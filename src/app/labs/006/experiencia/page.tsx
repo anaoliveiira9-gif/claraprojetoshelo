@@ -1,12 +1,14 @@
-import { LabExitBar } from "@/components/labs/lab-exit-bar";
+"use client";
 
-export default function Placeholder() {
+import { useRouter } from "next/navigation";
+import { NovaOnboardingScreen } from "@/components/labs/006/screens";
+
+export default function ExperienciaOnboardingPage() {
+  const router = useRouter();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink text-paper">
-      <LabExitBar labIndex="006" labName="Nova" />
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-paper-faint">
-        Em construção
-      </p>
-    </div>
+    <NovaOnboardingScreen
+      onFinish={() => router.push("/labs/006/experiencia/inicio")}
+    />
   );
 }
