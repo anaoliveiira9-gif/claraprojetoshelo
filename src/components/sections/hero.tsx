@@ -1,15 +1,41 @@
+"use client";
+
+import { useRef } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/logo";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { SpiralMark } from "@/components/spiral-mark";
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const lineScale = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+  const lineOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.15, 0.7, 1],
+    [0, 1, 1, 0]
+  );
+
   return (
-    <section className="relative overflow-hidden border-b border-line px-5 pb-20 pt-16 sm:px-8 sm:pt-24 lg:px-12">
-      <div
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden border-b border-line px-5 pb-20 pt-16 sm:px-8 sm:pt-24 lg:px-12"
+    >
+      <SpiralMark
+        sectionRef={sectionRef}
+        className="absolute -right-24 -top-24 h-[480px] w-[480px] text-accent/[0.06]"
+      />
+
+      {/* Opening line: draws itself open as the hero scrolls past, echoing
+          the spiral's expansion and handing off into the Labs section. */}
+      <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-24 -top-24 text-accent/[0.06]"
-      >
-        <Logo className="h-[480px] w-[480px] animate-spin-slow" />
-      </div>
+        style={{ scaleX: lineScale, opacity: lineOpacity }}
+        className="absolute inset-x-0 bottom-0 h-px origin-center bg-accent"
+      />
 
       <div className="mx-auto flex max-w-[1600px] flex-col">
         <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.25em] text-paper-faint">
