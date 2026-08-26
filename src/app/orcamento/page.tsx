@@ -20,9 +20,11 @@ export default async function OrcamentoPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const params = await searchParams;
-  const build = readParam(params, "build");
+  const builds = readParam(params, "builds");
   const needs = readParam(params, "needs");
+  const features = readParam(params, "features");
   const priorities = readParam(params, "priorities");
+  const servico = readParam(params, "servico");
   const name = readParam(params, "name");
   const email = readParam(params, "email");
   const company = readParam(params, "company");
@@ -43,9 +45,11 @@ export default async function OrcamentoPage({
 
       <div className="mt-16">
         <BudgetFlow
-          build={build}
+          builds={builds}
           needs={needs}
+          features={features}
           priorities={priorities}
+          servico={servico}
           name={name}
           email={email}
           company={company}

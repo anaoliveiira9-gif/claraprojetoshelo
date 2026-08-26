@@ -1,37 +1,35 @@
-export const BUILD_OPTIONS = [
-  "Site",
-  "E-commerce",
-  "App",
-  "Sistema",
-  "Produto Digital",
-  "Outro",
-] as const;
+import {
+  BUILD_OPTIONS,
+  NEED_OPTIONS,
+  FEATURE_OPTIONS,
+  PRIORITY_OPTIONS,
+  computeEstimate,
+  type BuildOption,
+  type NeedOption,
+  type FeatureOption,
+  type PriorityOption,
+  type EstimateResult,
+  type ServiceSlug,
+} from "@/lib/pricing";
 
-export const NEED_OPTIONS = [
-  "Vender",
-  "Agendar",
-  "Captar",
-  "Automatizar",
-  "Gerenciar",
-  "Integrar",
-] as const;
-
-export const PRIORITY_OPTIONS = [
-  "Marca",
-  "Experiência",
-  "Performance",
-  "Conversão",
-  "Tecnologia",
-] as const;
-
-export type BuildOption = (typeof BUILD_OPTIONS)[number];
-export type NeedOption = (typeof NEED_OPTIONS)[number];
-export type PriorityOption = (typeof PRIORITY_OPTIONS)[number];
+export {
+  BUILD_OPTIONS,
+  NEED_OPTIONS,
+  FEATURE_OPTIONS,
+  PRIORITY_OPTIONS,
+  type BuildOption,
+  type NeedOption,
+  type FeatureOption,
+  type PriorityOption,
+};
 
 export interface ProjectSelection {
-  build: BuildOption | null;
+  builds: BuildOption[];
   needs: NeedOption[];
+  features: FeatureOption[];
   priorities: PriorityOption[];
+  /** Present when the visitor arrived from a /servicos/[slug] page. */
+  initialService?: ServiceSlug;
 }
 
 export interface ContactInfo {
@@ -41,61 +39,27 @@ export interface ContactInfo {
   whatsapp: string;
 }
 
-export type ScopeTier = "Essencial" | "Autoral" | "Sistema Completo";
-
-export interface ScopeSuggestion {
-  tier: ScopeTier;
-  description: string;
-}
-
-const BASE_WEIGHT: Record<BuildOption, number> = {
-  Site: 1,
-  "E-commerce": 2.4,
-  App: 2.8,
-  Sistema: 3.2,
-  "Produto Digital": 3,
-  Outro: 1.5,
-};
-
 /**
- * Sugestão de escopo qualitativa, sem valores monetários ou prazos —
- * isso é deliberado (ver instruções do orçamento). Serve como ponto de
- * partida para a conversa com a equipe, não como cálculo final. Quando
- * houver uma lógica real de orçamento, ela troca esta função por uma
- * chamada de API mantendo a mesma assinatura.
+ * Estimativa de investimento — não é orçamento fechado. Combina o
+ * preço-base do tipo de projeto com o nível de complexidade sinalizado
+ * pelas respostas, descontando funcionalidades já implícitas no tipo de
+ * projeto escolhido. Toda a lógica de preço vive em `@/lib/pricing`; esta
+ * função só decide o que perguntar e como resumir a conversa.
  */
-export function suggestScope(selection: ProjectSelection): ScopeSuggestion {
-  const base = selection.build ? BASE_WEIGHT[selection.build] : 1;
-  const complexity =
-    base + selection.needs.length * 0.35 + selection.priorities.length * 0.15;
-
-  if (complexity < 1.8) {
-    return {
-      tier: "Essencial",
-      description:
-        "Projeto direto ao ponto: identidade aplicada, escopo enxuto, execução rápida.",
-    };
-  }
-
-  if (complexity < 3.2) {
-    return {
-      tier: "Autoral",
-      description:
-        "Projeto completo, com sistema de design próprio e integrações essenciais.",
-    };
-  }
-
-  return {
-    tier: "Sistema Completo",
-    description:
-      "Produto digital robusto — múltiplos fluxos, painéis e automações prontos para escalar.",
-  };
+export function suggestScope(selection: ProjectSelection): EstimateResult {
+  return computeEstimate({
+    builds: selection.builds,
+    needs: selection.needs,
+    features: selection.features,
+    priorities: selection.priorities,
+    initialService: selection.initialService,
+  });
 }
 
 export interface DiagnosticPayload {
   project: ProjectSelection;
   contact: ContactInfo;
-  scope: ScopeSuggestion;
+  estimate: EstimateResult;
   meta: {
     submittedAt: string;
     source: "start-a-project";
@@ -109,7 +73,7 @@ export function buildDiagnosticPayload(
   return {
     project,
     contact,
-    scope: suggestScope(project),
+    estimate: suggestScope(project),
     meta: {
       submittedAt: new Date().toISOString(),
       source: "start-a-project",

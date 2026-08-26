@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { CONTACT, PAYMENT_METHODS, type PaymentMethodId } from "@/lib/config";
+import { PAYMENT_METHODS, type PaymentMethodId } from "@/lib/config";
 import { suggestScope, type ProjectSelection } from "@/lib/diagnostic";
+import { formatEstimate, getService, type ServiceSlug } from "@/lib/pricing";
 import { submitBriefing } from "@/lib/briefing";
 import { createMockCharge, type MockChargeResult } from "@/lib/payments";
 import { SectionLabel } from "@/components/section-label";
+import { EmailLink, WhatsappLink } from "@/components/contact-links";
 
 function parseListParam(value: string | undefined) {
   if (!value) return [];
@@ -14,31 +16,39 @@ function parseListParam(value: string | undefined) {
 }
 
 export function BudgetFlow({
-  build,
+  builds,
   needs,
+  features,
   priorities,
+  servico,
   name,
   email,
   company,
 }: {
-  build?: string;
+  builds?: string;
   needs?: string;
+  features?: string;
   priorities?: string;
+  servico?: string;
   name?: string;
   email?: string;
   company?: string;
 }) {
   const selection = useMemo<ProjectSelection>(
     () => ({
-      build: (build as ProjectSelection["build"]) ?? null,
+      builds: parseListParam(builds) as ProjectSelection["builds"],
       needs: parseListParam(needs) as ProjectSelection["needs"],
+      features: parseListParam(features) as ProjectSelection["features"],
       priorities: parseListParam(priorities) as ProjectSelection["priorities"],
+      initialService: servico
+        ? (getService(servico)?.slug as ServiceSlug | undefined)
+        : undefined,
     }),
-    [build, needs, priorities]
+    [builds, needs, features, priorities, servico]
   );
 
-  const hasSelection = selection.build !== null;
-  const scope = useMemo(() => suggestScope(selection), [selection]);
+  const hasSelection = selection.builds.length > 0 || Boolean(selection.initialService);
+  const estimate = useMemo(() => suggestScope(selection), [selection]);
 
   const contactPrefilled = Boolean(name && email);
 
@@ -83,23 +93,19 @@ export function BudgetFlow({
                 Projeto
               </p>
               <p className="mt-2 font-display text-xl font-semibold">
-                {selection.build}
+                {selection.builds.join(" · ") || "—"}
               </p>
             </div>
-            <div>
+            <div className="sm:col-span-2">
               <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
-                Nível
+                Estimativa de Investimento
               </p>
               <p className="mt-2 font-display text-xl font-semibold text-accent">
-                {scope.tier}
+                {formatEstimate(estimate)}
               </p>
-            </div>
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
-                Escopo sugerido
-              </p>
-              <p className="mt-2 text-sm text-paper-dim">
-                {scope.description}
+              <p className="mt-2 text-xs leading-relaxed text-paper-faint">
+                Estimativa inicial. O valor final depende do escopo definido
+                no briefing e da complexidade técnica do projeto.
               </p>
             </div>
           </div>
@@ -113,7 +119,7 @@ export function BudgetFlow({
             >
               diagnóstico
             </a>{" "}
-            para gerar uma sugestão de escopo, ou envie o briefing abaixo
+            para gerar uma estimativa, ou envie o briefing abaixo
             diretamente.
           </p>
         )}
@@ -184,9 +190,8 @@ export function BudgetFlow({
         <SectionLabel index="03" label="Pagamento" />
         <p className="mt-6 max-w-lg text-sm leading-relaxed text-paper-dim">
           Estrutura de pagamento em preparação — nenhuma cobrança real é
-          feita aqui e nenhum valor é calculado nesta etapa. Ao aprovar o
-          orçamento, você recebe um link de pagamento real por e-mail ou
-          WhatsApp.
+          feita aqui. Ao aprovar o orçamento, você recebe um link de
+          pagamento real por e-mail ou WhatsApp.
         </p>
 
         <div className="mt-6 grid gap-px overflow-hidden bg-line sm:grid-cols-3">
@@ -318,22 +323,12 @@ export function BudgetFlow({
       <div className="border-t border-line pt-10">
         <SectionLabel index="04" label="Fale direto com a ALUMNA" />
         <div className="mt-6 flex flex-wrap gap-4">
-          <a
-            href={`mailto:${CONTACT.email}`}
-            data-cursor-hover
-            className="flex items-center gap-3 border border-paper px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent"
-          >
+          <EmailLink className="flex items-center gap-3 border border-paper px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent">
             E-mail →
-          </a>
-          <a
-            href={CONTACT.whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-cursor-hover
-            className="flex items-center gap-3 border border-paper px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent"
-          >
+          </EmailLink>
+          <WhatsappLink className="flex items-center gap-3 border border-paper px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent">
             WhatsApp →
-          </a>
+          </WhatsappLink>
         </div>
       </div>
     </div>

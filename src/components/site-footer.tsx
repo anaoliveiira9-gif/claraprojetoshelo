@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { BRAND, CONTACT, NAV_LINKS } from "@/lib/config";
+import { EmailLink, WhatsappLink } from "@/components/contact-links";
 
 export function SiteFooter() {
   return (
@@ -49,24 +50,14 @@ export function SiteFooter() {
             </p>
             <ul className="mt-4 flex flex-col gap-3 text-sm text-paper-dim">
               <li>
-                <a
-                  href={`mailto:${CONTACT.email}`}
-                  className="transition-colors hover:text-paper"
-                  data-cursor-hover
-                >
-                  {CONTACT.email}
-                </a>
+                <EmailLink className="transition-colors hover:text-paper">
+                  {CONTACT.email ?? "E-mail em breve"}
+                </EmailLink>
               </li>
               <li>
-                <a
-                  href={CONTACT.whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-colors hover:text-paper"
-                  data-cursor-hover
-                >
+                <WhatsappLink className="transition-colors hover:text-paper">
                   WhatsApp
-                </a>
+                </WhatsappLink>
               </li>
               <li>{CONTACT.address}</li>
             </ul>

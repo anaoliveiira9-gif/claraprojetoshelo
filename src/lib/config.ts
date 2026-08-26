@@ -13,15 +13,19 @@ export const BRAND = {
   city: "Brasil",
 } as const;
 
+/**
+ * Real contact details go here once they exist — every call site reads
+ * from this object and already handles `null` gracefully (renders a
+ * disabled "em breve" state instead of a link), so filling these in is
+ * the only change needed to turn on real WhatsApp/e-mail contact.
+ */
 export const CONTACT = {
-  email: "ola@alumna.studio",
-  phone: "+55 11 0000-0000",
-  phoneDisplay: "+55 11 0000-0000",
-  whatsappNumber: "5511000000000", // digits only, country code + DDD + number
+  email: null as string | null,
+  whatsappNumber: null as string | null, // digits only: country code + DDD + number
   get whatsappUrl() {
-    return `https://wa.me/${this.whatsappNumber}`;
+    return this.whatsappNumber ? `https://wa.me/${this.whatsappNumber}` : null;
   },
-  instagram: "https://instagram.com/alumna.studio",
+  instagram: null as string | null,
   address: "Disponível para projetos em todo o Brasil, remoto por padrão.",
 } as const;
 

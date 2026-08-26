@@ -6,9 +6,11 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+import { EmailLink, WhatsappLink } from "@/components/contact-links";
 import {
   BUILD_OPTIONS,
   NEED_OPTIONS,
+  FEATURE_OPTIONS,
   PRIORITY_OPTIONS,
   suggestScope,
   buildDiagnosticPayload,
@@ -16,21 +18,28 @@ import {
   type BuildOption,
   type ContactInfo,
   type NeedOption,
+  type FeatureOption,
   type PriorityOption,
   type ProjectSelection,
 } from "@/lib/diagnostic";
+import { getService, formatEstimate, type ServiceSlug } from "@/lib/pricing";
 
 const STEPS = [
   "O que vamos criar?",
   "O que precisa acontecer?",
-  "O que é prioridade?",
+  "Como deve funcionar?",
+  "O que é mais importante?",
   "Dados de contato",
   "Seu projeto",
 ] as const;
 
 const BUILD_ALIASES: Record<string, BuildOption> = {
   website: "Site",
+  "loja-virtual": "Loja virtual",
+  ecommerce: "Loja virtual",
+  app: "Aplicativo",
   sistemas: "Sistema",
+  "identidade-digital": "Identidade digital",
 };
 
 function Tile({
@@ -49,7 +58,7 @@ function Tile({
       data-cursor-hover
       aria-pressed={active}
       className={cn(
-        "flex items-center justify-between gap-3 border px-6 py-5 text-left font-display text-xl font-medium uppercase tracking-tight transition-colors sm:text-2xl",
+        "flex items-center justify-between gap-3 border px-5 py-4 text-left font-display text-lg font-medium uppercase tracking-tight transition-colors sm:px-6 sm:py-5 sm:text-xl",
         active
           ? "border-accent bg-accent/10 text-accent"
           : "border-line text-paper hover:border-paper-dim"
@@ -58,7 +67,7 @@ function Tile({
       {children}
       <span
         className={cn(
-          "font-mono text-xs",
+          "shrink-0 font-mono text-xs",
           active ? "text-accent" : "text-paper-faint"
         )}
       >
@@ -104,23 +113,35 @@ const emptyContact: ContactInfo = {
 
 export function Configurator() {
   const searchParams = useSearchParams();
+  const servicoParam = searchParams.get("servico");
   const focusParam = searchParams.get("focus");
   const reducedMotion = usePrefersReducedMotion();
 
-  const initialBuild: BuildOption | null = useMemo(() => {
-    if (!focusParam) return null;
+  const initialService = useMemo(() => {
+    if (!servicoParam) return undefined;
+    return getService(servicoParam)?.slug as ServiceSlug | undefined;
+  }, [servicoParam]);
+
+  const initialBuilds: BuildOption[] = useMemo(() => {
+    if (initialService) {
+      const svc = getService(initialService);
+      return svc ? [svc.buildOption] : [];
+    }
+    if (!focusParam) return [];
     const key = focusParam.toLowerCase();
     const aliased = BUILD_ALIASES[key];
-    if (aliased) return aliased;
+    if (aliased) return [aliased];
     const match = BUILD_OPTIONS.find((option) => option.toLowerCase() === key);
-    return match ?? null;
-  }, [focusParam]);
+    return match ? [match] : [];
+  }, [initialService, focusParam]);
 
   const [step, setStep] = useState(0);
   const [selection, setSelection] = useState<ProjectSelection>({
-    build: initialBuild,
+    builds: initialBuilds,
     needs: [],
+    features: [],
     priorities: [],
+    initialService,
   });
   const [contact, setContact] = useState<ContactInfo>(emptyContact);
 
@@ -128,17 +149,27 @@ export function Configurator() {
     "idle" | "sending" | "sent"
   >("idle");
 
-  const scope = useMemo(() => suggestScope(selection), [selection]);
+  const estimate = useMemo(() => suggestScope(selection), [selection]);
 
   const contactValid =
     contact.name.trim().length > 0 && /\S+@\S+\.\S+/.test(contact.email);
 
   const canAdvance =
-    (step === 0 && selection.build !== null) ||
-    (step === 1 && selection.needs.length > 0) ||
-    (step === 2 && selection.priorities.length > 0) ||
-    (step === 3 && contactValid) ||
-    step === 4;
+    (step === 0 && selection.builds.length > 0) ||
+    step === 1 ||
+    step === 2 ||
+    step === 3 ||
+    (step === 4 && contactValid) ||
+    step === 5;
+
+  function toggleBuild(build: BuildOption) {
+    setSelection((prev) => ({
+      ...prev,
+      builds: prev.builds.includes(build)
+        ? prev.builds.filter((b) => b !== build)
+        : [...prev.builds, build],
+    }));
+  }
 
   function toggleNeed(need: NeedOption) {
     setSelection((prev) => ({
@@ -146,6 +177,15 @@ export function Configurator() {
       needs: prev.needs.includes(need)
         ? prev.needs.filter((n) => n !== need)
         : [...prev.needs, need],
+    }));
+  }
+
+  function toggleFeature(feature: FeatureOption) {
+    setSelection((prev) => ({
+      ...prev,
+      features: prev.features.includes(feature)
+        ? prev.features.filter((f) => f !== feature)
+        : [...prev.features, feature],
     }));
   }
 
@@ -166,9 +206,11 @@ export function Configurator() {
   }
 
   const orcamentoQuery = new URLSearchParams({
-    build: selection.build ?? "",
+    builds: selection.builds.join(","),
     needs: selection.needs.join(","),
+    features: selection.features.join(","),
     priorities: selection.priorities.join(","),
+    ...(selection.initialService ? { servico: selection.initialService } : {}),
     name: contact.name,
     email: contact.email,
     company: contact.company,
@@ -193,7 +235,7 @@ export function Configurator() {
               {String(i + 1).padStart(2, "0")}
             </button>
             {i < STEPS.length - 1 && (
-              <span className="h-px w-6 bg-line sm:w-10" />
+              <span className="h-px w-4 bg-line sm:w-6" />
             )}
           </span>
         ))}
@@ -207,14 +249,12 @@ export function Configurator() {
 
           <div className="mt-10">
           {step === 0 && (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               {BUILD_OPTIONS.map((option) => (
                 <Tile
                   key={option}
-                  active={selection.build === option}
-                  onClick={() =>
-                    setSelection((prev) => ({ ...prev, build: option }))
-                  }
+                  active={selection.builds.includes(option)}
+                  onClick={() => toggleBuild(option)}
                 >
                   {option}
                 </Tile>
@@ -223,7 +263,7 @@ export function Configurator() {
           )}
 
           {step === 1 && (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               {NEED_OPTIONS.map((option) => (
                 <Tile
                   key={option}
@@ -237,7 +277,21 @@ export function Configurator() {
           )}
 
           {step === 2 && (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {FEATURE_OPTIONS.map((option) => (
+                <Tile
+                  key={option}
+                  active={selection.features.includes(option)}
+                  onClick={() => toggleFeature(option)}
+                >
+                  {option}
+                </Tile>
+              ))}
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="grid gap-3 sm:grid-cols-3">
               {PRIORITY_OPTIONS.map((option) => (
                 <Tile
                   key={option}
@@ -250,7 +304,7 @@ export function Configurator() {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div className="grid gap-4 sm:grid-cols-2">
               <input
                 required
@@ -294,13 +348,13 @@ export function Configurator() {
             </div>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div className="border border-line">
               <div className="grid gap-8 p-6 sm:grid-cols-2 sm:p-10">
                 <div className="flex flex-col gap-6">
                   <SummaryRow
                     label="Projeto"
-                    value={selection.build ?? "—"}
+                    value={selection.builds.join(" · ") || "—"}
                     onEdit={() => setStep(0)}
                   />
                   <SummaryRow
@@ -309,30 +363,35 @@ export function Configurator() {
                     onEdit={() => setStep(1)}
                   />
                   <SummaryRow
+                    label="Funcionalidades"
+                    value={selection.features.join(" · ") || "—"}
+                    onEdit={() => setStep(2)}
+                  />
+                  <SummaryRow
                     label="Prioridades"
                     value={selection.priorities.join(" · ") || "—"}
-                    onEdit={() => setStep(2)}
+                    onEdit={() => setStep(3)}
                   />
                   <SummaryRow
                     label="Contato"
                     value={[contact.name, contact.email]
                       .filter(Boolean)
                       .join(" · ")}
-                    onEdit={() => setStep(3)}
+                    onEdit={() => setStep(4)}
                   />
                 </div>
 
                 <div className="border-t border-line pt-6 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">
                   <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
-                    Escopo sugerido — {scope.tier}
+                    Estimativa de Investimento
                   </p>
-                  <p className="mt-3 text-sm leading-relaxed text-paper-dim">
-                    {scope.description}
+                  <p className="mt-3 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+                    {formatEstimate(estimate)}
                   </p>
                   <p className="mt-6 border-t border-line pt-4 text-xs leading-relaxed text-paper-faint">
-                    Valor e prazo são definidos pela equipe após a análise
-                    deste diagnóstico — nada é calculado automaticamente
-                    aqui.
+                    Estimativa inicial. O valor final depende do escopo
+                    definido no briefing e da complexidade técnica do
+                    projeto.
                   </p>
                 </div>
               </div>
@@ -369,6 +428,20 @@ export function Configurator() {
                   </button>
                 )}
               </div>
+
+              <div className="border-t border-line p-6 sm:p-10">
+                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
+                  Prefere conversar diretamente?
+                </p>
+                <div className="mt-4 flex flex-wrap gap-4">
+                  <WhatsappLink className="flex items-center gap-3 border border-line px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent">
+                    Falar pelo WhatsApp →
+                  </WhatsappLink>
+                  <EmailLink className="flex items-center gap-3 border border-line px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent">
+                    Enviar um e-mail →
+                  </EmailLink>
+                </div>
+              </div>
             </div>
           )}
           </div>
@@ -386,10 +459,10 @@ export function Configurator() {
           ← Voltar
         </button>
 
-        {step < 4 && (
+        {step < 5 && (
           <button
             type="button"
-            onClick={() => setStep((s) => Math.min(4, s + 1))}
+            onClick={() => setStep((s) => Math.min(5, s + 1))}
             disabled={!canAdvance}
             data-cursor-hover
             className="flex items-center gap-3 border border-paper px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
