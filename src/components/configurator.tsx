@@ -23,6 +23,13 @@ import {
   type ProjectSelection,
 } from "@/lib/diagnostic";
 import { getService, formatEstimate, type ServiceSlug } from "@/lib/pricing";
+import {
+  STEP_HINTS,
+  BUILD_DESCRIPTIONS,
+  NEED_DESCRIPTIONS,
+  FEATURE_DESCRIPTIONS,
+  PRIORITY_DESCRIPTIONS,
+} from "@/lib/configurator-copy";
 
 const STEPS = [
   "O que vamos criar?",
@@ -45,11 +52,13 @@ const BUILD_ALIASES: Record<string, BuildOption> = {
 function Tile({
   active,
   onClick,
-  children,
+  label,
+  description,
 }: {
   active: boolean;
   onClick: () => void;
-  children: React.ReactNode;
+  label: string;
+  description?: string;
 }) {
   return (
     <button
@@ -58,16 +67,35 @@ function Tile({
       data-cursor-hover
       aria-pressed={active}
       className={cn(
-        "flex items-center justify-between gap-3 border px-5 py-4 text-left font-display text-lg font-medium uppercase tracking-tight transition-colors sm:px-6 sm:py-5 sm:text-xl",
+        "flex items-start justify-between gap-3 border px-5 py-4 text-left transition-colors sm:px-6 sm:py-5",
         active
-          ? "border-accent bg-accent/10 text-accent"
-          : "border-line text-paper hover:border-paper-dim"
+          ? "border-accent bg-accent/10"
+          : "border-line hover:border-paper-dim"
       )}
     >
-      {children}
+      <span className="flex flex-col gap-1">
+        <span
+          className={cn(
+            "font-display text-lg font-medium uppercase leading-tight tracking-tight sm:text-xl",
+            active ? "text-accent" : "text-paper"
+          )}
+        >
+          {label}
+        </span>
+        {description && (
+          <span
+            className={cn(
+              "text-xs leading-snug normal-case tracking-normal",
+              active ? "text-accent/70" : "text-paper-faint"
+            )}
+          >
+            {description}
+          </span>
+        )}
+      </span>
       <span
         className={cn(
-          "shrink-0 font-mono text-xs",
+          "mt-1 shrink-0 font-mono text-xs",
           active ? "text-accent" : "text-paper-faint"
         )}
       >
@@ -246,60 +274,65 @@ export function Configurator() {
           <h1 className="font-display text-[clamp(1.8rem,5vw,3.2rem)] font-semibold uppercase leading-[1.05] tracking-tight">
             {STEPS[step]}
           </h1>
+          {STEP_HINTS[step] && (
+            <p className="mt-3 max-w-md text-sm text-paper-dim">
+              {STEP_HINTS[step]}
+            </p>
+          )}
 
           <div className="mt-10">
           {step === 0 && (
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {BUILD_OPTIONS.map((option) => (
                 <Tile
                   key={option}
+                  label={option}
+                  description={BUILD_DESCRIPTIONS[option]}
                   active={selection.builds.includes(option)}
                   onClick={() => toggleBuild(option)}
-                >
-                  {option}
-                </Tile>
+                />
               ))}
             </div>
           )}
 
           {step === 1 && (
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {NEED_OPTIONS.map((option) => (
                 <Tile
                   key={option}
+                  label={option}
+                  description={NEED_DESCRIPTIONS[option]}
                   active={selection.needs.includes(option)}
                   onClick={() => toggleNeed(option)}
-                >
-                  {option}
-                </Tile>
+                />
               ))}
             </div>
           )}
 
           {step === 2 && (
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {FEATURE_OPTIONS.map((option) => (
                 <Tile
                   key={option}
+                  label={option}
+                  description={FEATURE_DESCRIPTIONS[option]}
                   active={selection.features.includes(option)}
                   onClick={() => toggleFeature(option)}
-                >
-                  {option}
-                </Tile>
+                />
               ))}
             </div>
           )}
 
           {step === 3 && (
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {PRIORITY_OPTIONS.map((option) => (
                 <Tile
                   key={option}
+                  label={option}
+                  description={PRIORITY_DESCRIPTIONS[option]}
                   active={selection.priorities.includes(option)}
                   onClick={() => togglePriority(option)}
-                >
-                  {option}
-                </Tile>
+                />
               ))}
             </div>
           )}
