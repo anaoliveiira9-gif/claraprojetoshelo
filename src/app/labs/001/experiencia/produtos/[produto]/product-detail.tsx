@@ -34,7 +34,20 @@ export function ProductDetail({ product }: { product: Product }) {
           {product.description}
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-5 flex flex-wrap gap-2">
+          {product.scentNotes.map((note) => (
+            <Link
+              key={note}
+              href={`/labs/001/experiencia/produtos?nota=${encodeURIComponent(note)}`}
+              data-cursor-hover
+              className="border border-[#B4915B]/40 bg-[#B4915B]/10 px-3 py-1 text-xs uppercase tracking-[0.15em] text-[#B4915B] transition-colors hover:bg-[#B4915B]/20"
+            >
+              {note}
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
           {product.notes.map((note) => (
             <span
               key={note}

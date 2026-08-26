@@ -5,11 +5,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
-import { Display, Eyebrow, GhostButton, PrimaryButton } from "@/components/labs/003/noir-ui";
+import { AmbiancePanel, Display, Eyebrow, GhostButton, PrimaryButton } from "@/components/labs/003/noir-ui";
 import { buildMonthGrid, WEEKDAY_LABELS } from "@/components/labs/003/calendar";
-import { getTimeSlots, createReservation, type ReservationConfirmation } from "@/components/labs/003/reservation";
+import {
+  getTimeSlots,
+  createReservation,
+  TABLES,
+  getTableById,
+  type ReservationConfirmation,
+} from "@/components/labs/003/reservation";
 
-const STEPS = ["Data", "Pessoas", "Horário", "Confirmação"] as const;
+const STEPS = ["Noite", "Mesa", "Horário", "Confirmação"] as const;
 
 function formatDateLong(iso: string) {
   const [year, month, day] = iso.split("-").map(Number);
@@ -21,11 +27,64 @@ function formatDateLong(iso: string) {
   });
 }
 
+/**
+ * Every step's ambient panel is retuned from the choices made so far —
+ * the point is that "which night", "which table" and "which hour" each
+ * visibly shift the room's light, not just the text beside it.
+ */
+function useAmbiance(
+  step: number,
+  date: string | null,
+  tableId: string | null,
+  time: string | null,
+  timeSlots: { time: string; available: boolean }[],
+) {
+  return useMemo(() => {
+    const table = getTableById(tableId);
+
+    if (step === 0) {
+      if (!date) return { variant: "deep" as const, glowX: 60, glowY: 65, intensity: 0.45 };
+      const [y, m, d] = date.split("-").map(Number);
+      const weekday = new Date(y, m - 1, d).getDay();
+      const isWeekend = weekday === 5 || weekday === 6;
+      return isWeekend
+        ? { variant: "warm" as const, glowX: 28, glowY: 22, intensity: 1 }
+        : { variant: "deep" as const, glowX: 68, glowY: 38, intensity: 0.7 };
+    }
+
+    if (step === 1) {
+      if (!table) return { variant: "deep" as const, glowX: 50, glowY: 50, intensity: 0.55 };
+      return table.mood === "warm"
+        ? { variant: "warm" as const, glowX: 24, glowY: 24, intensity: 1 }
+        : { variant: "deep" as const, glowX: 72, glowY: 42, intensity: 0.85 };
+    }
+
+    if (step === 2) {
+      const base = table?.mood ?? "warm";
+      if (!time || timeSlots.length === 0) {
+        return { variant: base, glowX: base === "warm" ? 28 : 70, glowY: 30, intensity: 0.6 };
+      }
+      const idx = timeSlots.findIndex((s) => s.time === time);
+      const lateness = idx <= 0 ? 0 : idx / Math.max(1, timeSlots.length - 1);
+      return {
+        variant: base,
+        glowX: base === "warm" ? 26 : 70,
+        glowY: 20 + lateness * 55,
+        intensity: 1 - lateness * 0.55,
+      };
+    }
+
+    // Confirmation
+    return { variant: table?.mood ?? "warm", glowX: 40, glowY: 32, intensity: 1 };
+  }, [step, date, tableId, time, timeSlots]);
+}
+
 export function ReservationWizard() {
   const reducedMotion = usePrefersReducedMotion();
 
   const [step, setStep] = useState(0);
   const [date, setDate] = useState<string | null>(null);
+  const [tableId, setTableId] = useState<string | null>(null);
   const [people, setPeople] = useState(2);
   const [time, setTime] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -41,6 +100,8 @@ export function ReservationWizard() {
   }, [today]);
 
   const timeSlots = useMemo(() => (date ? getTimeSlots(date) : []), [date]);
+  const table = getTableById(tableId);
+  const ambiance = useAmbiance(step, date, tableId, time, timeSlots);
 
   function goTo(nextStep: number) {
     setDirection(nextStep > step ? 1 : -1);
@@ -61,16 +122,17 @@ export function ReservationWizard() {
   }
 
   async function handleConfirm() {
-    if (!date || !time) return;
+    if (!date || !time || !tableId) return;
     setSubmitting(true);
     goTo(3);
-    const result = await createReservation({ date, people, time });
+    const result = await createReservation({ date, people, time, tableId });
     setConfirmation(result);
     setSubmitting(false);
   }
 
   function handleRestart() {
     setDate(null);
+    setTableId(null);
     setPeople(2);
     setTime(null);
     setConfirmation(null);
@@ -80,7 +142,7 @@ export function ReservationWizard() {
 
   const canContinue =
     (step === 0 && !!date) ||
-    (step === 1 && people > 0) ||
+    (step === 1 && !!tableId && people > 0) ||
     (step === 2 && !!time);
 
   const variants = reducedMotion
@@ -137,225 +199,300 @@ export function ReservationWizard() {
         })}
       </ol>
 
-      <div className="relative min-h-[360px]">
-        <AnimatePresence mode="wait" custom={direction} initial={false}>
-          <motion.div
-            key={step}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: reducedMotion ? 0.001 : 0.18, ease: "easeOut" }}
-          >
-            {step === 0 && (
-              <div>
-                <Eyebrow>Passo 1</Eyebrow>
-                <Display as="h2" className="mt-3 text-3xl sm:text-4xl">
-                  Escolha a data
-                </Display>
-
-                <div className="mt-10 grid gap-10 sm:grid-cols-2">
-                  {months.map(({ weeks, label }) => (
-                    <div key={label}>
-                      <p className="mb-4 font-sans text-xs uppercase tracking-[0.2em] text-[#F1E9DD]/50">
-                        {label}
-                      </p>
-                      <div className="grid grid-cols-7 gap-1.5">
-                        {WEEKDAY_LABELS.map((w, i) => (
-                          <span
-                            key={`${label}-wd-${i}`}
-                            className="flex h-7 items-center justify-center font-sans text-[10px] text-[#F1E9DD]/35"
-                          >
-                            {w}
-                          </span>
-                        ))}
-                        {weeks.flat().map((cell, i) => {
-                          if (!cell) return <span key={`${label}-empty-${i}`} />;
-                          const isSelected = date === cell.iso;
-                          return (
-                            <button
-                              key={cell.iso}
-                              type="button"
-                              disabled={cell.isPast}
-                              data-cursor-hover={!cell.isPast ? true : undefined}
-                              onClick={() => setDate(cell.iso)}
-                              className={cn(
-                                "flex h-9 items-center justify-center rounded-sm font-sans text-xs transition-colors",
-                                cell.isPast && "text-[#F1E9DD]/15",
-                                !cell.isPast &&
-                                  !isSelected &&
-                                  "text-[#F1E9DD]/70 hover:bg-[#F1E9DD]/10",
-                                isSelected && "bg-[#7C2A2A] text-[#F1E9DD]",
-                              )}
-                            >
-                              {cell.date.getDate()}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {step === 1 && (
-              <div>
-                <Eyebrow>Passo 2</Eyebrow>
-                <Display as="h2" className="mt-3 text-3xl sm:text-4xl">
-                  Quantas pessoas?
-                </Display>
-
-                <div className="mt-12 flex items-center gap-8">
-                  <button
-                    type="button"
-                    data-cursor-hover
-                    disabled={people <= 1}
-                    onClick={() => setPeople((p) => Math.max(1, p - 1))}
-                    className="flex h-12 w-12 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30"
-                    aria-label="Diminuir número de pessoas"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </button>
-                  <span className="font-[family-name:var(--font-noir-display)] text-6xl tabular-nums">
-                    {people}
-                  </span>
-                  <button
-                    type="button"
-                    data-cursor-hover
-                    disabled={people >= 10}
-                    onClick={() => setPeople((p) => Math.min(10, p + 1))}
-                    className="flex h-12 w-12 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30"
-                    aria-label="Aumentar número de pessoas"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
-                  <span className="font-sans text-xs uppercase tracking-[0.2em] text-[#F1E9DD]/50">
-                    {people === 1 ? "pessoa" : "pessoas"}
-                  </span>
-                </div>
-
-                <div className="mt-10 flex flex-wrap gap-2">
-                  {[2, 4, 6, 8].map((preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      data-cursor-hover
-                      onClick={() => setPeople(preset)}
-                      className={cn(
-                        "rounded-full border px-4 py-1.5 font-sans text-xs transition-colors",
-                        people === preset
-                          ? "border-[#7C2A2A] bg-[#7C2A2A] text-[#F1E9DD]"
-                          : "border-[#F1E9DD]/20 text-[#F1E9DD]/60 hover:border-[#F1E9DD]/50",
-                      )}
-                    >
-                      {preset}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {step === 2 && date && (
-              <div>
-                <Eyebrow>Passo 3</Eyebrow>
-                <Display as="h2" className="mt-3 text-3xl sm:text-4xl">
-                  Escolha o horário
-                </Display>
-                <p className="mt-2 font-sans text-xs uppercase tracking-[0.15em] text-[#F1E9DD]/40">
-                  {formatDateLong(date)}
+      {step < 3 ? (
+        <div className="grid gap-8 sm:grid-cols-[0.9fr_1.3fr] sm:items-stretch sm:gap-12">
+          {/* Ambiance rail — retuned per choice, not just decorative */}
+          <div className="order-2 sm:order-1">
+            <AmbiancePanel
+              className="h-40 w-full sm:sticky sm:top-28 sm:h-[420px] lg:h-[480px]"
+              variant={ambiance.variant}
+              glowX={ambiance.glowX}
+              glowY={ambiance.glowY}
+              intensity={ambiance.intensity}
+            >
+              <div className="absolute inset-x-0 bottom-0 p-5">
+                <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#F1E9DD]/45">
+                  {step === 0 && "A noite"}
+                  {step === 1 && "A mesa"}
+                  {step === 2 && "O horário"}
                 </p>
-
-                <div className="mt-10 grid grid-cols-3 gap-2.5 sm:grid-cols-4">
-                  {timeSlots.map((slot) => (
-                    <button
-                      key={slot.time}
-                      type="button"
-                      disabled={!slot.available}
-                      data-cursor-hover={slot.available ? true : undefined}
-                      onClick={() => setTime(slot.time)}
-                      className={cn(
-                        "rounded-sm border px-4 py-3 font-sans text-sm transition-colors",
-                        !slot.available && "border-[#F1E9DD]/5 text-[#F1E9DD]/20 line-through",
-                        slot.available &&
-                          time !== slot.time &&
-                          "border-[#F1E9DD]/20 text-[#F1E9DD]/80 hover:border-[#F1E9DD]/50",
-                        slot.available &&
-                          time === slot.time &&
-                          "border-[#7C2A2A] bg-[#7C2A2A] text-[#F1E9DD]",
-                      )}
-                    >
-                      {slot.time}
-                    </button>
-                  ))}
-                </div>
+                <p className="mt-1.5 font-[family-name:var(--font-noir-display)] text-lg italic text-[#F1E9DD]/85 sm:text-xl">
+                  {step === 0 && (date ? formatDateLong(date) : "Ainda por escolher")}
+                  {step === 1 && (table ? table.label : "Ainda por escolher")}
+                  {step === 2 && (time ? time : "Ainda por escolher")}
+                </p>
               </div>
-            )}
+            </AmbiancePanel>
+          </div>
 
-            {step === 3 && (
-              <div>
-                {submitting && !confirmation && (
-                  <div className="flex flex-col items-center py-16 text-center">
-                    <Eyebrow>Confirmando</Eyebrow>
+          <div className="relative order-1 min-h-[360px] sm:order-2">
+            <AnimatePresence mode="wait" custom={direction} initial={false}>
+              <motion.div
+                key={step}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: reducedMotion ? 0.001 : 0.18, ease: "easeOut" }}
+              >
+                {step === 0 && (
+                  <div>
+                    <Eyebrow>Passo 1</Eyebrow>
                     <Display as="h2" className="mt-3 text-3xl sm:text-4xl">
-                      Preparando sua mesa…
+                      Escolha a noite
                     </Display>
-                    <div className="mt-8 h-px w-24 overflow-hidden bg-[#F1E9DD]/10">
-                      <motion.div
-                        className="h-full w-1/2 bg-[#7C2A2A]"
-                        animate={
-                          reducedMotion
-                            ? { opacity: [1, 0.4, 1] }
-                            : { x: ["-100%", "200%"] }
-                        }
-                        transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
-                      />
+
+                    <div className="mt-10 grid gap-10 sm:grid-cols-2">
+                      {months.map(({ weeks, label }) => (
+                        <div key={label}>
+                          <p className="mb-4 font-sans text-xs uppercase tracking-[0.2em] text-[#F1E9DD]/50">
+                            {label}
+                          </p>
+                          <div className="grid grid-cols-7 gap-1.5">
+                            {WEEKDAY_LABELS.map((w, i) => (
+                              <span
+                                key={`${label}-wd-${i}`}
+                                className="flex h-7 items-center justify-center font-sans text-[10px] text-[#F1E9DD]/35"
+                              >
+                                {w}
+                              </span>
+                            ))}
+                            {weeks.flat().map((cell, i) => {
+                              if (!cell) return <span key={`${label}-empty-${i}`} />;
+                              const isSelected = date === cell.iso;
+                              return (
+                                <button
+                                  key={cell.iso}
+                                  type="button"
+                                  disabled={cell.isPast}
+                                  data-cursor-hover={!cell.isPast ? true : undefined}
+                                  onClick={() => setDate(cell.iso)}
+                                  className={cn(
+                                    "flex h-9 items-center justify-center rounded-sm font-sans text-xs transition-colors",
+                                    cell.isPast && "text-[#F1E9DD]/15",
+                                    !cell.isPast &&
+                                      !isSelected &&
+                                      "text-[#F1E9DD]/70 hover:bg-[#F1E9DD]/10",
+                                    isSelected && "bg-[#7C2A2A] text-[#F1E9DD]",
+                                  )}
+                                >
+                                  {cell.date.getDate()}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
 
-                {confirmation && (
-                  <div className="flex flex-col items-center py-8 text-center">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#7C2A2A] text-[#7C2A2A]">
-                      <Check className="h-5 w-5" />
-                    </span>
-                    <Eyebrow className="mt-6">Reserva confirmada</Eyebrow>
-                    <Display as="h2" className="mt-3 text-4xl sm:text-5xl">
-                      {confirmation.code}
+                {step === 1 && (
+                  <div>
+                    <Eyebrow>Passo 2</Eyebrow>
+                    <Display as="h2" className="mt-3 text-3xl sm:text-4xl">
+                      Escolha uma mesa
                     </Display>
 
-                    <dl className="mt-10 grid w-full max-w-sm grid-cols-2 gap-y-4 border-t border-[#F1E9DD]/10 pt-8 text-left">
-                      <dt className="font-sans text-xs uppercase tracking-[0.15em] text-[#F1E9DD]/40">
-                        Data
-                      </dt>
-                      <dd className="text-right font-sans text-sm capitalize text-[#F1E9DD]/80">
-                        {formatDateLong(confirmation.selection.date)}
-                      </dd>
-                      <dt className="font-sans text-xs uppercase tracking-[0.15em] text-[#F1E9DD]/40">
-                        Pessoas
-                      </dt>
-                      <dd className="text-right font-sans text-sm text-[#F1E9DD]/80">
-                        {confirmation.selection.people}
-                      </dd>
-                      <dt className="font-sans text-xs uppercase tracking-[0.15em] text-[#F1E9DD]/40">
-                        Horário
-                      </dt>
-                      <dd className="text-right font-sans text-sm text-[#F1E9DD]/80">
-                        {confirmation.selection.time}
-                      </dd>
-                    </dl>
+                    <div className="mt-8 flex flex-col gap-2.5">
+                      {TABLES.map((option) => {
+                        const isSelected = tableId === option.id;
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            data-cursor-hover
+                            onClick={() => setTableId(option.id)}
+                            className={cn(
+                              "flex items-start justify-between gap-6 rounded-sm border px-5 py-4 text-left transition-colors",
+                              isSelected
+                                ? "border-[#7C2A2A] bg-[#7C2A2A]/10"
+                                : "border-[#F1E9DD]/15 hover:border-[#F1E9DD]/35",
+                            )}
+                          >
+                            <div>
+                              <p
+                                className={cn(
+                                  "font-[family-name:var(--font-noir-display)] text-lg sm:text-xl",
+                                  isSelected ? "text-[#F1E9DD]" : "text-[#F1E9DD]/85",
+                                )}
+                              >
+                                {option.label}
+                              </p>
+                              <p className="mt-1 max-w-sm text-sm leading-relaxed text-[#F1E9DD]/55">
+                                {option.description}
+                              </p>
+                            </div>
+                            <span className="shrink-0 pt-1 font-sans text-[11px] uppercase tracking-[0.15em] text-[#F1E9DD]/40">
+                              {option.capacity}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
 
-                    <GhostButton onClick={handleRestart} className="mt-10">
-                      Nova reserva
-                    </GhostButton>
+                    <div className="mt-9 flex items-center gap-5 border-t border-[#F1E9DD]/10 pt-8">
+                      <span className="font-sans text-xs uppercase tracking-[0.2em] text-[#F1E9DD]/50">
+                        Pessoas
+                      </span>
+                      <button
+                        type="button"
+                        data-cursor-hover
+                        disabled={people <= 1}
+                        onClick={() => setPeople((p) => Math.max(1, p - 1))}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30"
+                        aria-label="Diminuir número de pessoas"
+                      >
+                        <Minus className="h-3.5 w-3.5" />
+                      </button>
+                      <span className="font-[family-name:var(--font-noir-display)] text-3xl tabular-nums">
+                        {people}
+                      </span>
+                      <button
+                        type="button"
+                        data-cursor-hover
+                        disabled={people >= 10}
+                        onClick={() => setPeople((p) => Math.min(10, p + 1))}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30"
+                        aria-label="Aumentar número de pessoas"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
                 )}
+
+                {step === 2 && date && (
+                  <div>
+                    <Eyebrow>Passo 3</Eyebrow>
+                    <Display as="h2" className="mt-3 text-3xl sm:text-4xl">
+                      Escolha o horário
+                    </Display>
+                    <p className="mt-2 font-sans text-xs uppercase tracking-[0.15em] text-[#F1E9DD]/40">
+                      {formatDateLong(date)} · {table?.label}
+                    </p>
+
+                    <div className="mt-10 grid grid-cols-3 gap-2.5 sm:grid-cols-4">
+                      {timeSlots.map((slot) => (
+                        <button
+                          key={slot.time}
+                          type="button"
+                          disabled={!slot.available}
+                          data-cursor-hover={slot.available ? true : undefined}
+                          onClick={() => setTime(slot.time)}
+                          className={cn(
+                            "rounded-sm border px-4 py-3 font-sans text-sm transition-colors",
+                            !slot.available && "border-[#F1E9DD]/5 text-[#F1E9DD]/20 line-through",
+                            slot.available &&
+                              time !== slot.time &&
+                              "border-[#F1E9DD]/20 text-[#F1E9DD]/80 hover:border-[#F1E9DD]/50",
+                            slot.available &&
+                              time === slot.time &&
+                              "border-[#7C2A2A] bg-[#7C2A2A] text-[#F1E9DD]",
+                          )}
+                        >
+                          {slot.time}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      ) : (
+        <div className="relative">
+          {submitting && !confirmation && (
+            <div className="flex flex-col items-center py-16 text-center">
+              <Eyebrow>Confirmando</Eyebrow>
+              <Display as="h2" className="mt-3 text-3xl sm:text-4xl">
+                Preparando {table ? `a ${table.label}` : "sua mesa"}…
+              </Display>
+              <div className="mt-8 h-px w-24 overflow-hidden bg-[#F1E9DD]/10">
+                <motion.div
+                  className="h-full w-1/2 bg-[#7C2A2A]"
+                  animate={
+                    reducedMotion
+                      ? { opacity: [1, 0.4, 1] }
+                      : { x: ["-100%", "200%"] }
+                  }
+                  transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                />
               </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
+            </div>
+          )}
+
+          {confirmation && (
+            <motion.div
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: reducedMotion ? 0.001 : 0.4, ease: "easeOut" }}
+              className="relative mx-auto max-w-md py-6"
+            >
+              <AmbiancePanel
+                className="absolute inset-0 -z-10"
+                variant={ambiance.variant}
+                glowX={ambiance.glowX}
+                glowY={ambiance.glowY}
+                intensity={ambiance.intensity}
+              />
+
+              {/* The reservation card — an engraved keepsake, not a toast */}
+              <div className="relative border border-[#F1E9DD]/25 bg-[#0D0B0A]/70 px-8 py-12 backdrop-blur-sm sm:px-12 sm:py-14">
+                <span aria-hidden className="absolute left-3 top-3 h-3 w-3 border-l border-t border-[#7C2A2A]/70" />
+                <span aria-hidden className="absolute right-3 top-3 h-3 w-3 border-r border-t border-[#7C2A2A]/70" />
+                <span aria-hidden className="absolute bottom-3 left-3 h-3 w-3 border-b border-l border-[#7C2A2A]/70" />
+                <span aria-hidden className="absolute bottom-3 right-3 h-3 w-3 border-b border-r border-[#7C2A2A]/70" />
+
+                <div className="flex flex-col items-center text-center">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#7C2A2A] text-[#7C2A2A]">
+                    <Check className="h-4 w-4" />
+                  </span>
+                  <Eyebrow className="mt-6">Reserva confirmada</Eyebrow>
+                  <Display as="h2" className="mt-3 text-4xl tracking-[0.02em] sm:text-5xl">
+                    {confirmation.code}
+                  </Display>
+                </div>
+
+                <div className="mx-auto mt-10 h-px w-full bg-[#F1E9DD]/10" />
+
+                <dl className="mt-10 grid grid-cols-2 gap-x-8 gap-y-6">
+                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/40">
+                    Noite
+                  </dt>
+                  <dd className="text-right font-[family-name:var(--font-noir-display)] text-base capitalize text-[#F1E9DD]/90">
+                    {formatDateLong(confirmation.selection.date)}
+                  </dd>
+                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/40">
+                    Mesa
+                  </dt>
+                  <dd className="text-right font-[family-name:var(--font-noir-display)] text-base text-[#F1E9DD]/90">
+                    {getTableById(confirmation.selection.tableId)?.label ?? "—"}
+                  </dd>
+                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/40">
+                    Horário
+                  </dt>
+                  <dd className="text-right font-[family-name:var(--font-noir-display)] text-base text-[#F1E9DD]/90">
+                    {confirmation.selection.time}
+                  </dd>
+                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/40">
+                    Pessoas
+                  </dt>
+                  <dd className="text-right font-[family-name:var(--font-noir-display)] text-base text-[#F1E9DD]/90">
+                    {confirmation.selection.people}
+                  </dd>
+                </dl>
+
+                <div className="mt-11 flex justify-center">
+                  <GhostButton onClick={handleRestart}>Nova reserva</GhostButton>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      )}
 
       {step < 3 && (
         <div className="mt-12 flex items-center justify-between border-t border-[#F1E9DD]/10 pt-8">

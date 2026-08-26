@@ -1,7 +1,59 @@
+export type TableMood = "warm" | "deep";
+
+export type TableOption = {
+  id: string;
+  label: string;
+  description: string;
+  capacity: string;
+  mood: TableMood;
+};
+
+/**
+ * Stylized table choices — there is no real floor plan, so "escolher uma
+ * mesa" is represented as a handful of distinct spots in the room, each
+ * with its own mood. The mood feeds the ambient panel so the choice reads
+ * as spatial, not just a labelled radio option.
+ */
+export const TABLES: TableOption[] = [
+  {
+    id: "janela",
+    label: "Mesa da Janela",
+    description: "Vista para o pátio interno, a chama mais próxima do vidro.",
+    capacity: "2–4 pessoas",
+    mood: "warm",
+  },
+  {
+    id: "salao",
+    label: "Salão Central",
+    description: "No coração da sala, entre os arranjos e o burburinho baixo.",
+    capacity: "2–6 pessoas",
+    mood: "deep",
+  },
+  {
+    id: "reservada",
+    label: "Sala Reservada",
+    description: "Um canto recolhido atrás da cortina de linho, quase privado.",
+    capacity: "4–10 pessoas",
+    mood: "warm",
+  },
+  {
+    id: "chef",
+    label: "Mesa do Chef",
+    description: "De frente para a cozinha aberta — aroma de brasa, conversa com a equipe.",
+    capacity: "2–8 pessoas",
+    mood: "deep",
+  },
+];
+
+export function getTableById(id: string | null): TableOption | undefined {
+  return TABLES.find((table) => table.id === id);
+}
+
 export type ReservationSelection = {
   date: string; // ISO yyyy-mm-dd
   people: number;
   time: string; // HH:mm
+  tableId: string;
 };
 
 export type ReservationConfirmation = {

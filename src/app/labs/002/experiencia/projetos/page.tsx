@@ -30,7 +30,11 @@ export default function ProjetosPage() {
 
       <section className="grid grid-cols-1 gap-px bg-[#161615]/15 sm:grid-cols-2">
         {PROJECTS.map((project, i) => (
-          <Reveal key={project.slug} delay={(i % 2) * 0.06}>
+          <Reveal
+            key={project.slug}
+            delay={(i % 2) * 0.06}
+            className={i === 0 ? "sm:col-span-2" : undefined}
+          >
             <Link
               href={`/labs/002/experiencia/projetos/${project.slug}`}
               data-cursor-hover

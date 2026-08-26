@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -60,14 +60,34 @@ export function Rule({ className }: { className?: string }) {
 /**
  * A softly-lit gradient panel that reads as "ambiance" rather than a
  * broken image placeholder — low-key radial glows evoking candlelight.
+ *
+ * `glowX`/`glowY` (0–100) move the candle's position and `intensity`
+ * (0–1) scales its warmth, so callers can retune the same panel to track
+ * a live choice (a date, a table, a time) rather than swapping between
+ * two fixed looks.
  */
 export function AmbiancePanel({
   className,
   variant = "warm",
+  glowX,
+  glowY,
+  intensity = 1,
+  style,
+  children,
 }: {
   className?: string;
   variant?: "warm" | "deep";
+  glowX?: number;
+  glowY?: number;
+  intensity?: number;
+  style?: CSSProperties;
+  children?: ReactNode;
 }) {
+  const x = glowX ?? (variant === "warm" ? 30 : 70);
+  const y = glowY ?? (variant === "warm" ? 20 : 30);
+  const glowAlpha = Math.max(0, Math.min(1, intensity)) * (variant === "warm" ? 0.35 : 0.22);
+  const emberAlpha = Math.max(0, Math.min(1, intensity)) * 0.08;
+
   return (
     <div
       aria-hidden
@@ -76,13 +96,13 @@ export function AmbiancePanel({
         className,
       )}
       style={{
-        background:
-          variant === "warm"
-            ? "radial-gradient(120% 90% at 30% 20%, rgba(124,42,42,0.35) 0%, rgba(13,11,10,0) 55%), radial-gradient(80% 70% at 75% 75%, rgba(241,233,221,0.08) 0%, rgba(13,11,10,0) 60%), #0D0B0A"
-            : "radial-gradient(100% 80% at 70% 30%, rgba(124,42,42,0.22) 0%, rgba(13,11,10,0) 60%), radial-gradient(60% 60% at 20% 85%, rgba(241,233,221,0.05) 0%, rgba(13,11,10,0) 65%), #0D0B0A",
+        background: `radial-gradient(120% 90% at ${x}% ${y}%, rgba(124,42,42,${glowAlpha}) 0%, rgba(13,11,10,0) 55%), radial-gradient(80% 70% at ${100 - x}% ${100 - y}%, rgba(241,233,221,${emberAlpha}) 0%, rgba(13,11,10,0) 60%), #0D0B0A`,
+        transition: "background 0.5s ease-out",
+        ...style,
       }}
     >
       <div className="absolute inset-0 [background:repeating-linear-gradient(0deg,rgba(241,233,221,0.02)_0px,rgba(241,233,221,0.02)_1px,transparent_1px,transparent_3px)]" />
+      {children}
     </div>
   );
 }

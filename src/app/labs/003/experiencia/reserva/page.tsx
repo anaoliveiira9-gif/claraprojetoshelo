@@ -8,12 +8,12 @@ export const metadata: Metadata = {
 
 export default function NoirReservaPage() {
   return (
-    <main className="mx-auto max-w-2xl px-6 pb-32 pt-28 sm:px-10 sm:pt-36">
+    <main className="mx-auto max-w-4xl px-6 pb-32 pt-28 sm:px-10 sm:pt-36">
       <Eyebrow>Noir · Reserva</Eyebrow>
       <Display className="mt-4 text-5xl sm:text-6xl">Reservar mesa</Display>
       <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[#F1E9DD]/70">
-        Extremamente simples: escolha a data, o número de pessoas e o
-        horário. Sua mesa fica pronta em segundos.
+        Uma pequena jornada, não um formulário: a noite, a mesa, o horário —
+        e sua reserva fica pronta em segundos.
       </p>
 
       <div className="mt-16">

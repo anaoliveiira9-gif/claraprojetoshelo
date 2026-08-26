@@ -3,7 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
-import { PRODUCTS, formatPrice, type ProductCategory } from "@/components/labs/001/products";
+import {
+  PRODUCTS,
+  SCENT_NOTES,
+  formatPrice,
+  type ProductCategory,
+  type ScentNoteId,
+} from "@/components/labs/001/products";
 import { ScentObject } from "@/components/labs/001/scent-object";
 import { useEter } from "@/components/labs/001/eter-context";
 import { cn } from "@/lib/utils";
@@ -15,16 +21,61 @@ const CATEGORIES: (ProductCategory | "Todos")[] = [
   "Corpo",
 ];
 
-export function Catalog({ initialCategory }: { initialCategory: ProductCategory | "Todos" }) {
+export function Catalog({
+  initialCategory,
+  initialNote,
+}: {
+  initialCategory: ProductCategory | "Todos";
+  initialNote: ScentNoteId | null;
+}) {
   const [active, setActive] = useState<ProductCategory | "Todos">(initialCategory);
+  const [note, setNote] = useState<ScentNoteId | null>(initialNote);
   const { toggleWishlist, isWishlisted } = useEter();
 
-  const products =
-    active === "Todos" ? PRODUCTS : PRODUCTS.filter((p) => p.category === active);
+  const products = PRODUCTS.filter(
+    (p) =>
+      (active === "Todos" || p.category === active) &&
+      (note === null || p.scentNotes.includes(note))
+  );
 
   return (
     <div>
-      <div className="flex flex-wrap gap-3 border-b border-[#171512]/10 pb-6">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-3 border-b border-[#171512]/10 pb-6">
+        <span className="font-eter-sans mr-1 text-[10px] uppercase tracking-[0.2em] text-[#171512]/40">
+          Nota
+        </span>
+        <button
+          type="button"
+          data-cursor-hover
+          onClick={() => setNote(null)}
+          className={cn(
+            "font-eter-sans px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] transition-colors",
+            note === null
+              ? "bg-[#B4915B] text-[#F6F1E9]"
+              : "border border-[#171512]/20 text-[#171512]/70 hover:border-[#171512]"
+          )}
+        >
+          Todas
+        </button>
+        {SCENT_NOTES.map((n) => (
+          <button
+            key={n.id}
+            type="button"
+            data-cursor-hover
+            onClick={() => setNote(n.id)}
+            className={cn(
+              "font-eter-sans px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] transition-colors",
+              note === n.id
+                ? "bg-[#B4915B] text-[#F6F1E9]"
+                : "border border-[#171512]/20 text-[#171512]/70 hover:border-[#171512]"
+            )}
+          >
+            {n.id}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-3 border-b border-[#171512]/10 pb-6">
         {CATEGORIES.map((category) => (
           <button
             key={category}
@@ -42,6 +93,12 @@ export function Catalog({ initialCategory }: { initialCategory: ProductCategory 
           </button>
         ))}
       </div>
+
+      {products.length === 0 && (
+        <p className="mt-10 text-sm text-[#171512]/50">
+          Nenhuma composição nessa combinação de nota e categoria.
+        </p>
+      )}
 
       <div className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (

@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { PROJECTS, getProject } from "@/components/labs/002/data";
 import { AbstractComposition } from "@/components/labs/002/abstract-composition";
 import { FloorPlan } from "@/components/labs/002/floor-plan";
+import { PlanExplorer } from "@/components/labs/002/plan-explorer";
 import { CoordinateMap } from "@/components/labs/002/coordinate-map";
 import { Reveal } from "@/components/labs/002/reveal";
 import { SiteFooter } from "@/components/labs/002/site-footer";
@@ -125,19 +126,40 @@ export default async function ProjectDetailPage({
       {project.floorPlan && (
         <section className="px-6 py-12 sm:px-10 sm:py-16">
           <Reveal>
-            <p className="[font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.25em] text-[#2E4A5E]">
-              Planta baixa
-            </p>
-            <h2 className="mt-2 text-2xl font-black uppercase tracking-tight sm:text-3xl">
-              Explore os ambientes
-            </h2>
-            <p className="mt-2 max-w-lg text-sm text-[#161615]/65">
-              Passe o cursor ou toque nos marcadores para ver a área e as
-              notas técnicas de cada ambiente.
-            </p>
-            <div className="mt-8 border border-[#161615]/15 bg-[#F1F0EB] p-4 sm:p-10">
-              <FloorPlan plan={project.floorPlan} />
-            </div>
+            {project.floorPlan.rooms.some((room) => room.variant !== undefined) ? (
+              <>
+                <p className="[font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.25em] text-[#2E4A5E]">
+                  Planta → Espaço → Fotografia
+                </p>
+                <h2 className="mt-2 text-2xl font-black uppercase tracking-tight sm:text-3xl">
+                  A planta comanda a experiência
+                </h2>
+                <p className="mt-2 max-w-lg text-sm text-[#161615]/65">
+                  Selecione um ambiente na planta — em vez de uma galeria fixa,
+                  a escolha revela a composição e a nota de projeto daquele
+                  espaço específico.
+                </p>
+                <div className="mt-8 border border-[#161615]/15 bg-[#F1F0EB] p-4 sm:p-10">
+                  <PlanExplorer plan={project.floorPlan} />
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="[font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.25em] text-[#2E4A5E]">
+                  Planta baixa
+                </p>
+                <h2 className="mt-2 text-2xl font-black uppercase tracking-tight sm:text-3xl">
+                  Explore os ambientes
+                </h2>
+                <p className="mt-2 max-w-lg text-sm text-[#161615]/65">
+                  Passe o cursor ou toque nos marcadores para ver a área e as
+                  notas técnicas de cada ambiente.
+                </p>
+                <div className="mt-8 border border-[#161615]/15 bg-[#F1F0EB] p-4 sm:p-10">
+                  <FloorPlan plan={project.floorPlan} />
+                </div>
+              </>
+            )}
           </Reveal>
         </section>
       )}

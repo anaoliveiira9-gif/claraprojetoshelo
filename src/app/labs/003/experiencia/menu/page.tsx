@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Display, Eyebrow, PrimaryButton, Rule } from "@/components/labs/003/noir-ui";
+import { AmbiancePanel, Display, Eyebrow, PrimaryButton, Rule } from "@/components/labs/003/noir-ui";
 import { MENU } from "@/components/labs/003/menu-data";
 
 export const metadata: Metadata = {
@@ -8,17 +8,30 @@ export const metadata: Metadata = {
 
 export default function NoirMenuPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 pb-32 pt-28 sm:px-10 sm:pt-36">
-      <Eyebrow>Noir · Carta</Eyebrow>
-      <Display className="mt-4 text-5xl sm:text-6xl">Menu</Display>
-      <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[#F1E9DD]/70">
-        Pratos autorais preparados com ingredientes de estação. A carta muda
-        conforme a colheita — estes são os destaques da temporada atual.
-      </p>
+    <main className="pb-32 pt-28 sm:pt-36">
+      {/* Intro sits off-center against a wide ambient field, rather than
+          a centered block, to keep the same low-light, unhurried mood
+          established on the home page. */}
+      <section className="relative mx-auto grid max-w-6xl gap-8 px-6 sm:grid-cols-[3fr_2fr] sm:items-end sm:gap-16 sm:px-10">
+        <div>
+          <Eyebrow>Noir · Carta</Eyebrow>
+          <Display className="mt-4 text-5xl sm:text-7xl">Menu</Display>
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[#F1E9DD]/70">
+            Pratos autorais preparados com ingredientes de estação. A carta
+            muda conforme a colheita — estes são os destaques da temporada
+            atual.
+          </p>
+        </div>
+        <AmbiancePanel className="aspect-[5/3] w-full" variant="deep" glowX={70} glowY={35} />
+      </section>
 
-      <div className="mt-16 flex flex-col gap-20">
-        {MENU.map((category) => (
-          <section key={category.id} id={category.id}>
+      <div className="mx-auto mt-20 flex max-w-3xl flex-col gap-20 px-6 sm:mt-28 sm:px-10">
+        {MENU.map((category, index) => (
+          <section
+            key={category.id}
+            id={category.id}
+            className={index % 2 === 1 ? "sm:ml-10" : undefined}
+          >
             <Rule />
             <Display as="h2" className="mt-4 text-3xl sm:text-4xl">
               {category.label}
@@ -48,14 +61,16 @@ export default function NoirMenuPage() {
         ))}
       </div>
 
-      <div className="mt-24 flex flex-col items-center gap-4 rounded-sm border border-[#F1E9DD]/10 px-6 py-16 text-center">
-        <Eyebrow>Pronto para experimentar?</Eyebrow>
-        <Display as="h2" className="text-3xl sm:text-4xl">
-          Reserve sua mesa
-        </Display>
-        <PrimaryButton href="/labs/003/experiencia/reserva" className="mt-4">
-          Reservar
-        </PrimaryButton>
+      <div className="mx-auto mt-24 max-w-3xl px-6 sm:px-10">
+        <div className="flex flex-col items-center gap-4 rounded-sm border border-[#F1E9DD]/10 px-6 py-16 text-center">
+          <Eyebrow>Pronto para experimentar?</Eyebrow>
+          <Display as="h2" className="text-3xl sm:text-4xl">
+            Reserve sua mesa
+          </Display>
+          <PrimaryButton href="/labs/003/experiencia/reserva" className="mt-4">
+            Reservar
+          </PrimaryButton>
+        </div>
       </div>
     </main>
   );

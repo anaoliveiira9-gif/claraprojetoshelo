@@ -1,8 +1,10 @@
 import { KpiCard } from "@/components/labs/004/kpi-card";
 import { LineChart } from "@/components/labs/004/charts/line-chart";
 import { BarChart } from "@/components/labs/004/charts/bar-chart";
-import { WEEKLY_THROUGHPUT, CATEGORY_BREAKDOWN } from "@/components/labs/004/metrics-data";
+import { WEEKLY_THROUGHPUT, CATEGORY_BREAKDOWN, INSIGHTS } from "@/components/labs/004/metrics-data";
 import { DonutChart } from "@/components/labs/004/charts/donut-chart";
+import { InsightBanner } from "@/components/labs/004/insight-banner";
+import { ActivityFeed } from "@/components/labs/004/activity-feed";
 
 export default function OrbitDashboardPage() {
   return (
@@ -15,6 +17,8 @@ export default function OrbitDashboardPage() {
           Resumo das operações da última semana.
         </p>
       </div>
+
+      <InsightBanner text={INSIGHTS[0]} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
@@ -70,13 +74,17 @@ export default function OrbitDashboardPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-[var(--orbit-border)] bg-[var(--orbit-surface)] p-4">
-        <h2 className="mb-2 text-sm font-semibold text-[var(--orbit-ink)]">
-          Processos concluídos por dia
-        </h2>
-        <BarChart
-          data={WEEKLY_THROUGHPUT.map((d) => ({ ...d, value: Math.round(d.value * 0.72) }))}
-        />
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <div className="rounded-lg border border-[var(--orbit-border)] bg-[var(--orbit-surface)] p-4 xl:col-span-2">
+          <h2 className="mb-2 text-sm font-semibold text-[var(--orbit-ink)]">
+            Processos concluídos por dia
+          </h2>
+          <BarChart
+            data={WEEKLY_THROUGHPUT.map((d) => ({ ...d, value: Math.round(d.value * 0.72) }))}
+          />
+        </div>
+
+        <ActivityFeed />
       </div>
     </div>
   );

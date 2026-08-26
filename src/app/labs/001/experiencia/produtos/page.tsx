@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import type { ProductCategory } from "@/components/labs/001/products";
+import {
+  SCENT_NOTES,
+  type ProductCategory,
+  type ScentNoteId,
+} from "@/components/labs/001/products";
 import { Catalog } from "./catalog";
 
 export const metadata: Metadata = {
@@ -13,6 +17,8 @@ const VALID: (ProductCategory | "Todos")[] = [
   "Corpo",
 ];
 
+const VALID_NOTES = SCENT_NOTES.map((n) => n.id);
+
 export default async function CatalogPage({
   searchParams,
 }: {
@@ -25,6 +31,11 @@ export default async function CatalogPage({
     ? (categoria as ProductCategory | "Todos")
     : "Todos";
 
+  const nota = typeof params.nota === "string" ? params.nota : null;
+  const initialNote = (VALID_NOTES as string[]).includes(nota ?? "")
+    ? (nota as ScentNoteId)
+    : null;
+
   return (
     <main className="mx-auto max-w-6xl px-6 pb-24 pt-16">
       <h1 className="font-eter-serif text-3xl sm:text-4xl">Catálogo</h1>
@@ -33,7 +44,7 @@ export default async function CatalogPage({
         compostos a partir das mesmas famílias olfativas.
       </p>
       <div className="mt-10">
-        <Catalog initialCategory={initialCategory} />
+        <Catalog initialCategory={initialCategory} initialNote={initialNote} />
       </div>
     </main>
   );

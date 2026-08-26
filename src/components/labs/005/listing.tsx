@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { PROPERTIES, type PropertyType } from "./data";
-import { PropertyCard } from "./property-card";
+import { MapListView } from "./map-list-view";
 
 const TIPOS: PropertyType[] = ["Apartamento", "Casa", "Cobertura", "Terreno"];
 
@@ -145,17 +145,7 @@ export function ListingClient({
         {filtered.length} {filtered.length === 1 ? "imóvel encontrado" : "imóveis encontrados"}
       </p>
 
-      {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-sm border border-dashed border-[#DDD5C8] py-16 text-center text-sm text-[#7A6F63]">
-          Nenhum imóvel encontrado com esses filtros.
-        </div>
-      )}
+      <MapListView properties={filtered} />
     </div>
   );
 }

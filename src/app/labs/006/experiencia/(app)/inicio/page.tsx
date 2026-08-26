@@ -13,6 +13,7 @@ export default function InicioPage() {
       favoriteIds={favorites?.favoriteIds ?? []}
       onToggleFavorite={(id) => favorites?.toggleFavorite(id)}
       onSelect={(slug) => router.push(`/labs/006/experiencia/${slug}`)}
+      onOpenMap={() => router.push("/labs/006/experiencia/mapa")}
     />
   );
 }

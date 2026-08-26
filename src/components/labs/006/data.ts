@@ -15,6 +15,14 @@ export type NovaExperience = {
   gradient: string;
   mapX: number;
   mapY: number;
+  /** Fictional distance from the user's current position, in km — powers PERTO. */
+  distanceKm: number;
+  /** Minutes until it starts (from a fictional "now"); null when not happening soon — powers AGORA. */
+  startsInMinutes: number | null;
+  /** Editorial pick for today — powers HOJE. */
+  curatedToday: boolean;
+  /** Loose descriptors used to match against a visitor's favorited categories — powers PARA VOCÊ. */
+  vibeTags: string[];
 };
 
 /**
@@ -58,6 +66,10 @@ export const NOVA_EXPERIENCES: NovaExperience[] = [
     gradient: GRADIENTS.Comida[0],
     mapX: 28,
     mapY: 34,
+    distanceKm: 0.6,
+    startsInMinutes: 45,
+    curatedToday: true,
+    vibeTags: ["comida de rua", "ao ar livre", "social"],
   },
   {
     id: "2",
@@ -75,6 +87,10 @@ export const NOVA_EXPERIENCES: NovaExperience[] = [
     gradient: GRADIENTS.Arte[0],
     mapX: 62,
     mapY: 22,
+    distanceKm: 2.4,
+    startsInMinutes: null,
+    curatedToday: false,
+    vibeTags: ["arte", "têxtil", "tranquilo"],
   },
   {
     id: "3",
@@ -92,6 +108,10 @@ export const NOVA_EXPERIENCES: NovaExperience[] = [
     gradient: GRADIENTS.Música[0],
     mapX: 45,
     mapY: 58,
+    distanceKm: 1.8,
+    startsInMinutes: 180,
+    curatedToday: true,
+    vibeTags: ["música", "noite", "intimista"],
   },
   {
     id: "4",
@@ -109,6 +129,10 @@ export const NOVA_EXPERIENCES: NovaExperience[] = [
     gradient: GRADIENTS["Ar Livre"][0],
     mapX: 78,
     mapY: 70,
+    distanceKm: 4.2,
+    startsInMinutes: null,
+    curatedToday: false,
+    vibeTags: ["natureza", "esportivo", "manhã"],
   },
   {
     id: "5",
@@ -126,6 +150,10 @@ export const NOVA_EXPERIENCES: NovaExperience[] = [
     gradient: GRADIENTS.Comida[1],
     mapX: 18,
     mapY: 60,
+    distanceKm: 0.9,
+    startsInMinutes: 20,
+    curatedToday: true,
+    vibeTags: ["comida", "manhã", "relaxante"],
   },
   {
     id: "6",
@@ -143,6 +171,10 @@ export const NOVA_EXPERIENCES: NovaExperience[] = [
     gradient: GRADIENTS.Arte[1],
     mapX: 34,
     mapY: 42,
+    distanceKm: 1.1,
+    startsInMinutes: null,
+    curatedToday: false,
+    vibeTags: ["arte", "fotografia", "indoor"],
   },
   {
     id: "7",
@@ -160,6 +192,10 @@ export const NOVA_EXPERIENCES: NovaExperience[] = [
     gradient: GRADIENTS.Música[1],
     mapX: 58,
     mapY: 48,
+    distanceKm: 3.0,
+    startsInMinutes: 300,
+    curatedToday: false,
+    vibeTags: ["música", "noite", "vinil"],
   },
   {
     id: "8",
@@ -177,6 +213,10 @@ export const NOVA_EXPERIENCES: NovaExperience[] = [
     gradient: GRADIENTS["Ar Livre"][1],
     mapX: 85,
     mapY: 30,
+    distanceKm: 2.6,
+    startsInMinutes: 90,
+    curatedToday: true,
+    vibeTags: ["ao ar livre", "esportivo", "social"],
   },
 ];
 
@@ -189,6 +229,50 @@ export const NOVA_CATEGORIES: NovaCategory[] = [
 
 export function getExperienceBySlug(slug: string) {
   return NOVA_EXPERIENCES.find((item) => item.slug === slug);
+}
+
+/** Formats a distance in km as a short human label, e.g. "600 m" or "2,4 km". */
+export function formatDistance(distanceKm: number) {
+  if (distanceKm < 1) return `${Math.round(distanceKm * 1000)} m`;
+  return `${distanceKm.toFixed(1).replace(".", ",")} km`;
+}
+
+/** Formats minutes-until-start as a short countdown label, e.g. "Começa em 20 min". */
+export function formatCountdown(startsInMinutes: number) {
+  if (startsInMinutes < 60) return `Começa em ${startsInMinutes} min`;
+  const hours = Math.round(startsInMinutes / 60);
+  return `Começa em ${hours}h`;
+}
+
+/**
+ * Ranks experiences against a set of favorited ids for the PARA VOCÊ rail —
+ * scoring by how many vibe tags overlap with the visitor's favorited items,
+ * falling back to a fixed, hand-picked variety order when nothing is favorited yet.
+ */
+export function rankForYou(
+  experiences: NovaExperience[],
+  favoriteIds: string[],
+) {
+  const favorited = experiences.filter((item) => favoriteIds.includes(item.id));
+  if (favorited.length === 0) {
+    const fallbackOrder = ["2", "8", "6", "7", "4", "1", "5", "3"];
+    return [...experiences].sort(
+      (a, b) => fallbackOrder.indexOf(a.id) - fallbackOrder.indexOf(b.id),
+    );
+  }
+
+  const likedTags = new Set(favorited.flatMap((item) => item.vibeTags));
+  const likedCategories = new Set(favorited.map((item) => item.category));
+
+  return [...experiences]
+    .filter((item) => !favoriteIds.includes(item.id))
+    .map((item) => {
+      const tagScore = item.vibeTags.filter((tag) => likedTags.has(tag)).length;
+      const categoryScore = likedCategories.has(item.category) ? 1 : 0;
+      return { item, score: tagScore * 2 + categoryScore };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map((entry) => entry.item);
 }
 
 export function generateConfirmationCode(seed: string) {

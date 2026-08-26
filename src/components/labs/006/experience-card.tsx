@@ -10,12 +10,17 @@ export function ExperienceCard({
   onToggleFavorite,
   onSelect,
   size = "default",
+  meta,
+  className,
 }: {
   experience: NovaExperience;
   favorited?: boolean;
   onToggleFavorite?: (id: string) => void;
   onSelect?: (slug: string) => void;
-  size?: "default" | "compact";
+  size?: "default" | "compact" | "rail";
+  /** Optional overlay badge (top-right of the art) — e.g. a countdown or distance chip. */
+  meta?: string;
+  className?: string;
 }) {
   return (
     <button
@@ -24,12 +29,14 @@ export function ExperienceCard({
       onClick={() => onSelect?.(experience.slug)}
       className={cn(
         "group flex w-full flex-col overflow-hidden rounded-2xl border border-[#EAE3D6] bg-white text-left shadow-[0_1px_2px_rgba(26,23,18,0.04)] transition-transform active:scale-[0.98]",
+        size === "rail" && "w-[168px] shrink-0",
+        className,
       )}
     >
       <div
         className={cn(
           "relative w-full",
-          size === "compact" ? "h-24" : "h-36",
+          size === "compact" ? "h-24" : size === "rail" ? "h-28" : "h-36",
         )}
         style={{ background: experience.gradient }}
       >
@@ -55,6 +62,11 @@ export function ExperienceCard({
             )}
           />
         </button>
+        {meta && (
+          <span className="absolute bottom-3 left-3 rounded-full bg-[#1A1712]/80 px-2.5 py-1 text-[10px] font-semibold text-white">
+            {meta}
+          </span>
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-1 px-3.5 py-3">
         <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-[#D93B6C]">

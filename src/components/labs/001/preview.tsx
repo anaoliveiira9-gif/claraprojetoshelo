@@ -12,12 +12,12 @@ export function LabPreview() {
 
       <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 text-center">
         <span className="text-[6px] uppercase tracking-[0.3em] text-[#171512]/45">
-          Perfumaria & Objetos Sensoriais
+          Navegue pelo cheiro
         </span>
-        <p className="font-serif text-[13px] leading-[1.1]">
-          O silêncio também
+        <p className="font-serif text-[11px] leading-[1.15] tracking-tight">
+          MADEIRA · PELE · <span className="text-[#B4915B]">FUMAÇA</span>
           <br />
-          tem um perfume.
+          FLOR · ÂMBAR
         </p>
       </div>
 

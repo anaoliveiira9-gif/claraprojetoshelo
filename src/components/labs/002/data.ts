@@ -8,6 +8,14 @@ export interface FloorPlanRoom {
   note: string;
   /** [x, y, w, h] in a 400x300 unit drafting space */
   rect: [number, number, number, number];
+  /**
+   * Optional — when present, this room is eligible for the interactive
+   * PLANTA → ESPAÇO → FOTOGRAFIA explorer (see plan-explorer.tsx): `variant`
+   * picks an AbstractComposition, `caption` is the editorial note shown
+   * alongside it (materials, dimensions, a design note).
+   */
+  variant?: number;
+  caption?: string;
 }
 
 export interface FloorPlan {
@@ -190,6 +198,47 @@ export const PROJECTS: Project[] = [
     teaser: "Residência de veraneio com planta em U voltada para um pátio ajardinado central.",
     coordinate: "22°23' S · 43°08' W",
     galleryVariants: [6, 3],
+    floorPlan: {
+      outer: [40, 30, 320, 200],
+      rooms: [
+        {
+          id: "sala",
+          label: "Sala de estar — 42 m²",
+          note: "Piso rebaixado 12 cm em relação ao pátio",
+          caption:
+            "42 m² · Piso rebaixado 12 cm em relação ao pátio. Alvenaria pintada de branco, esquadrias em madeira de demolição recuperada.",
+          variant: 1,
+          rect: [40, 30, 110, 140],
+        },
+        {
+          id: "cozinha",
+          label: "Cozinha — 26 m²",
+          note: "Bancada em concreto queimado",
+          caption:
+            "26 m² · Bancada em concreto queimado. Uma janela horizontal baixa preserva a vista do jardim mesmo junto ao fogão.",
+          variant: 2,
+          rect: [40, 170, 320, 60],
+        },
+        {
+          id: "patio",
+          label: "Pátio central — 68 m²",
+          note: "Vazio organizador da planta em U",
+          caption:
+            "68 m² · Piso em pedra portuguesa irregular e vegetação nativa de baixa manutenção. O vazio central organiza a casa — todo cômodo abre uma porta para ele.",
+          variant: 5,
+          rect: [150, 60, 100, 110],
+        },
+        {
+          id: "suite",
+          label: "Suíte — 34 m²",
+          note: "Abertura em ângulo contra o sol da tarde",
+          caption:
+            "34 m² · Telha metálica aparente e forro em madeira natural. Abertura em ângulo evita o sol da tarde sem depender de brise.",
+          variant: 3,
+          rect: [250, 30, 110, 140],
+        },
+      ],
+    },
   },
   {
     slug: "centro-civico-meridiano",

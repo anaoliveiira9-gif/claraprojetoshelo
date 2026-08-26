@@ -39,10 +39,10 @@ export function LabPreview() {
           Reservar
         </span>
         <span
-          className="font-sans text-[9px] tracking-[0.1em]"
+          className="font-sans text-[9px] tracking-[0.15em]"
           style={{ color: "rgba(241,233,221,0.35)" }}
         >
-          19:30
+          Noite · Mesa · Horário
         </span>
       </div>
     </div>

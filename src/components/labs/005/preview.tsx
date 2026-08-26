@@ -3,34 +3,36 @@ export function LabPreview() {
     <div className="flex h-full w-full flex-col overflow-hidden bg-[#EFEAE3] p-4 text-[#241E1A]">
       <p className="font-serif text-[13px] leading-none">Vértice</p>
 
-      <div className="mt-3 flex items-center gap-2 rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] px-2.5 py-2">
-        <span className="flex-1 truncate font-sans text-[8px] text-[#7A6F63]">
-          Jardins, São Paulo…
-        </span>
-        <span className="shrink-0 rounded-sm bg-[#2F4A3B] px-2 py-1 font-sans text-[7px] uppercase tracking-[0.1em] text-[#F8F5F0]">
-          Buscar
-        </span>
-      </div>
-
-      <div className="mt-3 grid flex-1 grid-cols-2 gap-2">
-        <div className="flex flex-col overflow-hidden rounded-sm border border-[#DDD5C8] bg-[#F8F5F0]">
-          <div
-            className="aspect-[4/3] w-full"
-            style={{ background: "linear-gradient(135deg, #E8DCC8, #C9A67E)" }}
-          />
-          <div className="flex items-center justify-between px-1.5 py-1">
-            <span className="font-sans text-[6.5px] text-[#7A6F63]">Cobertura</span>
-            <span className="font-sans text-[6.5px] text-[#2F4A3B]">R$ 4,8M</span>
-          </div>
+      <div className="mt-3 flex flex-1 gap-2">
+        <div className="relative flex-1 overflow-hidden rounded-sm border border-[#DDD5C8] bg-[#F8F5F0]">
+          <svg viewBox="0 0 100 70" className="h-full w-full" aria-hidden="true">
+            <rect x={0} y={0} width={100} height={70} fill="#F8F5F0" />
+            {[14, 28, 42, 56, 70].map((x) => (
+              <line key={x} x1={x} y1={0} x2={x} y2={70} stroke="#DDD5C8" strokeWidth={0.6} />
+            ))}
+            {[14, 28, 42, 56].map((y) => (
+              <line key={y} x1={0} y1={y} x2={100} y2={y} stroke="#DDD5C8" strokeWidth={0.6} />
+            ))}
+            <circle cx={26} cy={22} r={4.5} fill="none" stroke="#2F4A3B" strokeWidth={1} opacity={0.5} />
+            <circle cx={26} cy={22} r={3} fill="#2F4A3B" />
+            <circle cx={58} cy={34} r={2.2} fill="#2F4A3B" opacity={0.8} />
+            <circle cx={44} cy={50} r={2.2} fill="#2F4A3B" opacity={0.8} />
+            <circle cx={78} cy={16} r={2.2} fill="#2F4A3B" opacity={0.8} />
+          </svg>
         </div>
-        <div className="flex flex-col overflow-hidden rounded-sm border border-[#DDD5C8] bg-[#F8F5F0]">
-          <div
-            className="aspect-[4/3] w-full"
-            style={{ background: "linear-gradient(135deg, #DCE3D5, #2F4A3B)" }}
-          />
-          <div className="flex items-center justify-between px-1.5 py-1">
-            <span className="font-sans text-[6.5px] text-[#7A6F63]">Apartamento</span>
-            <span className="font-sans text-[6.5px] text-[#2F4A3B]">R$ 3,2M</span>
+
+        <div className="flex w-[38%] flex-col gap-1.5">
+          <div className="flex items-center justify-between rounded-sm border border-[#2F4A3B] bg-[#F8F5F0] px-1.5 py-1.5">
+            <span className="truncate font-sans text-[6.5px] text-[#7A6F63]">Jardins</span>
+            <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 4,8M</span>
+          </div>
+          <div className="flex items-center justify-between rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] px-1.5 py-1.5">
+            <span className="truncate font-sans text-[6.5px] text-[#7A6F63]">Leblon</span>
+            <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 3,2M</span>
+          </div>
+          <div className="flex items-center justify-between rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] px-1.5 py-1.5">
+            <span className="truncate font-sans text-[6.5px] text-[#7A6F63]">Moema</span>
+            <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 2,6M</span>
           </div>
         </div>
       </div>

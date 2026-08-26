@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { OrbitSidebar, OrbitMobileNav } from "@/components/labs/004/sidebar";
 import { OrbitTopbar } from "@/components/labs/004/topbar";
+import { OrbitPageTransition } from "@/components/labs/004/page-transition";
 
 export default function OrbitAppLayout({ children }: { children: ReactNode }) {
   return (
@@ -9,7 +10,9 @@ export default function OrbitAppLayout({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <OrbitTopbar />
         <OrbitMobileNav />
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <OrbitPageTransition>{children}</OrbitPageTransition>
+        </main>
       </div>
     </div>
   );
