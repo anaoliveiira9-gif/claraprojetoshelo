@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence, useDragControls } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Bell,
@@ -562,10 +562,74 @@ export function NovaMapScreen({
 }) {
   const reducedMotion = usePrefersReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
-  const dragControls = useDragControls();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [filter, setFilter] = useState<MapFilterKey>("todos");
   const [zoomed, setZoomed] = useState(false);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Manual pointer-based panning instead of Framer Motion's `drag` prop.
+  // `drag` attaches its own native pointerdown listener directly to the
+  // DOM node, which fires during the real browser bubble phase — before
+  // React ever gets to run a child pin's `stopPropagation()` in its own
+  // (later, synthetic) event dispatch. That race is what made pin taps
+  // unreliable: the gesture recognizer could still claim the pointer
+  // session even when a click started on a pin. Handling pointerdown/
+  // move/up ourselves, all through React's own consistent synthetic
+  // event system, removes that race entirely — same approach already
+  // proven reliable in the LAB 005 map (discovery-map.tsx).
+  const panState = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    startPan: { x: number; y: number };
+    dragging: boolean;
+  } | null>(null);
+  const PAN_DRAG_THRESHOLD = 4;
+
+  function handleMapPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (reducedMotion) return;
+    panState.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      startPan: pan,
+      dragging: false,
+    };
+  }
+
+  function handleMapPointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    const state = panState.current;
+    if (!state || state.pointerId !== event.pointerId) return;
+    const dx = event.clientX - state.startX;
+    const dy = event.clientY - state.startY;
+    if (!state.dragging && Math.hypot(dx, dy) < PAN_DRAG_THRESHOLD) return;
+    if (!state.dragging) {
+      state.dragging = true;
+      setIsDragging(true);
+      containerRef.current?.setPointerCapture(event.pointerId);
+    }
+    event.preventDefault();
+    const rect = containerRef.current?.getBoundingClientRect();
+    const maxOffset = rect ? { x: rect.width * 0.35, y: rect.height * 0.35 } : { x: 999, y: 999 };
+    setPan({
+      x: Math.min(maxOffset.x, Math.max(-maxOffset.x, state.startPan.x + dx)),
+      y: Math.min(maxOffset.y, Math.max(-maxOffset.y, state.startPan.y + dy)),
+    });
+  }
+
+  function handleMapPointerUp(event: React.PointerEvent<HTMLDivElement>) {
+    const state = panState.current;
+    if (state?.dragging) {
+      try {
+        containerRef.current?.releasePointerCapture(event.pointerId);
+      } catch {
+        // already released
+      }
+      setIsDragging(false);
+    }
+    panState.current = null;
+  }
 
   const active = experiences.find((item) => item.id === activeId) ?? null;
 
@@ -632,92 +696,114 @@ export function NovaMapScreen({
       <div
         ref={containerRef}
         className="relative mx-4 mb-4 flex-1 overflow-hidden rounded-2xl border border-[#EAE3D6] bg-[#F1EBDD]"
+        onPointerDown={handleMapPointerDown}
+        onPointerMove={handleMapPointerMove}
+        onPointerUp={handleMapPointerUp}
+        onPointerCancel={handleMapPointerUp}
       >
-        <motion.div
-          drag={!reducedMotion}
-          dragListener={false}
-          dragControls={dragControls}
-          onPointerDown={(event) => {
-            if (!reducedMotion) dragControls.start(event);
-          }}
-          dragConstraints={containerRef}
-          dragElastic={0.05}
-          dragTransition={{ power: 0.2, timeConstant: 200 }}
-          animate={reducedMotion ? undefined : { scale: zoomed ? 1.5 : 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 28 }}
-          className={cn(
-            "absolute",
-            reducedMotion ? "inset-0" : "inset-[-35%] cursor-grab active:cursor-grabbing",
-          )}
-          style={{ touchAction: "none" }}
-        >
-          <svg
-            viewBox="0 0 100 140"
-            preserveAspectRatio="none"
-            className="absolute inset-0 h-full w-full"
-          >
-            {Array.from({ length: 6 }).map((_, i) => (
-              <line
-                key={`h-${i}`}
-                x1={0}
-                y1={(i + 1) * 20}
-                x2={100}
-                y2={(i + 1) * 20}
-                stroke="#DFD5C0"
-                strokeWidth={1.4}
-              />
-            ))}
-            {Array.from({ length: 5 }).map((_, i) => (
-              <line
-                key={`v-${i}`}
-                x1={(i + 1) * 18}
-                y1={0}
-                x2={(i + 1) * 18}
-                y2={140}
-                stroke="#DFD5C0"
-                strokeWidth={1.4}
-              />
-            ))}
-          </svg>
-
-          {experiences.map((experience) => {
-            const included = matchesFilter(experience);
-            return (
-              <button
-                key={experience.id}
-                type="button"
-                data-cursor-hover
-                onPointerDown={(event) => event.stopPropagation()}
-                onClick={() =>
-                  setActiveId((current) =>
-                    current === experience.id ? null : experience.id,
-                  )
-                }
-                style={{
-                  left: `${experience.mapX}%`,
-                  top: `${(experience.mapY / 140) * 100}%`,
-                }}
-                className={cn(
-                  "absolute -translate-x-1/2 -translate-y-full transition-[opacity,transform] duration-150 active:scale-90",
-                  included ? "opacity-100" : "opacity-25",
-                )}
+        {(() => {
+          const worldTransform = reducedMotion
+            ? undefined
+            : `translate(${pan.x}px, ${pan.y}px) scale(${zoomed ? 1.5 : 1})`;
+          const worldTransition = isDragging
+            ? "none"
+            : "transform 220ms cubic-bezier(0.16, 1, 0.3, 1)";
+          return (
+            <>
+              {/* Decorative grid — stays below the popup card, same transform as the pins layer so they pan/zoom together. */}
+              <div
+                className="absolute inset-0"
+                style={{ transform: worldTransform, transition: worldTransition }}
               >
-                <MapPin
-                  className={cn(
-                    "h-7 w-7 drop-shadow-sm",
-                    activeId === experience.id
-                      ? "fill-[#D93B6C] text-[#1A1712]"
-                      : "fill-white text-[#D93B6C]",
-                  )}
-                  strokeWidth={1.5}
-                />
-              </button>
-            );
-          })}
-        </motion.div>
+                <svg
+                  viewBox="0 0 100 140"
+                  preserveAspectRatio="none"
+                  className="absolute inset-0 h-full w-full"
+                >
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <line
+                      key={`h-${i}`}
+                      x1={0}
+                      y1={(i + 1) * 20}
+                      x2={100}
+                      y2={(i + 1) * 20}
+                      stroke="#DFD5C0"
+                      strokeWidth={1.4}
+                    />
+                  ))}
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <line
+                      key={`v-${i}`}
+                      x1={(i + 1) * 18}
+                      y1={0}
+                      x2={(i + 1) * 18}
+                      y2={140}
+                      stroke="#DFD5C0"
+                      strokeWidth={1.4}
+                    />
+                  ))}
+                </svg>
+              </div>
+
+              {/* Pins layer — deliberately stacked ABOVE the popup card (z-20 vs
+                  the card's z-10). The card is bottom-anchored and can visually
+                  cover pins lower on the map; without this, a pin hidden behind
+                  an already-open card is simply unreachable — a click there
+                  lands on the card instead and can trigger its own "view
+                  details" navigation, which reads as "the map doesn't respond
+                  to clicks" from a user's perspective. */}
+              <div
+                className={cn(
+                  "absolute inset-0 z-20",
+                  !reducedMotion && (isDragging ? "cursor-grabbing" : "cursor-grab"),
+                )}
+                style={{
+                  touchAction: "none",
+                  transform: worldTransform,
+                  transition: worldTransition,
+                }}
+              >
+                {experiences.map((experience) => {
+                  const included = matchesFilter(experience);
+                  return (
+                    <button
+                      key={experience.id}
+                      type="button"
+                      data-cursor-hover
+                      onPointerDown={(event) => event.stopPropagation()}
+                      onClick={() =>
+                        setActiveId((current) =>
+                          current === experience.id ? null : experience.id,
+                        )
+                      }
+                      style={{
+                        left: `${experience.mapX}%`,
+                        top: `${(experience.mapY / 140) * 100}%`,
+                      }}
+                      className={cn(
+                        "absolute -translate-x-1/2 -translate-y-full transition-[opacity,transform] duration-150 active:scale-90",
+                        included ? "opacity-100" : "opacity-25",
+                      )}
+                    >
+                      <MapPin
+                        className={cn(
+                          "h-7 w-7 drop-shadow-sm",
+                          activeId === experience.id
+                            ? "fill-[#D93B6C] text-[#1A1712]"
+                            : "fill-white text-[#D93B6C]",
+                        )}
+                        strokeWidth={1.5}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          );
+        })()}
 
         {!reducedMotion && (
-          <div className="absolute right-3 top-3 flex flex-col overflow-hidden rounded-xl border border-[#EAE3D6] bg-white shadow-sm">
+          <div className="absolute right-3 top-3 z-30 flex flex-col overflow-hidden rounded-xl border border-[#EAE3D6] bg-white shadow-sm">
             <button
               type="button"
               data-cursor-hover
@@ -745,9 +831,13 @@ export function NovaMapScreen({
               key={active.id}
               initial={reducedMotion ? undefined : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={reducedMotion ? undefined : { opacity: 0, y: 10 }}
+              exit={
+                reducedMotion
+                  ? { pointerEvents: "none" }
+                  : { opacity: 0, y: 10, pointerEvents: "none" }
+              }
               transition={{ duration: 0.16 }}
-              className="absolute inset-x-3 bottom-3"
+              className="absolute inset-x-3 bottom-3 z-10"
             >
               <div className="relative">
                 <button
