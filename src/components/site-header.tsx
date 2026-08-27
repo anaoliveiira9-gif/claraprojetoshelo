@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/logo";
-import { NAV_LINKS, BRAND } from "@/lib/config";
+import { NAV_LINKS } from "@/lib/config";
+import { useSiteContent } from "@/components/site-content-provider";
 
 export function SiteHeader() {
+  const { brand } = useSiteContent();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -32,7 +34,7 @@ export function SiteHeader() {
         >
           <Logo className="h-6 w-6 text-accent" />
           <span className="font-display text-sm font-semibold uppercase tracking-[0.15em]">
-            {BRAND.name}
+            {brand.name}
           </span>
         </Link>
 

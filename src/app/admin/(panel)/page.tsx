@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CONTACT } from "@/lib/config";
+import { getSiteContent } from "@/lib/site-content";
 import { SERVICES } from "@/lib/pricing";
 import { LABS } from "@/lib/labs";
 
@@ -47,16 +47,19 @@ function Card({
   );
 }
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const content = await getSiteContent();
+  const { contact } = content;
+
   return (
     <div>
       <h1 className="font-display text-3xl font-semibold uppercase tracking-tight">
         Painel
       </h1>
       <p className="mt-3 max-w-lg text-sm leading-relaxed text-paper-dim">
-        Visão geral da ALUMNA. Serviços, LABs e FAQ ainda são editados no
-        código-fonte — este painel te dá uma leitura rápida do que está
-        configurado antes de expandirmos para edição direta.
+        Visão geral da ALUMNA. Conteúdo da home, marca, contato, tipografia
+        e FAQ já são editáveis por aqui. Serviços e LABs ainda são só
+        leitura — edição direta deles é um próximo passo.
       </p>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -68,11 +71,11 @@ export default function AdminDashboardPage() {
         <Card title="Labs publicados" value={String(LABS.length)} href="/admin/labs" />
         <Card
           title="Contato"
-          value={CONTACT.email || CONTACT.whatsappNumber ? "Configurado" : "Pendente"}
+          value={contact.email || contact.whatsappNumber ? "Configurado" : "Pendente"}
           hint={
-            CONTACT.email || CONTACT.whatsappNumber
+            contact.email || contact.whatsappNumber
               ? undefined
-              : "E-mail e WhatsApp ainda não foram definidos em src/lib/config.ts"
+              : "E-mail e WhatsApp ainda não foram definidos"
           }
           href="/admin/configuracoes"
         />

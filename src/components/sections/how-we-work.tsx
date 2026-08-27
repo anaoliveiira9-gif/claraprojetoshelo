@@ -12,44 +12,21 @@ import { SectionLabel } from "@/components/section-label";
 import { ProcessCanvas } from "@/components/process-canvas";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/utils";
+import { useSiteContent } from "@/components/site-content-provider";
 
-const PROCESS_STEPS = [
-  {
-    n: "01",
-    title: "Descobrir",
-    desc: "Entendemos marca, objetivo e público antes de desenhar qualquer tela.",
-  },
-  {
-    n: "02",
-    title: "Estruturar",
-    desc: "Mapeamos páginas, fluxos e prioridades em um esqueleto claro.",
-  },
-  {
-    n: "03",
-    title: "Projetar",
-    desc: "Desenhamos a interface com tipografia, grid e identidade aplicados.",
-  },
-  {
-    n: "04",
-    title: "Construir",
-    desc: "Desenvolvemos com código limpo, performance e testes reais.",
-  },
-  {
-    n: "05",
-    title: "Lançar",
-    desc: "Publicamos, validamos e entregamos um produto pronto para crescer.",
-  },
-] as const;
+type ProcessStep = { n: string; title: string; desc: string };
 
-const STEP_COUNT = PROCESS_STEPS.length;
+const STEP_COUNT = 5;
 
 function StepList({
+  steps,
   activeStep,
   displayStep,
   onSelect,
   onPreview,
   onPreviewEnd,
 }: {
+  steps: ProcessStep[];
   activeStep: number;
   displayStep: number;
   onSelect: (i: number) => void;
@@ -58,7 +35,7 @@ function StepList({
 }) {
   return (
     <div className="flex flex-col gap-0">
-      {PROCESS_STEPS.map((step, i) => {
+      {steps.map((step, i) => {
         const isActive = i === displayStep;
         const isDone = i < activeStep;
         return (
@@ -120,7 +97,7 @@ function StepList({
   );
 }
 
-function ScrollDrivenProcess() {
+function ScrollDrivenProcess({ steps }: { steps: ProcessStep[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeStep, setActiveStep] = useState(0);
   const [previewStep, setPreviewStep] = useState<number | null>(null);
@@ -155,6 +132,7 @@ function ScrollDrivenProcess() {
       <div className="sticky top-20 flex h-[calc(100vh-5rem)] max-h-[720px] flex-col justify-center">
         <div className="grid gap-10 lg:grid-cols-[280px_1fr] lg:gap-16">
           <StepList
+            steps={steps}
             activeStep={activeStep}
             displayStep={displayStep}
             onSelect={jumpToStep}
@@ -182,10 +160,10 @@ function ScrollDrivenProcess() {
   );
 }
 
-function StaticProcess() {
+function StaticProcess({ steps }: { steps: ProcessStep[] }) {
   return (
     <div className="flex flex-col gap-16">
-      {PROCESS_STEPS.map((step, i) => (
+      {steps.map((step, i) => (
         <div
           key={step.n}
           className="grid gap-8 border-t border-line pt-8 sm:grid-cols-[200px_1fr] sm:gap-12"
@@ -210,18 +188,27 @@ function StaticProcess() {
 
 export function HowWeWork() {
   const reducedMotion = usePrefersReducedMotion();
+  const { howWeWork } = useSiteContent();
+  const steps: ProcessStep[] = howWeWork.steps.map((step, i) => ({
+    n: String(i + 1).padStart(2, "0"),
+    title: step.title,
+    desc: step.description,
+  }));
 
   return (
     <section className="border-b border-line px-5 py-24 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-[1600px]">
-        <SectionLabel index="02" label="Como Construímos" />
+        <SectionLabel index="02" label={howWeWork.label} />
         <p className="mt-6 max-w-xl text-sm leading-relaxed text-paper-dim">
-          Do briefing ao produto final — cada projeto passa pelas mesmas
-          cinco etapas, sem atalhos.
+          {howWeWork.description}
         </p>
 
         <div className="mt-16">
-          {reducedMotion ? <StaticProcess /> : <ScrollDrivenProcess />}
+          {reducedMotion ? (
+            <StaticProcess steps={steps} />
+          ) : (
+            <ScrollDrivenProcess steps={steps} />
+          )}
         </div>
       </div>
     </section>

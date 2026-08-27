@@ -4,14 +4,14 @@ import { useState } from "react";
 import { SectionLabel } from "@/components/section-label";
 import { Reveal } from "@/components/reveal";
 import { cn } from "@/lib/utils";
-import { FAQ_ITEMS } from "@/lib/faq-data";
+import { useSiteContent } from "@/components/site-content-provider";
 
 function FaqItem({
   item,
   isOpen,
   onToggle,
 }: {
-  item: (typeof FAQ_ITEMS)[number];
+  item: { question: string; answer: string };
   isOpen: boolean;
   onToggle: () => void;
 }) {
@@ -30,7 +30,7 @@ function FaqItem({
             isOpen ? "text-accent" : "text-paper"
           )}
         >
-          {item.q}
+          {item.question}
         </span>
         <span
           className={cn(
@@ -47,7 +47,7 @@ function FaqItem({
       >
         <div className="overflow-hidden">
           <p className="max-w-2xl pb-6 text-sm leading-relaxed text-paper-dim">
-            {item.a}
+            {item.answer}
           </p>
         </div>
       </div>
@@ -56,6 +56,7 @@ function FaqItem({
 }
 
 export function Faq() {
+  const { faq } = useSiteContent();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
@@ -68,8 +69,8 @@ export function Faq() {
         </p>
 
         <div className="mt-14 max-w-3xl border-t border-line">
-          {FAQ_ITEMS.map((item, i) => (
-            <Reveal key={item.q} delay={Math.min(i, 6) * 0.02}>
+          {faq.map((item, i) => (
+            <Reveal key={item.question} delay={Math.min(i, 6) * 0.02}>
               <FaqItem
                 item={item}
                 isOpen={openIndex === i}

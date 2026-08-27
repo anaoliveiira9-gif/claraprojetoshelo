@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { useSiteContent } from "@/components/site-content-provider";
 
 export function FinalCta() {
+  const { finalCta } = useSiteContent();
   return (
     <section className="relative overflow-hidden px-5 py-28 sm:px-8 lg:px-12">
       <div
@@ -13,8 +17,8 @@ export function FinalCta() {
 
       <div className="relative mx-auto flex max-w-[1600px] flex-col items-start gap-10">
         <p className="font-display text-[clamp(2rem,6.5vw,5.5rem)] font-semibold uppercase leading-[0.95] tracking-tight">
-          Sua próxima experiência
-          <br /> digital começa aqui.
+          {finalCta.headlineLine1}
+          <br /> {finalCta.headlineLine2}
         </p>
 
         <Link
@@ -22,7 +26,7 @@ export function FinalCta() {
           data-cursor-hover
           className="group flex items-center gap-3 bg-accent px-8 py-4 font-mono text-sm uppercase tracking-[0.25em] text-ink transition-colors hover:bg-paper"
         >
-          Começar um Projeto
+          {finalCta.ctaLabel}
           <span className="transition-transform group-hover:translate-x-1.5">
             →
           </span>

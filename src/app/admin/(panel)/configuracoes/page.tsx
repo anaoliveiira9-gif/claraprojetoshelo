@@ -1,43 +1,22 @@
-import { BRAND, CONTACT } from "@/lib/config";
+import { getSiteContent } from "@/lib/site-content";
 import { AdminAccessForm } from "@/components/admin/access-form";
+import { BrandEditor, TypographyEditor } from "./brand-editor";
 
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line py-4 last:border-b-0">
-      <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
-        {label}
-      </span>
-      <span className="font-display text-base">{value}</span>
-    </div>
-  );
-}
+export default async function AdminConfiguracoesPage() {
+  const content = await getSiteContent();
 
-export default function AdminConfiguracoesPage() {
   return (
     <div>
       <h1 className="font-display text-3xl font-semibold uppercase tracking-tight">
         Configurações
       </h1>
       <p className="mt-3 max-w-lg text-sm leading-relaxed text-paper-dim">
-        Dados de marca e contato usados em todo o site. Tudo isso é lido de
-        um único arquivo — <code className="text-paper">src/lib/config.ts</code> —
-        editar esses valores lá já reflete automaticamente em cada lugar do
-        site que mostra esse dado.
+        Marca, contato e tipografia usados em todo o site.
       </p>
 
-      <div className="mt-10 max-w-lg">
-        <Row label="Nome" value={BRAND.name} />
-        <Row label="Razão social" value={BRAND.legalName} />
-        <Row label="Fundadora" value={BRAND.founder} />
-        <Row
-          label="E-mail"
-          value={CONTACT.email ?? "Não configurado"}
-        />
-        <Row
-          label="WhatsApp"
-          value={CONTACT.whatsappNumber ?? "Não configurado"}
-        />
-        <Row label="Endereço / base" value={CONTACT.address} />
+      <div className="mt-10">
+        <BrandEditor brand={content.brand} contact={content.contact} />
+        <TypographyEditor typography={content.typography} />
       </div>
 
       <div className="mt-14">

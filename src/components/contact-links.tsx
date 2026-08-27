@@ -1,12 +1,14 @@
+"use client";
+
 import type { ReactNode } from "react";
-import { CONTACT } from "@/lib/config";
+import { useSiteContent } from "@/components/site-content-provider";
 import { cn } from "@/lib/utils";
 
 /**
- * Renders a real mailto:/wa.me link once CONTACT.email / .whatsappNumber
- * are filled in (see src/lib/config.ts); until then, renders the same
- * visual treatment as a disabled, clearly-not-yet-active control instead
- * of a fabricated number or address.
+ * Renders a real mailto:/wa.me link once the admin panel has set an
+ * e-mail / WhatsApp number (see `src/lib/site-content.ts`); until then,
+ * renders the same visual treatment as a disabled, clearly-not-yet-active
+ * control instead of a fabricated number or address.
  */
 
 export function EmailLink({
@@ -16,7 +18,8 @@ export function EmailLink({
   className?: string;
   children: ReactNode;
 }) {
-  if (!CONTACT.email) {
+  const { contact } = useSiteContent();
+  if (!contact.email) {
     return (
       <span
         aria-disabled="true"
@@ -28,11 +31,7 @@ export function EmailLink({
     );
   }
   return (
-    <a
-      href={`mailto:${CONTACT.email}`}
-      data-cursor-hover
-      className={className}
-    >
+    <a href={`mailto:${contact.email}`} data-cursor-hover className={className}>
       {children}
     </a>
   );
@@ -45,7 +44,11 @@ export function WhatsappLink({
   className?: string;
   children: ReactNode;
 }) {
-  if (!CONTACT.whatsappUrl) {
+  const { contact } = useSiteContent();
+  const whatsappUrl = contact.whatsappNumber
+    ? `https://wa.me/${contact.whatsappNumber}`
+    : null;
+  if (!whatsappUrl) {
     return (
       <span
         aria-disabled="true"
@@ -58,7 +61,7 @@ export function WhatsappLink({
   }
   return (
     <a
-      href={CONTACT.whatsappUrl}
+      href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
       data-cursor-hover

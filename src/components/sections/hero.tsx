@@ -4,8 +4,10 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { SpiralMark } from "@/components/spiral-mark";
+import { useSiteContent } from "@/components/site-content-provider";
 
 export function Hero() {
+  const { hero } = useSiteContent();
   const sectionRef = useRef<HTMLElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -39,35 +41,32 @@ export function Hero() {
 
       <div className="mx-auto flex max-w-[1600px] flex-col">
         <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.25em] text-paper-faint">
-          <span>Estúdio Independente</span>
-          <span className="hidden sm:inline">N 23.5505° / W 46.6333°</span>
+          <span>{hero.eyebrow}</span>
+          <span className="hidden sm:inline">{hero.coordinates}</span>
         </div>
 
         <h1 className="mt-10 font-display text-[clamp(3rem,11vw,9rem)] font-semibold uppercase leading-[0.88] tracking-tight">
-          Alumna
+          {hero.titleLine1}
         </h1>
         <p className="mt-2 font-display text-[clamp(1.5rem,4.5vw,3rem)] font-medium uppercase leading-none tracking-tight text-paper-dim">
-          Digital Experience
+          {hero.titleLine2}
         </p>
 
         <div className="mt-14 grid gap-10 border-t border-line pt-10 md:grid-cols-[1.4fr_1fr] md:items-end">
           <p className="font-display text-[clamp(1.5rem,3.2vw,2.75rem)] font-medium leading-[1.1] tracking-tight text-paper">
-            Criamos experiências digitais para marcas que não querem parecer
-            com todas as outras.
+            {hero.lead}
           </p>
 
           <div className="flex flex-col items-start gap-6">
             <p className="max-w-sm text-sm leading-relaxed text-paper-dim">
-              Um estúdio independente de design e tecnologia. Sites, produtos
-              digitais e sistemas — pensados como laboratório, apresentados
-              como editorial.
+              {hero.description}
             </p>
             <Link
               href="/start-a-project"
               data-cursor-hover
               className="group flex items-center gap-3 border border-paper px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent"
             >
-              Explorar
+              {hero.ctaLabel}
               <span className="transition-transform group-hover:translate-x-1.5">
                 →
               </span>

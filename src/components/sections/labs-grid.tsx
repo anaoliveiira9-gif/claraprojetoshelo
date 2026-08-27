@@ -1,18 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { LABS } from "@/lib/labs";
 import { SectionLabel } from "@/components/section-label";
 import { DeviceFrame } from "@/components/device-frame";
 import { LAB_PREVIEWS } from "@/components/labs/preview-registry";
 import { Reveal } from "@/components/reveal";
+import { useSiteContent } from "@/components/site-content-provider";
 
 export function LabsGrid() {
+  const { labsSection } = useSiteContent();
   return (
     <section id="labs" className="border-b border-line px-5 py-24 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-[1600px]">
-        <SectionLabel index="01" label="Labs — Projetos Conceituais" />
+        <SectionLabel index="01" label={labsSection.label} />
         <p className="mt-6 max-w-xl text-sm leading-relaxed text-paper-dim">
-          Projetos conceituais desenvolvidos internamente como demonstração de
-          capacidade — não são trabalhos encomendados por essas marcas.
+          {labsSection.description}
         </p>
 
         <div className="mt-16 grid gap-px overflow-hidden bg-line sm:grid-cols-2">

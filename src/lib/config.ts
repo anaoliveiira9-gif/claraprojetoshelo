@@ -1,33 +1,10 @@
 /**
- * Single source of truth for ALUMNA's public-facing data.
- * Replace the placeholder values below with real data when available —
- * nothing else in the codebase needs to change.
+ * Code-only site config — payment methods and navigation links.
+ * Brand identity and contact details are editable content now, not code:
+ * see `src/lib/site-content.ts` (persisted in Vercel Blob, edited from
+ * `/admin`). Read them via `useSiteContent()` in client components, or
+ * `getSiteContent()` directly in server components.
  */
-
-export const BRAND = {
-  name: "ALUMNA",
-  suffix: "Digital Experience",
-  legalName: "Alumna Estúdio Digital",
-  founder: "Ana Clara R. Oliveira",
-  foundedYear: 2026,
-  city: "Brasil",
-} as const;
-
-/**
- * Real contact details go here once they exist — every call site reads
- * from this object and already handles `null` gracefully (renders a
- * disabled "em breve" state instead of a link), so filling these in is
- * the only change needed to turn on real WhatsApp/e-mail contact.
- */
-export const CONTACT = {
-  email: null as string | null,
-  whatsappNumber: null as string | null, // digits only: country code + DDD + number
-  get whatsappUrl() {
-    return this.whatsappNumber ? `https://wa.me/${this.whatsappNumber}` : null;
-  },
-  instagram: null as string | null,
-  address: "Disponível para projetos em todo o Brasil, remoto por padrão.",
-} as const;
 
 /**
  * Payment methods offered in the mocked budget/checkout flow.
