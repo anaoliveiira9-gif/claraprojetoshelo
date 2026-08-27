@@ -10,110 +10,108 @@
  */
 
 // ---------------------------------------------------------------------------
-// Step 1 — "O que vamos criar?" (project type, multi-select, pricing anchor)
+// Step 01 — "O que vamos criar?" (project type, multi-select, pricing anchor)
+// The FIRST option selected — not the most expensive — is the anchor: order
+// of selection is what the client meant as "the project", everything else
+// picked alongside it is treated as an added surface, not a second project.
 // ---------------------------------------------------------------------------
 
 export const BUILD_OPTIONS = [
+  "Landing page",
   "Site",
   "Loja virtual",
   "Aplicativo",
   "Sistema",
-  "Landing page",
-  "Automação",
-  "UX/UI",
-  "Identidade digital",
-  "Outro",
+  "Plataforma",
 ] as const;
 
 export type BuildOption = (typeof BUILD_OPTIONS)[number];
 
-/** Base "a partir de" price used when a build option is picked without a
- * more specific service context (see SERVICES below for the precise
- * per-service prices shown on /servicos/*). */
+/** "A partir de" entry price for each project type. */
 export const BUILD_OPTION_BASE: Record<BuildOption, number> = {
   "Landing page": 2500,
-  Site: 3900,
-  "Loja virtual": 7500,
-  Aplicativo: 12000,
-  Sistema: 15000,
-  Automação: 2500,
-  "UX/UI": 2500,
-  "Identidade digital": 4500,
-  Outro: 3900,
+  Site: 4000,
+  "Loja virtual": 7000,
+  Aplicativo: 9000,
+  Sistema: 12000,
+  Plataforma: 16000,
 };
 
+/**
+ * Internal-only reference bands per project type — never shown to the
+ * client, never hard-clamped in code. They exist purely so whoever tunes
+ * the weights below has something to sanity-check typical scenarios
+ * against. An exceptionally complex project is expected to exceed its
+ * band; that's by design, not a bug.
+ *   Landing page:  2.500 –  5.000+
+ *   Site:          4.000 – 12.000+
+ *   Loja virtual:  7.000 – 20.000+
+ *   Aplicativo:    9.000 – 30.000+
+ *   Sistema:      12.000 – 40.000+
+ *   Plataforma:   16.000 – 60.000+
+ */
+
 // ---------------------------------------------------------------------------
-// Step 2 — "O que precisa acontecer?" (goals/behaviors, multi-select)
+// Step 02 — "Qual é o objetivo?" (business goals, multi-select)
 // ---------------------------------------------------------------------------
 
-export const NEED_OPTIONS = [
+export const OBJECTIVE_OPTIONS = [
   "Vender",
-  "Agendar",
-  "Captar",
-  "Automatizar",
-  "Gerenciar",
-  "Integrar",
-  "Área de clientes",
-  "Pagamentos",
-  "Dados e métricas",
-  "Outro",
+  "Atrair clientes",
+  "Agendar e receber pedidos",
+  "Gerenciar operações",
+  "Automatizar processos",
+  "Conectar ferramentas",
 ] as const;
 
-export type NeedOption = (typeof NEED_OPTIONS)[number];
+export type ObjectiveOption = (typeof OBJECTIVE_OPTIONS)[number];
 
-const NEED_WEIGHT: Record<NeedOption, number> = {
-  Vender: 400,
-  Agendar: 250,
-  Captar: 200,
-  Automatizar: 500,
-  Gerenciar: 350,
-  Integrar: 400,
-  "Área de clientes": 900,
-  Pagamentos: 700,
-  "Dados e métricas": 500,
-  Outro: 300,
+const OBJECTIVE_WEIGHT: Record<ObjectiveOption, number> = {
+  Vender: 500,
+  "Atrair clientes": 350,
+  "Agendar e receber pedidos": 450,
+  "Gerenciar operações": 500,
+  "Automatizar processos": 600,
+  "Conectar ferramentas": 500,
 };
 
 // ---------------------------------------------------------------------------
-// Step 3 — "Como deve funcionar?" (functionality/architecture, multi-select)
+// Step 03 — "O que ele precisa ter?" (functionality, multi-select)
+// Deliberately excludes purely-technical building blocks (banco de dados,
+// e-mail transacional...) that are always considered internally whenever
+// they're implied by the rest of the architecture, not asked as a choice.
 // ---------------------------------------------------------------------------
 
 export const FEATURE_OPTIONS = [
-  "Login",
-  "Painel administrativo",
+  "Contas e login",
+  "Área administrativa",
   "Pagamentos",
-  "WhatsApp",
-  "E-mail",
+  "WhatsApp e contato",
   "Notificações",
   "Busca e filtros",
-  "Mapas",
-  "Chat",
-  "Assinaturas",
-  "Integrações",
-  "IA",
-  "Banco de dados",
+  "Mapas e localização",
+  "Integrações externas",
+  "Inteligência artificial",
 ] as const;
 
 export type FeatureOption = (typeof FEATURE_OPTIONS)[number];
 
 const FEATURE_WEIGHT: Record<FeatureOption, number> = {
-  Login: 600,
-  "Painel administrativo": 1400,
-  Pagamentos: 900,
-  WhatsApp: 200,
-  "E-mail": 150,
-  Notificações: 300,
-  "Busca e filtros": 500,
-  Mapas: 500,
-  Chat: 600,
-  Assinaturas: 1200,
-  Integrações: 900,
-  IA: 1600,
-  "Banco de dados": 1000,
+  "Contas e login": 700,
+  "Área administrativa": 1600,
+  Pagamentos: 1000,
+  "WhatsApp e contato": 250,
+  Notificações: 350,
+  "Busca e filtros": 600,
+  "Mapas e localização": 600,
+  "Integrações externas": 1000,
+  "Inteligência artificial": 1800,
 };
 
 // ---------------------------------------------------------------------------
-// Step 4 — "O que é mais importante?" (priorities, multi-select — small nudge)
+// Step 04 — "O que é mais importante?" (priorities, multi-select)
+// No individual price — a small, capped nudge on the total, purely to
+// reflect emphasis. Never shown as a line item to the client.
 // ---------------------------------------------------------------------------
 
 export const PRIORITY_OPTIONS = [
@@ -126,61 +124,102 @@ export const PRIORITY_OPTIONS = [
 
 export type PriorityOption = (typeof PRIORITY_OPTIONS)[number];
 
-/** Each selected priority nudges the estimate up slightly (emphasis, not
- * added scope) — capped so ticking every box can't inflate the range. */
 const PRIORITY_STEP_BOOST = 0.03;
 const PRIORITY_BOOST_CAP = 0.15;
 
 // ---------------------------------------------------------------------------
-// Synergy — needs/features already implied by a chosen project type (or
-// service) contribute far less to the estimate, so common combinations
-// don't get double-charged.
+// Step 05 — "O que você gostaria de adicionar?" (add-on services, multi)
+// Manutenção e evolução is recurring and always quoted separately — it
+// never joins the one-time estimate's min–max range.
+// ---------------------------------------------------------------------------
+
+export const ADDON_OPTIONS = [
+  "Automação",
+  "UX/UI",
+  "Identidade digital",
+  "Manutenção e evolução",
+] as const;
+
+export type AddonOption = (typeof ADDON_OPTIONS)[number];
+
+const ADDON_WEIGHT: Record<AddonOption, number> = {
+  Automação: 2500,
+  "UX/UI": 3000,
+  "Identidade digital": 4500,
+  "Manutenção e evolução": 700,
+};
+
+const RECURRING_ADDONS: AddonOption[] = ["Manutenção e evolução"];
+
+// ---------------------------------------------------------------------------
+// Step 06 — "Como você imagina esse projeto?" (single choice)
+// Never presented to the client as a multiplier — it reads as an ambition
+// level. Internally it nudges the computed complexity tier up or down by
+// one notch, it doesn't replace the tier that real selections earned.
+// ---------------------------------------------------------------------------
+
+export const STYLE_OPTIONS = ["Essencial", "Personalizado", "Sob medida"] as const;
+
+export type StyleOption = (typeof STYLE_OPTIONS)[number];
+
+const STYLE_TIER_SHIFT: Record<StyleOption, number> = {
+  Essencial: -1,
+  Personalizado: 0,
+  "Sob medida": 1,
+};
+
+// ---------------------------------------------------------------------------
+// Synergy — objectives/features/add-ons already implied by the chosen
+// project type contribute far less to the estimate, so common, expected
+// combinations don't get double-charged.
 // ---------------------------------------------------------------------------
 
 const IMPLIED_BY_BUILD: Partial<Record<BuildOption, string[]>> = {
-  "Loja virtual": ["Vender", "Pagamentos", "Busca e filtros", "Área de clientes"],
-  Sistema: ["Gerenciar", "Login", "Painel administrativo", "Banco de dados"],
-  Aplicativo: ["Login", "Notificações"],
-  Automação: ["Automatizar", "Integrar", "Integrações"],
-  "Landing page": ["Captar"],
+  "Loja virtual": ["Vender", "Pagamentos", "Busca e filtros", "Contas e login"],
+  Sistema: ["Gerenciar operações", "Contas e login", "Área administrativa"],
+  Plataforma: [
+    "Gerenciar operações",
+    "Contas e login",
+    "Área administrativa",
+    "Integrações externas",
+  ],
+  Aplicativo: ["Contas e login", "Notificações"],
+  "Landing page": ["Atrair clientes"],
 };
 
-const IMPLIED_BY_SERVICE: Partial<Record<ServiceSlug, string[]>> = {
-  ecommerce: ["Vender", "Pagamentos", "Busca e filtros", "Área de clientes"],
-  "sistema-web-app": ["Gerenciar", "Login", "Painel administrativo", "Banco de dados"],
-  "saas-plataforma": [
-    "Gerenciar",
-    "Login",
-    "Painel administrativo",
-    "Banco de dados",
-    "Assinaturas",
-    "Área de clientes",
-  ],
-  aplicativo: ["Login", "Notificações"],
-  automacao: ["Automatizar", "Integrar", "Integrações"],
-  "landing-page": ["Captar"],
+/** Add-ons discounted when an objective already signals that work is
+ * naturally part of the project — currently just Automação vs. the
+ * "Automatizar processos" objective. UX/UI and Identidade digital have no
+ * natural overlap with anything else, so they're never discounted. */
+const IMPLIED_ADDON_BY_OBJECTIVE: Partial<Record<ObjectiveOption, AddonOption[]>> = {
+  "Automatizar processos": ["Automação"],
 };
 
 /** Implied items still count toward complexity, just at a fraction of their
- * usual weight — "comum e complementar" per the brief, not free. */
+ * usual weight — "naturalmente esperado", not free. */
 const IMPLIED_WEIGHT_FACTOR = 0.18;
 
+/** Extra project types beyond the first-selected anchor count at this
+ * fraction of their own base price — part of the same engagement, not a
+ * fully separate project. */
+const EXTRA_SURFACE_FACTOR = 0.4;
+
 // ---------------------------------------------------------------------------
-// Service catalog — used by /servicos/[slug] and as a precise pricing
-// anchor when a visitor arrives at the configurator from a service page.
+// Service catalog — used by /servicos/[slug] and to preselect the
+// configurator (a project type for the 6 core services, an add-on for the
+// other 4) when a visitor arrives from a specific service page.
 // ---------------------------------------------------------------------------
 
 export type ServiceSlug =
   | "landing-page"
-  | "site-institucional"
-  | "site-experiencia-digital"
-  | "ecommerce"
+  | "site"
+  | "loja-virtual"
   | "aplicativo"
-  | "sistema-web-app"
-  | "saas-plataforma"
+  | "sistema"
+  | "plataforma"
   | "automacao"
   | "ux-ui"
-  | "branding-digital"
+  | "identidade-digital"
   | "manutencao-evolucao";
 
 export interface ServiceDef {
@@ -193,9 +232,9 @@ export interface ServiceDef {
   possibleFeatures: string[];
   basePrice: number;
   isRecurring?: boolean;
-  /** Which step-1 tile this service maps to when preselecting the
-   * configurator from this service's CTA. */
-  buildOption: BuildOption;
+  /** One of these two is set — which step the CTA preselects. */
+  buildOption?: BuildOption;
+  addonOption?: AddonOption;
 }
 
 export const SERVICES: ServiceDef[] = [
@@ -223,15 +262,15 @@ export const SERVICES: ServiceDef[] = [
     buildOption: "Landing page",
   },
   {
-    slug: "site-institucional",
-    name: "Site Institucional",
+    slug: "site",
+    name: "Site",
     tagline: "A primeira impressão, bem resolvida.",
     description:
       "Um site institucional editorial, rápido e fácil de manter — a base digital de uma marca séria.",
     audience:
       "Para empresas e profissionais que precisam de presença digital confiável.",
     deliverables: [
-      "Até 5 páginas",
+      "Design autoral, não template",
       "Sistema de design próprio",
       "Formulário de contato",
       "Otimização para buscadores",
@@ -239,38 +278,15 @@ export const SERVICES: ServiceDef[] = [
     possibleFeatures: [
       "Blog ou notícias",
       "Múltiplos idiomas",
-      "Contato avançado",
+      "Busca e filtros",
       "Integração com redes sociais",
     ],
-    basePrice: 3900,
+    basePrice: 4000,
     buildOption: "Site",
   },
   {
-    slug: "site-experiencia-digital",
-    name: "Site / Experiência Digital",
-    tagline: "Quando o site precisa contar uma história.",
-    description:
-      "Uma experiência digital mais ambiciosa — narrativa visual, interações e um sistema de conteúdo próprio.",
-    audience:
-      "Para marcas que querem se diferenciar visualmente, não só existir online.",
-    deliverables: [
-      "Direção de arte própria",
-      "Múltiplas páginas e fluxos",
-      "Microinterações e animações",
-      "Sistema de conteúdo gerenciável",
-    ],
-    possibleFeatures: [
-      "CMS próprio",
-      "Multilíngue",
-      "Busca e filtros",
-      "Integrações de marketing",
-    ],
-    basePrice: 6500,
-    buildOption: "Site",
-  },
-  {
-    slug: "ecommerce",
-    name: "E-commerce",
+    slug: "loja-virtual",
+    name: "Loja Virtual",
     tagline: "Vender também é uma questão de direção de arte.",
     description:
       "Loja virtual completa — catálogo, carrinho e checkout, com uma experiência que não parece template.",
@@ -287,7 +303,7 @@ export const SERVICES: ServiceDef[] = [
       "Área do cliente",
       "Integração com frete",
     ],
-    basePrice: 7500,
+    basePrice: 7000,
     buildOption: "Loja virtual",
   },
   {
@@ -307,15 +323,15 @@ export const SERVICES: ServiceDef[] = [
     possibleFeatures: [
       "Login e autenticação",
       "Pagamentos in-app",
-      "Chat",
       "Integração com APIs externas",
+      "Inteligência artificial",
     ],
-    basePrice: 12000,
+    basePrice: 9000,
     buildOption: "Aplicativo",
   },
   {
-    slug: "sistema-web-app",
-    name: "Sistema / Web App",
+    slug: "sistema",
+    name: "Sistema",
     tagline: "Software feito sob medida para como o seu time trabalha.",
     description:
       "Um sistema web completo — painel, dados e fluxos próprios, construído para uso interno ou de clientes.",
@@ -333,19 +349,19 @@ export const SERVICES: ServiceDef[] = [
       "Integrações com outras ferramentas",
       "Automações internas",
     ],
-    basePrice: 15000,
+    basePrice: 12000,
     buildOption: "Sistema",
   },
   {
-    slug: "saas-plataforma",
-    name: "SaaS / Plataforma",
+    slug: "plataforma",
+    name: "Plataforma",
     tagline: "Um produto pronto para ter muitos clientes ao mesmo tempo.",
     description:
-      "Plataforma multiusuário, com arquitetura pensada para escalar desde o primeiro cliente.",
+      "Plataforma multiusuário — de um SaaS a um marketplace —, com arquitetura pensada para escalar desde o primeiro cliente.",
     audience:
       "Para quem está construindo um produto digital para vender como serviço.",
     deliverables: [
-      "Arquitetura multi-tenant",
+      "Arquitetura multiusuário",
       "Painel e área de clientes",
       "Autenticação e planos",
       "Base para cobrança recorrente",
@@ -356,8 +372,8 @@ export const SERVICES: ServiceDef[] = [
       "Integrações via API",
       "Painel de métricas de uso",
     ],
-    basePrice: 20000,
-    buildOption: "Sistema",
+    basePrice: 16000,
+    buildOption: "Plataforma",
   },
   {
     slug: "automacao",
@@ -380,7 +396,7 @@ export const SERVICES: ServiceDef[] = [
       "IA aplicada ao fluxo",
     ],
     basePrice: 2500,
-    buildOption: "Automação",
+    addonOption: "Automação",
   },
   {
     slug: "ux-ui",
@@ -402,12 +418,12 @@ export const SERVICES: ServiceDef[] = [
       "Design system completo",
       "Handoff para desenvolvimento",
     ],
-    basePrice: 2500,
-    buildOption: "UX/UI",
+    basePrice: 3000,
+    addonOption: "UX/UI",
   },
   {
-    slug: "branding-digital",
-    name: "Branding + Digital",
+    slug: "identidade-digital",
+    name: "Identidade Digital",
     tagline: "Uma identidade que funciona antes mesmo de ler o nome.",
     description:
       "Identidade visual e aplicação digital juntas — a marca nasce já pronta para existir online.",
@@ -426,7 +442,7 @@ export const SERVICES: ServiceDef[] = [
       "Guia de tom de voz",
     ],
     basePrice: 4500,
-    buildOption: "Identidade digital",
+    addonOption: "Identidade digital",
   },
   {
     slug: "manutencao-evolucao",
@@ -449,7 +465,7 @@ export const SERVICES: ServiceDef[] = [
     ],
     basePrice: 700,
     isRecurring: true,
-    buildOption: "Outro",
+    addonOption: "Manutenção e evolução",
   },
 ];
 
@@ -461,24 +477,38 @@ export function getService(slug: string): ServiceDef | undefined {
 // Estimate engine
 // ---------------------------------------------------------------------------
 
-export type ComplexityTier = "Essencial" | "Profissional" | "Avançado" | "Sob medida";
+/** Internal complexity tier — drives the width of the min–max spread.
+ * Never shown to the client by name. */
+type ComplexityTier = "Essencial" | "Profissional" | "Avançado" | "Sob medida";
+
+const TIERS: { name: ComplexityTier; minScore: number; spread: [number, number] }[] = [
+  { name: "Essencial", minScore: 0, spread: [0.95, 1.15] },
+  { name: "Profissional", minScore: 2, spread: [1.0, 1.3] },
+  { name: "Avançado", minScore: 5, spread: [1.05, 1.45] },
+  { name: "Sob medida", minScore: 9, spread: [1.1, 1.6] },
+];
 
 export interface EstimateInput {
   builds: BuildOption[];
-  needs: NeedOption[];
+  objectives: ObjectiveOption[];
   features: FeatureOption[];
   priorities: PriorityOption[];
+  addons: AddonOption[];
+  style: StyleOption | null;
   /** Set when the visitor arrived from a specific /servicos/[slug] page —
-   * gives a more precise pricing anchor than the generic build option. */
+   * gives a more precise pricing anchor than the generic build option
+   * (only applies when that service maps to a project type, not an
+   * add-on). */
   initialService?: ServiceSlug;
 }
 
 export interface EstimateResult {
   min: number;
   max: number;
-  /** Internal only — not necessarily shown to the client. */
-  tier: ComplexityTier;
   isRecurring: boolean;
+  /** Extra fixed monthly line (Manutenção e evolução), shown alongside the
+   * one-time range rather than folded into it. */
+  monthly: number;
   /** False when there's too little information for a real range yet —
    * UI should show "a partir de {min}" instead of a min–max range. */
   hasRange: boolean;
@@ -489,10 +519,13 @@ function impliedSet(input: EstimateInput): Set<string> {
   for (const build of input.builds) {
     for (const item of IMPLIED_BY_BUILD[build] ?? []) items.add(item);
   }
-  if (input.initialService) {
-    for (const item of IMPLIED_BY_SERVICE[input.initialService] ?? []) {
-      items.add(item);
-    }
+  return items;
+}
+
+function impliedAddons(input: EstimateInput): Set<AddonOption> {
+  const items = new Set<AddonOption>();
+  for (const objective of input.objectives) {
+    for (const addon of IMPLIED_ADDON_BY_OBJECTIVE[objective] ?? []) items.add(addon);
   }
   return items;
 }
@@ -513,99 +546,98 @@ function roundToHundred(value: number): number {
 }
 
 /**
- * preço-base do projeto + complexidade + necessidades específicas −
- * sinergias/duplicidades. Prefers a conservative, commercially realistic
- * estimate when signals are ambiguous — see the module doc comment for
- * where every number involved actually lives.
+ * projeto-base + complexidade real + funcionalidades + integrações +
+ * personalização − sobreposição/sinergia. Prefers a conservative,
+ * commercially realistic estimate when signals are ambiguous — see the
+ * module doc comment for where every number involved actually lives.
+ * Nothing here (score, tier, multipliers) is ever surfaced to the client.
  */
 export function computeEstimate(input: EstimateInput): EstimateResult {
   const service = input.initialService ? getService(input.initialService) : undefined;
 
-  if (service?.isRecurring) {
-    return {
-      min: service.basePrice,
-      max: service.basePrice,
-      tier: "Essencial",
-      isRecurring: true,
-      hasRange: true,
-    };
+  // Manutenção e evolução is always a separate recurring line — never part
+  // of the one-time min–max range.
+  const monthly = input.addons.includes("Manutenção e evolução")
+    ? ADDON_WEIGHT["Manutenção e evolução"]
+    : 0;
+  const oneTimeAddons = input.addons.filter((a) => !RECURRING_ADDONS.includes(a));
+
+  if (input.builds.length === 0) {
+    // Nothing to anchor a one-time estimate on yet — maintenance-only ask.
+    return { min: 0, max: 0, isRecurring: monthly > 0, monthly, hasRange: false };
   }
 
-  // Anchor: the most demanding selected build type (or the precise service
-  // price when the visitor arrived from a /servicos page), plus a fraction
-  // of any additional, genuinely separate surfaces the client also picked.
-  let anchorIndex = -1;
-  let anchorPrice = 0;
-  input.builds.forEach((build, i) => {
-    const price = BUILD_OPTION_BASE[build];
-    if (price > anchorPrice) {
-      anchorPrice = price;
-      anchorIndex = i;
-    }
-  });
+  // Anchor: the FIRST project type the client selected — order, not price,
+  // decides what "the project" is. Everything selected alongside it is an
+  // added surface, not a second project.
+  const anchorBuild = input.builds[0];
+  let base = BUILD_OPTION_BASE[anchorBuild];
+  if (service?.buildOption && service.basePrice > base) base = service.basePrice;
 
-  const extraSurfaces = input.builds.reduce((sum, build, i) => {
-    if (i === anchorIndex) return sum;
-    return sum + BUILD_OPTION_BASE[build] * 0.4;
-  }, 0);
-
-  let base = anchorPrice;
-  if (service && service.basePrice > base) base = service.basePrice;
-  if (base === 0) base = BUILD_OPTION_BASE.Outro;
+  const extraSurfaces = input.builds
+    .slice(1)
+    .reduce((sum, build) => sum + BUILD_OPTION_BASE[build] * EXTRA_SURFACE_FACTOR, 0);
 
   const implied = impliedSet(input);
-  const needsSum = weightedSum(input.needs, NEED_WEIGHT, implied);
+  const objectivesSum = weightedSum(input.objectives, OBJECTIVE_WEIGHT, implied);
   const featuresSum = weightedSum(input.features, FEATURE_WEIGHT, implied);
+
+  const impliedAddonSet = impliedAddons(input);
+  const addonsSum = oneTimeAddons.reduce((sum, addon) => {
+    const weight = ADDON_WEIGHT[addon];
+    return sum + (impliedAddonSet.has(addon) ? weight * IMPLIED_WEIGHT_FACTOR : weight);
+  }, 0);
 
   const priorityBoost =
     1 + Math.min(PRIORITY_BOOST_CAP, input.priorities.length * PRIORITY_STEP_BOOST);
 
-  const rawTotal = (base + extraSurfaces + needsSum + featuresSum) * priorityBoost;
+  const rawTotal =
+    (base + extraSurfaces + objectivesSum + featuresSum + addonsSum) * priorityBoost;
 
-  // Internal complexity tier — drives how wide the min–max spread is.
-  // Non-implied ("real") features count far more than ones already implied
-  // by the chosen project type, so ticking a common box doesn't blow up
-  // the tier the way a structural one (auth, DB, integrations) does.
+  // Complexity score: non-implied ("real") items count far more than ones
+  // already implied by the chosen project type, so ticking a common box
+  // doesn't move the tier the way a structural one does.
   const nonImpliedFeatures = input.features.filter((f) => !implied.has(f)).length;
   const impliedFeatures = input.features.length - nonImpliedFeatures;
+  const nonImpliedAddons = oneTimeAddons.filter((a) => !impliedAddonSet.has(a)).length;
+  const impliedAddonsCount = oneTimeAddons.length - nonImpliedAddons;
+
   const complexityScore =
     input.builds.length * 1 +
-    input.needs.length * 0.4 +
+    input.objectives.length * 0.4 +
     nonImpliedFeatures * 1.2 +
-    impliedFeatures * 0.3;
+    impliedFeatures * 0.3 +
+    nonImpliedAddons * 1.0 +
+    impliedAddonsCount * 0.3;
 
-  let tier: ComplexityTier;
-  let spread: [number, number];
-  if (complexityScore < 2) {
-    tier = "Essencial";
-    spread = [0.95, 1.15];
-  } else if (complexityScore < 5) {
-    tier = "Profissional";
-    spread = [1.0, 1.3];
-  } else if (complexityScore < 9) {
-    tier = "Avançado";
-    spread = [1.05, 1.45];
-  } else {
-    tier = "Sob medida";
-    spread = [1.1, 1.6];
+  let tierIndex = 0;
+  for (let i = 0; i < TIERS.length; i++) {
+    if (complexityScore >= TIERS[i].minScore) tierIndex = i;
   }
+
+  // "Como você imagina esse projeto?" nudges the tier by one notch — it
+  // influences the range, but real selections (the score above) are what
+  // earned the tier in the first place.
+  const shift = input.style ? STYLE_TIER_SHIFT[input.style] : 0;
+  tierIndex = Math.min(TIERS.length - 1, Math.max(0, tierIndex + shift));
+  const spread = TIERS[tierIndex].spread;
 
   let min = rawTotal * spread[0];
   let max = rawTotal * spread[1];
 
-  // Floor: an estimate should never undercut the service's own "a partir
-  // de" price, and the range should always be meaningfully wide enough to
-  // read as a real estimate rather than a single disguised number.
+  // Floor: never undercut the project's own "a partir de" price. Ceiling
+  // guard: keep the range meaningfully wide rather than a disguised point
+  // estimate.
   min = Math.max(min, base);
   max = Math.max(max, min + base * 0.15);
 
-  const hasRange = input.needs.length + input.features.length > 0;
+  const hasRange = input.objectives.length + input.features.length + oneTimeAddons.length > 0;
 
   return {
     min: roundToHundred(min),
     max: roundToHundred(max),
-    tier,
     isRecurring: false,
+    monthly,
     hasRange,
   };
 }
@@ -619,12 +651,20 @@ export function formatBRL(value: number): string {
 }
 
 export function formatEstimate(estimate: EstimateResult): string {
-  const suffix = estimate.isRecurring ? "/mês" : "";
+  const monthlySuffix = estimate.monthly > 0
+    ? ` + ${formatBRL(estimate.monthly)}/mês (manutenção)`
+    : "";
+
+  if (estimate.min === 0 && estimate.max === 0) {
+    return estimate.monthly > 0
+      ? `${formatBRL(estimate.monthly)}/mês`
+      : "Escolha um tipo de projeto para ver a estimativa";
+  }
   if (!estimate.hasRange) {
-    return `A partir de ${formatBRL(estimate.min)}${suffix}`;
+    return `A partir de ${formatBRL(estimate.min)}${monthlySuffix}`;
   }
   if (estimate.min === estimate.max) {
-    return `${formatBRL(estimate.min)}${suffix}`;
+    return `${formatBRL(estimate.min)}${monthlySuffix}`;
   }
-  return `${formatBRL(estimate.min)} — ${formatBRL(estimate.max)}${suffix}`;
+  return `${formatBRL(estimate.min)} — ${formatBRL(estimate.max)}${monthlySuffix}`;
 }

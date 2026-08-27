@@ -6,13 +6,13 @@ const SERVICES = [
   {
     n: "01",
     name: "Website",
-    slug: "site-institucional",
+    slug: "site",
     desc: "Sites institucionais editoriais, rápidos e memoráveis.",
   },
   {
     n: "02",
     name: "E-commerce",
-    slug: "ecommerce",
+    slug: "loja-virtual",
     desc: "Lojas de alta conversão sem parecer template.",
   },
   {
@@ -24,13 +24,13 @@ const SERVICES = [
   {
     n: "04",
     name: "Produto Digital",
-    slug: "site-experiencia-digital",
+    slug: "plataforma",
     desc: "Produtos digitais com identidade e sistema próprios.",
   },
   {
     n: "05",
     name: "Sistemas",
-    slug: "sistema-web-app",
+    slug: "sistema",
     desc: "Design systems e painéis internos que escalam.",
   },
   {

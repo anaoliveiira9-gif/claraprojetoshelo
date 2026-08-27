@@ -1,33 +1,43 @@
 import {
   BUILD_OPTIONS,
-  NEED_OPTIONS,
+  OBJECTIVE_OPTIONS,
   FEATURE_OPTIONS,
   PRIORITY_OPTIONS,
+  ADDON_OPTIONS,
+  STYLE_OPTIONS,
   computeEstimate,
   type BuildOption,
-  type NeedOption,
+  type ObjectiveOption,
   type FeatureOption,
   type PriorityOption,
+  type AddonOption,
+  type StyleOption,
   type EstimateResult,
   type ServiceSlug,
 } from "@/lib/pricing";
 
 export {
   BUILD_OPTIONS,
-  NEED_OPTIONS,
+  OBJECTIVE_OPTIONS,
   FEATURE_OPTIONS,
   PRIORITY_OPTIONS,
+  ADDON_OPTIONS,
+  STYLE_OPTIONS,
   type BuildOption,
-  type NeedOption,
+  type ObjectiveOption,
   type FeatureOption,
   type PriorityOption,
+  type AddonOption,
+  type StyleOption,
 };
 
 export interface ProjectSelection {
   builds: BuildOption[];
-  needs: NeedOption[];
+  objectives: ObjectiveOption[];
   features: FeatureOption[];
   priorities: PriorityOption[];
+  addons: AddonOption[];
+  style: StyleOption | null;
   /** Present when the visitor arrived from a /servicos/[slug] page. */
   initialService?: ServiceSlug;
 }
@@ -42,16 +52,18 @@ export interface ContactInfo {
 /**
  * Estimativa de investimento — não é orçamento fechado. Combina o
  * preço-base do tipo de projeto com o nível de complexidade sinalizado
- * pelas respostas, descontando funcionalidades já implícitas no tipo de
- * projeto escolhido. Toda a lógica de preço vive em `@/lib/pricing`; esta
- * função só decide o que perguntar e como resumir a conversa.
+ * pelas respostas, descontando o que já é naturalmente esperado do tipo
+ * de projeto escolhido. Toda a lógica de preço vive em `@/lib/pricing`;
+ * esta função só decide o que perguntar e como resumir a conversa.
  */
 export function suggestScope(selection: ProjectSelection): EstimateResult {
   return computeEstimate({
     builds: selection.builds,
-    needs: selection.needs,
+    objectives: selection.objectives,
     features: selection.features,
     priorities: selection.priorities,
+    addons: selection.addons,
+    style: selection.style,
     initialService: selection.initialService,
   });
 }

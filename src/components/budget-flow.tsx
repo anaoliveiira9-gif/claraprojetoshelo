@@ -17,18 +17,22 @@ function parseListParam(value: string | undefined) {
 
 export function BudgetFlow({
   builds,
-  needs,
+  objectives,
   features,
   priorities,
+  addons,
+  style,
   servico,
   name,
   email,
   company,
 }: {
   builds?: string;
-  needs?: string;
+  objectives?: string;
   features?: string;
   priorities?: string;
+  addons?: string;
+  style?: string;
   servico?: string;
   name?: string;
   email?: string;
@@ -37,14 +41,16 @@ export function BudgetFlow({
   const selection = useMemo<ProjectSelection>(
     () => ({
       builds: parseListParam(builds) as ProjectSelection["builds"],
-      needs: parseListParam(needs) as ProjectSelection["needs"],
+      objectives: parseListParam(objectives) as ProjectSelection["objectives"],
       features: parseListParam(features) as ProjectSelection["features"],
       priorities: parseListParam(priorities) as ProjectSelection["priorities"],
+      addons: parseListParam(addons) as ProjectSelection["addons"],
+      style: (style || null) as ProjectSelection["style"],
       initialService: servico
         ? (getService(servico)?.slug as ServiceSlug | undefined)
         : undefined,
     }),
-    [builds, needs, features, priorities, servico]
+    [builds, objectives, features, priorities, addons, style, servico]
   );
 
   const hasSelection = selection.builds.length > 0 || Boolean(selection.initialService);
@@ -104,8 +110,9 @@ export function BudgetFlow({
                 {formatEstimate(estimate)}
               </p>
               <p className="mt-2 text-xs leading-relaxed text-paper-faint">
-                Estimativa inicial. O valor final depende do escopo definido
-                no briefing e da complexidade técnica do projeto.
+                Estimativa inicial com base nas escolhas acima. O valor
+                final depende do escopo definido no briefing e da
+                complexidade técnica do projeto.
               </p>
             </div>
           </div>

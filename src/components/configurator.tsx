@@ -9,33 +9,41 @@ import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 import { EmailLink, WhatsappLink } from "@/components/contact-links";
 import {
   BUILD_OPTIONS,
-  NEED_OPTIONS,
+  OBJECTIVE_OPTIONS,
   FEATURE_OPTIONS,
   PRIORITY_OPTIONS,
+  ADDON_OPTIONS,
+  STYLE_OPTIONS,
   suggestScope,
   buildDiagnosticPayload,
   submitDiagnostic,
   type BuildOption,
   type ContactInfo,
-  type NeedOption,
+  type ObjectiveOption,
   type FeatureOption,
   type PriorityOption,
+  type AddonOption,
+  type StyleOption,
   type ProjectSelection,
 } from "@/lib/diagnostic";
 import { getService, formatEstimate, type ServiceSlug } from "@/lib/pricing";
 import {
   STEP_HINTS,
   BUILD_DESCRIPTIONS,
-  NEED_DESCRIPTIONS,
+  OBJECTIVE_DESCRIPTIONS,
   FEATURE_DESCRIPTIONS,
   PRIORITY_DESCRIPTIONS,
+  ADDON_DESCRIPTIONS,
+  STYLE_DESCRIPTIONS,
 } from "@/lib/configurator-copy";
 
 const STEPS = [
   "O que vamos criar?",
-  "O que precisa acontecer?",
-  "Como deve funcionar?",
+  "Qual é o objetivo?",
+  "O que ele precisa ter?",
   "O que é mais importante?",
+  "O que você gostaria de adicionar?",
+  "Como você imagina esse projeto?",
   "Dados de contato",
   "Seu projeto",
 ] as const;
@@ -44,9 +52,11 @@ const BUILD_ALIASES: Record<string, BuildOption> = {
   website: "Site",
   "loja-virtual": "Loja virtual",
   ecommerce: "Loja virtual",
+  "e-commerce": "Loja virtual",
   app: "Aplicativo",
   sistemas: "Sistema",
-  "identidade-digital": "Identidade digital",
+  saas: "Plataforma",
+  plataforma: "Plataforma",
 };
 
 function Tile({
@@ -153,7 +163,7 @@ export function Configurator() {
   const initialBuilds: BuildOption[] = useMemo(() => {
     if (initialService) {
       const svc = getService(initialService);
-      return svc ? [svc.buildOption] : [];
+      return svc?.buildOption ? [svc.buildOption] : [];
     }
     if (!focusParam) return [];
     const key = focusParam.toLowerCase();
@@ -163,12 +173,20 @@ export function Configurator() {
     return match ? [match] : [];
   }, [initialService, focusParam]);
 
+  const initialAddons: AddonOption[] = useMemo(() => {
+    if (!initialService) return [];
+    const svc = getService(initialService);
+    return svc?.addonOption ? [svc.addonOption] : [];
+  }, [initialService]);
+
   const [step, setStep] = useState(0);
   const [selection, setSelection] = useState<ProjectSelection>({
     builds: initialBuilds,
-    needs: [],
+    objectives: [],
     features: [],
     priorities: [],
+    addons: initialAddons,
+    style: null,
     initialService,
   });
   const [contact, setContact] = useState<ContactInfo>(emptyContact);
@@ -187,8 +205,10 @@ export function Configurator() {
     step === 1 ||
     step === 2 ||
     step === 3 ||
-    (step === 4 && contactValid) ||
-    step === 5;
+    step === 4 ||
+    (step === 5 && selection.style !== null) ||
+    (step === 6 && contactValid) ||
+    step === 7;
 
   function toggleBuild(build: BuildOption) {
     setSelection((prev) => ({
@@ -199,12 +219,12 @@ export function Configurator() {
     }));
   }
 
-  function toggleNeed(need: NeedOption) {
+  function toggleObjective(objective: ObjectiveOption) {
     setSelection((prev) => ({
       ...prev,
-      needs: prev.needs.includes(need)
-        ? prev.needs.filter((n) => n !== need)
-        : [...prev.needs, need],
+      objectives: prev.objectives.includes(objective)
+        ? prev.objectives.filter((o) => o !== objective)
+        : [...prev.objectives, objective],
     }));
   }
 
@@ -226,6 +246,19 @@ export function Configurator() {
     }));
   }
 
+  function toggleAddon(addon: AddonOption) {
+    setSelection((prev) => ({
+      ...prev,
+      addons: prev.addons.includes(addon)
+        ? prev.addons.filter((a) => a !== addon)
+        : [...prev.addons, addon],
+    }));
+  }
+
+  function setStyle(style: StyleOption) {
+    setSelection((prev) => ({ ...prev, style }));
+  }
+
   async function handleSubmit() {
     setSubmitStatus("sending");
     const payload = buildDiagnosticPayload(selection, contact);
@@ -235,9 +268,11 @@ export function Configurator() {
 
   const orcamentoQuery = new URLSearchParams({
     builds: selection.builds.join(","),
-    needs: selection.needs.join(","),
+    objectives: selection.objectives.join(","),
     features: selection.features.join(","),
     priorities: selection.priorities.join(","),
+    addons: selection.addons.join(","),
+    style: selection.style ?? "",
     ...(selection.initialService ? { servico: selection.initialService } : {}),
     name: contact.name,
     email: contact.email,
@@ -246,7 +281,7 @@ export function Configurator() {
 
   return (
     <div className="mx-auto max-w-[1000px]">
-      <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
         {STEPS.map((label, i) => (
           <span key={label} className="flex items-center gap-2">
             <button
@@ -297,13 +332,13 @@ export function Configurator() {
 
           {step === 1 && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {NEED_OPTIONS.map((option) => (
+              {OBJECTIVE_OPTIONS.map((option) => (
                 <Tile
                   key={option}
                   label={option}
-                  description={NEED_DESCRIPTIONS[option]}
-                  active={selection.needs.includes(option)}
-                  onClick={() => toggleNeed(option)}
+                  description={OBJECTIVE_DESCRIPTIONS[option]}
+                  active={selection.objectives.includes(option)}
+                  onClick={() => toggleObjective(option)}
                 />
               ))}
             </div>
@@ -338,6 +373,34 @@ export function Configurator() {
           )}
 
           {step === 4 && (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {ADDON_OPTIONS.map((option) => (
+                <Tile
+                  key={option}
+                  label={option}
+                  description={ADDON_DESCRIPTIONS[option]}
+                  active={selection.addons.includes(option)}
+                  onClick={() => toggleAddon(option)}
+                />
+              ))}
+            </div>
+          )}
+
+          {step === 5 && (
+            <div className="grid gap-3 sm:grid-cols-3">
+              {STYLE_OPTIONS.map((option) => (
+                <Tile
+                  key={option}
+                  label={option}
+                  description={STYLE_DESCRIPTIONS[option]}
+                  active={selection.style === option}
+                  onClick={() => setStyle(option)}
+                />
+              ))}
+            </div>
+          )}
+
+          {step === 6 && (
             <div className="grid gap-4 sm:grid-cols-2">
               <input
                 required
@@ -381,7 +444,7 @@ export function Configurator() {
             </div>
           )}
 
-          {step === 5 && (
+          {step === 7 && (
             <div className="border border-line">
               <div className="grid gap-8 p-6 sm:grid-cols-2 sm:p-10">
                 <div className="flex flex-col gap-6">
@@ -391,12 +454,12 @@ export function Configurator() {
                     onEdit={() => setStep(0)}
                   />
                   <SummaryRow
-                    label="Necessidades"
-                    value={selection.needs.join(" · ") || "—"}
+                    label="Objetivo"
+                    value={selection.objectives.join(" · ") || "—"}
                     onEdit={() => setStep(1)}
                   />
                   <SummaryRow
-                    label="Funcionalidades"
+                    label="Recursos"
                     value={selection.features.join(" · ") || "—"}
                     onEdit={() => setStep(2)}
                   />
@@ -406,11 +469,21 @@ export function Configurator() {
                     onEdit={() => setStep(3)}
                   />
                   <SummaryRow
+                    label="Adicionais"
+                    value={selection.addons.join(" · ") || "—"}
+                    onEdit={() => setStep(4)}
+                  />
+                  <SummaryRow
+                    label="Estilo do projeto"
+                    value={selection.style ?? "—"}
+                    onEdit={() => setStep(5)}
+                  />
+                  <SummaryRow
                     label="Contato"
                     value={[contact.name, contact.email]
                       .filter(Boolean)
                       .join(" · ")}
-                    onEdit={() => setStep(4)}
+                    onEdit={() => setStep(6)}
                   />
                 </div>
 
@@ -422,9 +495,9 @@ export function Configurator() {
                     {formatEstimate(estimate)}
                   </p>
                   <p className="mt-6 border-t border-line pt-4 text-xs leading-relaxed text-paper-faint">
-                    Estimativa inicial. O valor final depende do escopo
-                    definido no briefing e da complexidade técnica do
-                    projeto.
+                    Estimativa inicial com base nas escolhas acima. O valor
+                    final depende do escopo definido no briefing e da
+                    complexidade técnica do projeto.
                   </p>
                 </div>
               </div>
@@ -492,10 +565,10 @@ export function Configurator() {
           ← Voltar
         </button>
 
-        {step < 5 && (
+        {step < 7 && (
           <button
             type="button"
-            onClick={() => setStep((s) => Math.min(5, s + 1))}
+            onClick={() => setStep((s) => Math.min(7, s + 1))}
             disabled={!canAdvance}
             data-cursor-hover
             className="flex items-center gap-3 border border-paper px-6 py-3.5 font-mono text-xs uppercase tracking-[0.25em] text-paper transition-colors hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
