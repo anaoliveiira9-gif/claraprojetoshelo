@@ -49,11 +49,11 @@ export function PropertyCard({ property }: { property: Property }) {
         <div className="flex items-start justify-between gap-3">
           <h3 className={`${serif} text-lg leading-snug text-[#241E1A]`}>{property.titulo}</h3>
         </div>
-        <p className="text-xs uppercase tracking-[0.14em] text-[#7A6F63]">
+        <p className="text-xs uppercase tracking-[0.14em] text-[#6B6157]">
           {property.bairro}, {property.cidade}
         </p>
 
-        <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#7A6F63]">
+        <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#6B6157]">
           <span>{property.area} m²</span>
           {property.quartos > 0 && (
             <span className="inline-flex items-center gap-1">
@@ -74,7 +74,7 @@ export function PropertyCard({ property }: { property: Property }) {
 
         <div className="mt-auto flex items-center justify-between pt-3">
           <span className={`${serif} text-xl text-[#2F4A3B]`}>{formatBRL(property.preco)}</span>
-          <span className="text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+          <span className="text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
             {property.tipo}
           </span>
         </div>

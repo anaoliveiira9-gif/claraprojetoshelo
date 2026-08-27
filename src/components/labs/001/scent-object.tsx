@@ -1,8 +1,8 @@
-import type { Product } from "@/components/labs/001/products";
+﻿import type { Product } from "@/components/labs/001/products";
 
 function BottleSvg({ gradient, id }: { gradient: [string, string]; id: string }) {
   return (
-    <svg viewBox="0 0 120 220" className="h-full w-full">
+    <svg viewBox="0 0 120 220" className="h-full w-full" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={gradient[0]} />
@@ -35,7 +35,7 @@ function BottleSvg({ gradient, id }: { gradient: [string, string]; id: string })
 
 function SprayBottleSvg({ gradient, id }: { gradient: [string, string]; id: string }) {
   return (
-    <svg viewBox="0 0 120 220" className="h-full w-full">
+    <svg viewBox="0 0 120 220" className="h-full w-full" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={gradient[0]} />
@@ -59,7 +59,7 @@ function SprayBottleSvg({ gradient, id }: { gradient: [string, string]; id: stri
 
 function CandleSvg({ gradient, id }: { gradient: [string, string]; id: string }) {
   return (
-    <svg viewBox="0 0 140 180" className="h-full w-full">
+    <svg viewBox="0 0 140 180" className="h-full w-full" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={gradient[0]} />
@@ -77,7 +77,7 @@ function CandleSvg({ gradient, id }: { gradient: [string, string]; id: string })
 
 function DiffuserSvg({ gradient, id }: { gradient: [string, string]; id: string }) {
   return (
-    <svg viewBox="0 0 120 220" className="h-full w-full">
+    <svg viewBox="0 0 120 220" className="h-full w-full" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={gradient[0]} />
@@ -104,7 +104,7 @@ function DiffuserSvg({ gradient, id }: { gradient: [string, string]; id: string 
 
 function JarSvg({ gradient, id }: { gradient: [string, string]; id: string }) {
   return (
-    <svg viewBox="0 0 130 160" className="h-full w-full">
+    <svg viewBox="0 0 130 160" className="h-full w-full" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={gradient[0]} />
@@ -136,3 +136,4 @@ export function ScentObject({ product }: { product: Product }) {
     </div>
   );
 }
+

@@ -49,26 +49,33 @@ export function FaqEditor({ initial }: { initial: SiteContent["faq"] }) {
     <div>
       <div className="flex flex-col gap-6">
         {items.map((item, i) => (
-          <div key={i} className="border border-line p-5">
+          <fieldset key={i} className="border border-line p-5">
+            <legend className="sr-only">Pergunta {i + 1}</legend>
             <div className="flex items-start justify-between gap-4">
-              <span className="pt-3 font-mono text-xs text-paper-faint">
+              <span aria-hidden="true" className="pt-3 font-mono text-xs text-paper-faint">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <div className="flex flex-1 flex-col gap-3">
-                <input
-                  type="text"
-                  value={item.question}
-                  onChange={(e) => update(i, "question", e.target.value)}
-                  placeholder="Pergunta"
-                  className="border border-line bg-transparent px-4 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
-                />
-                <textarea
-                  value={item.answer}
-                  onChange={(e) => update(i, "answer", e.target.value)}
-                  placeholder="Resposta"
-                  rows={2}
-                  className="border border-line bg-transparent px-4 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
-                />
+                <label className="flex flex-col gap-2">
+                  <span className="sr-only">Pergunta {i + 1}</span>
+                  <input
+                    type="text"
+                    value={item.question}
+                    onChange={(e) => update(i, "question", e.target.value)}
+                    placeholder="Pergunta"
+                    className="border border-line bg-transparent px-4 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+                  />
+                </label>
+                <label className="flex flex-col gap-2">
+                  <span className="sr-only">Resposta {i + 1}</span>
+                  <textarea
+                    value={item.answer}
+                    onChange={(e) => update(i, "answer", e.target.value)}
+                    placeholder="Resposta"
+                    rows={2}
+                    className="border border-line bg-transparent px-4 py-2.5 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+                  />
+                </label>
               </div>
               <div className="flex shrink-0 flex-col gap-2">
                 <button
@@ -76,33 +83,33 @@ export function FaqEditor({ initial }: { initial: SiteContent["faq"] }) {
                   data-cursor-hover
                   onClick={() => move(i, -1)}
                   disabled={i === 0}
-                  aria-label="Mover para cima"
+                  aria-label={`Mover pergunta ${i + 1} para cima`}
                   className="font-mono text-xs text-paper-faint transition-colors hover:text-paper disabled:opacity-20"
                 >
-                  ↑
+                  <span aria-hidden="true">↑</span>
                 </button>
                 <button
                   type="button"
                   data-cursor-hover
                   onClick={() => move(i, 1)}
                   disabled={i === items.length - 1}
-                  aria-label="Mover para baixo"
+                  aria-label={`Mover pergunta ${i + 1} para baixo`}
                   className="font-mono text-xs text-paper-faint transition-colors hover:text-paper disabled:opacity-20"
                 >
-                  ↓
+                  <span aria-hidden="true">↓</span>
                 </button>
                 <button
                   type="button"
                   data-cursor-hover
                   onClick={() => remove(i)}
-                  aria-label="Remover pergunta"
+                  aria-label={`Remover pergunta ${i + 1}`}
                   className="font-mono text-xs text-paper-faint transition-colors hover:text-accent"
                 >
-                  ✕
+                  <span aria-hidden="true">✕</span>
                 </button>
               </div>
             </div>
-          </div>
+          </fieldset>
         ))}
       </div>
 
@@ -125,12 +132,14 @@ export function FaqEditor({ initial }: { initial: SiteContent["faq"] }) {
         >
           {pending ? "Salvando…" : "Salvar FAQ"}
         </button>
-        {state.saved && (
-          <span className="font-mono text-xs uppercase tracking-[0.15em] text-accent">
-            Salvo ✓
-          </span>
-        )}
-        {state.error && <span className="text-xs text-accent">{state.error}</span>}
+        <span role="status" aria-live="polite">
+          {state.saved && (
+            <span className="font-mono text-xs uppercase tracking-[0.15em] text-accent">
+              Salvo ✓
+            </span>
+          )}
+          {state.error && <span className="text-xs text-accent">{state.error}</span>}
+        </span>
       </div>
     </div>
   );

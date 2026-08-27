@@ -6,6 +6,7 @@ import { Heart, X } from "lucide-react";
 import { useEter } from "@/components/labs/001/eter-context";
 import { formatPrice } from "@/components/labs/001/products";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+import { useDialogA11y } from "@/components/labs/001/use-dialog-a11y";
 
 export function WishlistDrawer() {
   const {
@@ -16,6 +17,8 @@ export function WishlistDrawer() {
     addToCart,
   } = useEter();
   const reducedMotion = usePrefersReducedMotion();
+  const close = () => setWishlistOpen(false);
+  const dialogRef = useDialogA11y<HTMLDivElement>(wishlistOpen, close);
 
   return (
     <AnimatePresence>
@@ -27,9 +30,14 @@ export function WishlistDrawer() {
             exit={{ opacity: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.2 }}
             className="fixed inset-0 z-[90] bg-[#171512]/40"
-            onClick={() => setWishlistOpen(false)}
+            aria-hidden="true"
+            onClick={close}
           />
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="wishlist-drawer-title"
             initial={{ x: reducedMotion ? 0 : "100%" }}
             animate={{ x: 0 }}
             exit={{ x: reducedMotion ? 0 : "100%" }}
@@ -37,14 +45,17 @@ export function WishlistDrawer() {
             className="fixed right-0 top-0 z-[95] flex h-full w-full max-w-md flex-col bg-[#F6F1E9] text-[#171512] shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-[#171512]/10 px-6 py-5">
-              <p className="font-eter-sans text-[11px] uppercase tracking-[0.2em]">
+              <p
+                id="wishlist-drawer-title"
+                className="font-eter-sans text-[11px] uppercase tracking-[0.2em]"
+              >
                 Favoritos ({wishlistProducts.length})
               </p>
               <button
                 type="button"
                 data-cursor-hover
                 aria-label="Fechar favoritos"
-                onClick={() => setWishlistOpen(false)}
+                onClick={close}
               >
                 <X className="h-5 w-5" strokeWidth={1.5} />
               </button>
@@ -58,8 +69,8 @@ export function WishlistDrawer() {
                 <Link
                   href="/labs/001/experiencia/produtos"
                   data-cursor-hover
-                  onClick={() => setWishlistOpen(false)}
-                  className="font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#B4915B] underline underline-offset-4"
+                  onClick={close}
+                  className="font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#7A5A28] underline underline-offset-4"
                 >
                   Ver produtos
                 </Link>
@@ -72,7 +83,8 @@ export function WishlistDrawer() {
                       <Link
                         href={`/labs/001/experiencia/produtos/${product.slug}`}
                         data-cursor-hover
-                        onClick={() => setWishlistOpen(false)}
+                        onClick={close}
+                        aria-label={product.name}
                         className="h-20 w-16 shrink-0"
                         style={{
                           background: `linear-gradient(180deg, ${product.gradient[0]}, ${product.gradient[1]})`,
@@ -82,22 +94,23 @@ export function WishlistDrawer() {
                         <p className="font-eter-serif text-base">
                           {product.name}
                         </p>
-                        <p className="mt-0.5 text-xs text-[#171512]/50">
+                        <p className="mt-0.5 text-xs text-[#171512]/70">
                           {formatPrice(product.price)}
                         </p>
                         <div className="mt-2 flex items-center gap-4">
                           <button
                             type="button"
                             data-cursor-hover
+                            aria-label={`Adicionar ${product.name} à sacola`}
                             onClick={() => addToCart(product.slug)}
-                            className="font-eter-sans text-[10px] uppercase tracking-[0.15em] text-[#171512] underline underline-offset-4 hover:text-[#B4915B]"
+                            className="font-eter-sans text-[10px] uppercase tracking-[0.15em] text-[#171512] underline underline-offset-4 hover:text-[#7A5A28]"
                           >
                             Adicionar à sacola
                           </button>
                           <button
                             type="button"
                             data-cursor-hover
-                            aria-label="Remover dos favoritos"
+                            aria-label={`Remover ${product.name} dos favoritos`}
                             onClick={() => toggleWishlist(product.slug)}
                           >
                             <Heart

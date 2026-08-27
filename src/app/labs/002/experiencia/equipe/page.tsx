@@ -42,11 +42,11 @@ export default function EquipePage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold uppercase tracking-tight">{member.name}</h2>
-                <p className="mt-1 [font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.1em] text-[#161615]/55">
+                <p className="mt-1 [font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.1em] text-[#161615]/65">
                   {member.role}
                 </p>
               </div>
-              <span className="mt-auto [font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.15em] text-[#161615]/35">
+              <span className="mt-auto [font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.15em] text-[#161615]/65">
                 {String(i + 1).padStart(2, "0")} / {TEAM.length.toString().padStart(2, "0")}
               </span>
             </div>

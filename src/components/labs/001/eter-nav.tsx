@@ -51,18 +51,25 @@ export function EterNav() {
             onClick={() => setSearchOpen(true)}
             className="transition-opacity hover:opacity-60"
           >
-            <Search className="h-[18px] w-[18px]" strokeWidth={1.5} />
+            <Search className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden="true" />
           </button>
           <button
             type="button"
             data-cursor-hover
-            aria-label="Favoritos"
+            aria-label={
+              wishlist.length > 0
+                ? `Favoritos (${wishlist.length})`
+                : "Favoritos"
+            }
             onClick={() => setWishlistOpen(true)}
             className="relative transition-opacity hover:opacity-60"
           >
-            <Heart className="h-[18px] w-[18px]" strokeWidth={1.5} />
+            <Heart className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden="true" />
             {wishlist.length > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#B4915B] text-[8px] text-[#F6F1E9]">
+              <span
+                aria-hidden="true"
+                className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#7A5A28] text-[8px] text-[#F6F1E9]"
+              >
                 {wishlist.length}
               </span>
             )}
@@ -70,13 +77,16 @@ export function EterNav() {
           <button
             type="button"
             data-cursor-hover
-            aria-label="Sacola"
+            aria-label={cartCount > 0 ? `Sacola (${cartCount})` : "Sacola"}
             onClick={() => setCartOpen(true)}
             className="relative transition-opacity hover:opacity-60"
           >
-            <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.5} />
+            <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.5} aria-hidden="true" />
             {cartCount > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#B4915B] text-[8px] text-[#F6F1E9]">
+              <span
+                aria-hidden="true"
+                className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#7A5A28] text-[8px] text-[#F6F1E9]"
+              >
                 {cartCount}
               </span>
             )}

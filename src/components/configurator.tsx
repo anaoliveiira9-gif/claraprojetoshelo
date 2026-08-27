@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -64,18 +64,25 @@ function Tile({
   onClick,
   label,
   description,
+  role,
 }: {
   active: boolean;
   onClick: () => void;
   label: string;
   description?: string;
+  /** Pass "radio" for single-select steps (e.g. style) so screen readers
+   * announce this group as mutually exclusive rather than independent
+   * toggles. Defaults to a plain toggle button (aria-pressed). */
+  role?: "radio";
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       data-cursor-hover
-      aria-pressed={active}
+      role={role}
+      aria-pressed={role === "radio" ? undefined : active}
+      aria-checked={role === "radio" ? active : undefined}
       className={cn(
         "flex items-start justify-between gap-3 border px-5 py-4 text-left transition-colors sm:px-6 sm:py-5",
         active
@@ -190,10 +197,41 @@ export function Configurator() {
     initialService,
   });
   const [contact, setContact] = useState<ContactInfo>(emptyContact);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const contactFieldIds = useId();
 
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "sending" | "sent"
   >("idle");
+
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    // Runs once after the initial mount, strictly before any step change
+    // can occur — flips the flag so the very first heading (step 0, on
+    // page load) is never auto-focused, only headings that appear as a
+    // *result* of navigating are.
+    isFirstRender.current = false;
+  }, []);
+
+  // Move focus to each new step's heading so keyboard/screen-reader users
+  // get an announcement and a sane tab-order reset on every step change —
+  // without this, focus stays on the (now hidden or relocated) Continuar/
+  // Voltar button and step changes are silent to assistive tech.
+  //
+  // This is a callback ref, not a `useEffect(() => ref.current?.focus(),
+  // [step])`, because StepShell wraps the heading in
+  // AnimatePresence mode="wait": the outgoing step's DOM is kept mounted
+  // for its exit animation and the incoming heading isn't inserted into
+  // the DOM until that finishes, so a step-keyed effect would fire while
+  // `ref.current` is still null (or still the old node) and silently do
+  // nothing. A callback ref fires exactly when the new heading node is
+  // actually attached, whenever that happens to be.
+  const headingRef = (node: HTMLHeadingElement | null) => {
+    if (node && !isFirstRender.current) {
+      node.focus();
+    }
+  };
 
   const estimate = useMemo(() => suggestScope(selection), [selection]);
 
@@ -281,34 +319,55 @@ export function Configurator() {
 
   return (
     <div className="mx-auto max-w-[1000px]">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
-        {STEPS.map((label, i) => (
-          <span key={label} className="flex items-center gap-2">
-            <button
-              type="button"
-              data-cursor-hover
-              disabled={i > step}
-              onClick={() => i < step && setStep(i)}
-              className={cn(
-                "transition-colors",
-                i <= step ? "text-accent" : "text-paper-faint",
-                i < step && "hover:text-paper"
+      <nav
+        aria-label="Progresso do formulário"
+        className="flex flex-wrap items-center gap-x-2 gap-y-2 font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint"
+      >
+        {STEPS.map((label, i) => {
+          const isCurrent = i === step;
+          const isCompleted = i < step;
+          const status = isCurrent
+            ? "etapa atual"
+            : isCompleted
+              ? "concluída"
+              : "ainda não disponível";
+          return (
+            <span key={label} className="flex items-center gap-2">
+              <button
+                type="button"
+                data-cursor-hover
+                disabled={i > step}
+                aria-current={isCurrent ? "step" : undefined}
+                aria-label={`Etapa ${i + 1} de ${STEPS.length}: ${label} (${status})`}
+                onClick={() => i < step && setStep(i)}
+                className={cn(
+                  "transition-colors",
+                  i <= step ? "text-accent" : "text-paper-faint",
+                  i < step && "hover:text-paper"
+                )}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </button>
+              {i < STEPS.length - 1 && (
+                <span className="h-px w-4 bg-line sm:w-6" aria-hidden="true" />
               )}
-            >
-              {String(i + 1).padStart(2, "0")}
-            </button>
-            {i < STEPS.length - 1 && (
-              <span className="h-px w-4 bg-line sm:w-6" />
-            )}
-          </span>
-        ))}
-      </div>
+            </span>
+          );
+        })}
+      </nav>
 
       <div className="mt-10 min-h-[420px]">
         <StepShell step={step} reducedMotion={reducedMotion}>
-          <h1 className="font-display text-[clamp(1.8rem,5vw,3.2rem)] font-semibold uppercase leading-[1.05] tracking-tight">
+          <h1
+            ref={headingRef}
+            tabIndex={-1}
+            className="font-display text-[clamp(1.8rem,5vw,3.2rem)] font-semibold uppercase leading-[1.05] tracking-tight"
+          >
             {STEPS[step]}
           </h1>
+          <p className="sr-only" role="status">
+            Etapa {step + 1} de {STEPS.length}: {STEPS[step]}
+          </p>
           {STEP_HINTS[step] && (
             <p className="mt-3 max-w-md text-sm text-paper-dim">
               {STEP_HINTS[step]}
@@ -317,7 +376,11 @@ export function Configurator() {
 
           <div className="mt-10">
           {step === 0 && (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              role="group"
+              aria-label={STEPS[0]}
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            >
               {BUILD_OPTIONS.map((option) => (
                 <Tile
                   key={option}
@@ -331,7 +394,11 @@ export function Configurator() {
           )}
 
           {step === 1 && (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              role="group"
+              aria-label={STEPS[1]}
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            >
               {OBJECTIVE_OPTIONS.map((option) => (
                 <Tile
                   key={option}
@@ -345,7 +412,11 @@ export function Configurator() {
           )}
 
           {step === 2 && (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              role="group"
+              aria-label={STEPS[2]}
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            >
               {FEATURE_OPTIONS.map((option) => (
                 <Tile
                   key={option}
@@ -359,7 +430,11 @@ export function Configurator() {
           )}
 
           {step === 3 && (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              role="group"
+              aria-label={STEPS[3]}
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            >
               {PRIORITY_OPTIONS.map((option) => (
                 <Tile
                   key={option}
@@ -373,7 +448,11 @@ export function Configurator() {
           )}
 
           {step === 4 && (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              role="group"
+              aria-label={STEPS[4]}
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            >
               {ADDON_OPTIONS.map((option) => (
                 <Tile
                   key={option}
@@ -387,10 +466,15 @@ export function Configurator() {
           )}
 
           {step === 5 && (
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div
+              role="radiogroup"
+              aria-label={STEPS[5]}
+              className="grid gap-3 sm:grid-cols-3"
+            >
               {STYLE_OPTIONS.map((option) => (
                 <Tile
                   key={option}
+                  role="radio"
                   label={option}
                   description={STYLE_DESCRIPTIONS[option]}
                   active={selection.style === option}
@@ -402,45 +486,100 @@ export function Configurator() {
 
           {step === 6 && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <input
-                required
-                placeholder="Nome"
-                value={contact.name}
-                onChange={(e) =>
-                  setContact((c) => ({ ...c, name: e.target.value }))
-                }
-                data-cursor-hover
-                className="border border-line bg-transparent px-4 py-4 text-base text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
-              />
-              <input
-                placeholder="Empresa (opcional)"
-                value={contact.company}
-                onChange={(e) =>
-                  setContact((c) => ({ ...c, company: e.target.value }))
-                }
-                data-cursor-hover
-                className="border border-line bg-transparent px-4 py-4 text-base text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
-              />
-              <input
-                required
-                type="email"
-                placeholder="E-mail"
-                value={contact.email}
-                onChange={(e) =>
-                  setContact((c) => ({ ...c, email: e.target.value }))
-                }
-                data-cursor-hover
-                className="border border-line bg-transparent px-4 py-4 text-base text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
-              />
-              <input
-                placeholder="WhatsApp (opcional)"
-                value={contact.whatsapp}
-                onChange={(e) =>
-                  setContact((c) => ({ ...c, whatsapp: e.target.value }))
-                }
-                data-cursor-hover
-                className="border border-line bg-transparent px-4 py-4 text-base text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
-              />
+              <div>
+                <label htmlFor={`${contactFieldIds}-name`} className="sr-only">
+                  Nome
+                </label>
+                <input
+                  id={`${contactFieldIds}-name`}
+                  required
+                  autoComplete="name"
+                  placeholder="Nome"
+                  value={contact.name}
+                  onChange={(e) =>
+                    setContact((c) => ({ ...c, name: e.target.value }))
+                  }
+                  data-cursor-hover
+                  className="w-full border border-line bg-transparent px-4 py-4 text-base text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor={`${contactFieldIds}-company`}
+                  className="sr-only"
+                >
+                  Empresa (opcional)
+                </label>
+                <input
+                  id={`${contactFieldIds}-company`}
+                  autoComplete="organization"
+                  placeholder="Empresa (opcional)"
+                  value={contact.company}
+                  onChange={(e) =>
+                    setContact((c) => ({ ...c, company: e.target.value }))
+                  }
+                  data-cursor-hover
+                  className="w-full border border-line bg-transparent px-4 py-4 text-base text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+                />
+              </div>
+              <div>
+                <label htmlFor={`${contactFieldIds}-email`} className="sr-only">
+                  E-mail
+                </label>
+                <input
+                  id={`${contactFieldIds}-email`}
+                  required
+                  type="email"
+                  autoComplete="email"
+                  placeholder="E-mail"
+                  value={contact.email}
+                  onChange={(e) =>
+                    setContact((c) => ({ ...c, email: e.target.value }))
+                  }
+                  onBlur={() => setEmailTouched(true)}
+                  aria-invalid={
+                    emailTouched && contact.email.length > 0 && !contactValid
+                  }
+                  aria-describedby={
+                    emailTouched && contact.email.length > 0 && !contactValid
+                      ? `${contactFieldIds}-email-error`
+                      : undefined
+                  }
+                  data-cursor-hover
+                  className="w-full border border-line bg-transparent px-4 py-4 text-base text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+                />
+                {emailTouched &&
+                  contact.email.length > 0 &&
+                  !contactValid && (
+                    <p
+                      id={`${contactFieldIds}-email-error`}
+                      role="alert"
+                      className="mt-1.5 text-xs text-red-400"
+                    >
+                      Informe um e-mail válido.
+                    </p>
+                  )}
+              </div>
+              <div>
+                <label
+                  htmlFor={`${contactFieldIds}-whatsapp`}
+                  className="sr-only"
+                >
+                  WhatsApp (opcional)
+                </label>
+                <input
+                  id={`${contactFieldIds}-whatsapp`}
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="WhatsApp (opcional)"
+                  value={contact.whatsapp}
+                  onChange={(e) =>
+                    setContact((c) => ({ ...c, whatsapp: e.target.value }))
+                  }
+                  data-cursor-hover
+                  className="w-full border border-line bg-transparent px-4 py-4 text-base text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+                />
+              </div>
             </div>
           )}
 
@@ -502,7 +641,11 @@ export function Configurator() {
                 </div>
               </div>
 
-              <div className="border-t border-line p-6 sm:p-10">
+              <div
+                className="border-t border-line p-6 sm:p-10"
+                role="status"
+                aria-live="polite"
+              >
                 {submitStatus === "sent" ? (
                   <div>
                     <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
@@ -601,6 +744,7 @@ function SummaryRow({
       <button
         type="button"
         onClick={onEdit}
+        aria-label={`Editar ${label}`}
         data-cursor-hover
         className="shrink-0 font-mono text-[11px] uppercase tracking-[0.15em] text-paper-dim underline underline-offset-4 transition-colors hover:text-accent"
       >

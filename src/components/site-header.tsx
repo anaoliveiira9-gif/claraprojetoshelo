@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/logo";
 import { NAV_LINKS } from "@/lib/config";
 import { useSiteContent } from "@/components/site-content-provider";
+
+const MOBILE_MENU_ID = "mobile-nav-menu";
 
 export function SiteHeader() {
   const { brand } = useSiteContent();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -17,6 +20,20 @@ export function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Escape closes the mobile menu and returns focus to the toggle button,
+  // matching the behavior expected of any disclosure/menu widget.
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   return (
     <header
@@ -63,8 +80,11 @@ export function SiteHeader() {
         </Link>
 
         <button
+          ref={menuButtonRef}
           type="button"
-          aria-label="Abrir menu"
+          aria-label={open ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={open}
+          aria-controls={MOBILE_MENU_ID}
           data-cursor-hover
           className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 md:hidden"
           onClick={() => setOpen((v) => !v)}
@@ -83,13 +103,17 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <div className="border-t border-line bg-ink px-5 py-6 md:hidden">
+        <div
+          id={MOBILE_MENU_ID}
+          className="border-t border-line bg-ink px-5 py-6 md:hidden"
+        >
           <nav className="flex flex-col gap-5">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
+                data-cursor-hover
                 className="font-mono text-sm uppercase tracking-[0.2em] text-paper-dim"
               >
                 {link.label}

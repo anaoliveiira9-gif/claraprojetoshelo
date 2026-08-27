@@ -40,6 +40,7 @@ export function OrbitSidebar() {
               key={item.href}
               href={item.href}
               data-cursor-hover
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",
                 active
@@ -47,7 +48,7 @@ export function OrbitSidebar() {
                   : "text-[var(--orbit-secondary)] hover:bg-[var(--orbit-bg)] hover:text-[var(--orbit-ink)]",
               )}
             >
-              <Icon className="h-4 w-4" strokeWidth={2} />
+              <Icon className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
               {item.label}
             </Link>
           );
@@ -78,6 +79,7 @@ export function OrbitMobileNav() {
             key={item.href}
             href={item.href}
             data-cursor-hover
+            aria-current={active ? "page" : undefined}
             className={cn(
               "flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs transition-colors",
               active
@@ -85,7 +87,7 @@ export function OrbitMobileNav() {
                 : "text-[var(--orbit-secondary)] hover:bg-[var(--orbit-bg)] hover:text-[var(--orbit-ink)]",
             )}
           >
-            <Icon className="h-3.5 w-3.5" strokeWidth={2} />
+            <Icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
             {item.label}
           </Link>
         );

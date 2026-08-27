@@ -128,7 +128,7 @@ export default function OrbitAutomacoesPage() {
 
       {automations.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-[var(--orbit-border)] bg-[var(--orbit-surface)] px-6 py-16 text-center">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--orbit-accent)]/10 text-[var(--orbit-accent)]">
+          <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--orbit-accent)]/10 text-[var(--orbit-accent)]">
             <Zap className="h-5 w-5" />
           </span>
           <div>
@@ -161,7 +161,10 @@ export default function OrbitAutomacoesPage() {
               )}
             >
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--orbit-accent)]/10 text-[var(--orbit-accent)]">
+                <span
+                  aria-hidden="true"
+                  className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--orbit-accent)]/10 text-[var(--orbit-accent)]"
+                >
                   <Zap className="h-4 w-4" />
                 </span>
                 <div>
@@ -171,14 +174,20 @@ export default function OrbitAutomacoesPage() {
                   </p>
                   <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-[var(--orbit-secondary)]">
                     <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
+                      <Clock className="h-3 w-3" aria-hidden="true" />
                       {a.frequency}
                     </span>
                     <span className="flex items-center gap-1">
                       {a.lastRunStatus === "success" ? (
-                        <CheckCircle2 className="h-3 w-3 text-[var(--orbit-accent)]" />
+                        <CheckCircle2
+                          className="h-3 w-3 text-[var(--orbit-accent)]"
+                          aria-label="Sucesso"
+                        />
                       ) : (
-                        <AlertTriangle className="h-3 w-3 text-[var(--orbit-negative)]" />
+                        <AlertTriangle
+                          className="h-3 w-3 text-[var(--orbit-negative)]"
+                          aria-label="Atenção"
+                        />
                       )}
                       Última execução: {a.lastRun}
                     </span>

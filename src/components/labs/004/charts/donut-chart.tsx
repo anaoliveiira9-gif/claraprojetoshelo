@@ -45,9 +45,7 @@ export function DonutChart({ data }: { data: DonutSlice[] }) {
             strokeDasharray={`${slice.dash} ${CIRCUMFERENCE - slice.dash}`}
             strokeDashoffset={-slice.offset}
           >
-            <title>
-              {slice.label}: {Math.round(slice.fraction * 100)}%
-            </title>
+            <title>{`${slice.label}: ${Math.round(slice.fraction * 100)}%`}</title>
           </circle>
         ))}
       </svg>

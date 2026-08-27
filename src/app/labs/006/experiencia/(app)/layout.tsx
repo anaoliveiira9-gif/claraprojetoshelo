@@ -33,10 +33,13 @@ export default function AppShellLayout({ children }: { children: ReactNode }) {
           data-cursor-hover
           onClick={() => setNotificationsOpen(true)}
           aria-label="Notificações"
-          className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[#EAE3D6] bg-white"
+          className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[#EAE3D6] bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
         >
           <Bell className="h-3.5 w-3.5 text-[#1A1712]" />
-          <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#D93B6C]" />
+          <span
+            aria-hidden="true"
+            className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#D93B6C]"
+          />
         </button>
       </header>
 

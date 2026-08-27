@@ -19,7 +19,7 @@ export function VerticeChrome({ children }: { children: React.ReactNode }) {
           >
             Vértice
           </Link>
-          <nav className="flex items-center gap-5 text-xs uppercase tracking-[0.16em] text-[#7A6F63] sm:gap-7">
+          <nav className="flex items-center gap-5 text-xs uppercase tracking-[0.16em] text-[#6B6157] sm:gap-7">
             <Link href="/labs/005/experiencia" data-cursor-hover className="hover:text-[#241E1A]">
               Início
             </Link>
@@ -33,18 +33,24 @@ export function VerticeChrome({ children }: { children: React.ReactNode }) {
             <Link
               href="/labs/005/experiencia/favoritos"
               data-cursor-hover
+              aria-label={
+                favorites.length > 0
+                  ? `Favoritos, ${favorites.length} ${favorites.length === 1 ? "imóvel salvo" : "imóveis salvos"}`
+                  : "Favoritos, nenhum imóvel salvo"
+              }
               className="flex items-center gap-1.5 hover:text-[#241E1A]"
             >
               <Heart
+                aria-hidden="true"
                 className={favorites.length > 0 ? "h-4 w-4 fill-[#2F4A3B] text-[#2F4A3B]" : "h-4 w-4"}
               />
-              <span>{favorites.length}</span>
+              <span aria-hidden="true">{favorites.length}</span>
             </Link>
           </nav>
         </div>
       </header>
       <main>{children}</main>
-      <footer className="border-t border-[#DDD5C8] px-5 py-8 text-center text-[10px] uppercase tracking-[0.2em] text-[#7A6F63] sm:px-8">
+      <footer className="border-t border-[#DDD5C8] px-5 py-8 text-center text-[10px] uppercase tracking-[0.2em] text-[#6B6157] sm:px-8">
         Vértice — projeto conceitual de portfólio criado pela ALUMNA
       </footer>
     </div>

@@ -29,7 +29,7 @@ export function LabPreview() {
       </div>
 
       <div className="flex-1 overflow-hidden px-3 pb-2 pt-2.5">
-        <p className="text-[7px] font-medium text-[#8A8175]">
+        <p className="text-[7px] font-medium text-[#6D665C]">
           Boa tarde, exploradora
         </p>
         <p className="mb-2 text-[11px] font-extrabold leading-tight tracking-tight">

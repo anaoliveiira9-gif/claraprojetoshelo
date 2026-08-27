@@ -129,7 +129,7 @@ export function ActivityFeed() {
         </span>
       </div>
 
-      <ul className="flex flex-col gap-1">
+      <ul className="flex flex-col gap-1" aria-live="polite" aria-atomic="false">
         <AnimatePresence initial={false}>
           {events.map((event) => {
             const style = KIND_STYLES[event.kind];
@@ -145,6 +145,7 @@ export function ActivityFeed() {
                 className="flex items-start gap-2.5 rounded-md px-1.5 py-2"
               >
                 <span
+                  aria-hidden="true"
                   className={cn(
                     "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
                     style.className,

@@ -43,6 +43,7 @@ export function AdminAccessForm() {
             setCopied(false);
           }}
           required
+          autoComplete="email"
           className="border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
         />
       </label>
@@ -59,6 +60,7 @@ export function AdminAccessForm() {
           }}
           required
           minLength={8}
+          autoComplete="new-password"
           className="border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
         />
       </label>
@@ -72,14 +74,16 @@ export function AdminAccessForm() {
         {copied ? "Pedido copiado ✓" : "Preparar troca de acesso →"}
       </button>
 
-      {copied && (
-        <p className="max-w-md text-xs leading-relaxed text-paper-faint">
-          Copiado. Cole essa mensagem para mim (Claude) no chat e eu aplico
-          direto nas variáveis de ambiente da Vercel — leva menos de um
-          minuto. Assim que houver um banco de dados conectado, essa troca
-          passa a acontecer direto por aqui, sem precisar do chat.
-        </p>
-      )}
+      <div role="status" aria-live="polite">
+        {copied && (
+          <p className="max-w-md text-xs leading-relaxed text-paper-faint">
+            Copiado. Cole essa mensagem para mim (Claude) no chat e eu aplico
+            direto nas variáveis de ambiente da Vercel — leva menos de um
+            minuto. Assim que houver um banco de dados conectado, essa troca
+            passa a acontecer direto por aqui, sem precisar do chat.
+          </p>
+        )}
+      </div>
     </form>
   );
 }

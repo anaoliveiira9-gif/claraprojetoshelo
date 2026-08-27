@@ -66,7 +66,7 @@ export function ScentNoteStage() {
         className="relative mx-auto max-w-6xl px-6 py-16 sm:py-20"
         onMouseLeave={handleLeaveAll}
       >
-        <p className="font-eter-sans text-center text-[11px] uppercase tracking-[0.3em] text-[#171512]/50">
+        <p className="font-eter-sans text-center text-[11px] uppercase tracking-[0.3em] text-[#171512]/70">
           Navegue pelo cheiro
         </p>
 
@@ -88,7 +88,7 @@ export function ScentNoteStage() {
                   active === null
                     ? "opacity-90"
                     : active === note.id
-                      ? "scale-[1.04] opacity-100 text-[#B4915B]"
+                      ? "scale-[1.04] opacity-100 text-[#7A5A28]"
                       : "scale-[0.98] opacity-35"
                 )}
               >
@@ -166,7 +166,7 @@ export function ScentNoteStage() {
                   <p className="font-eter-serif mt-3 text-sm sm:text-base">
                     {product.name}
                   </p>
-                  <span className="text-xs text-[#171512]/50">
+                  <span className="text-xs text-[#171512]/70">
                     {formatPrice(product.price)}
                   </span>
                 </Link>

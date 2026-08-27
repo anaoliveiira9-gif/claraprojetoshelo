@@ -10,7 +10,7 @@ export default function EterHomePage() {
   return (
     <main className="pb-24">
       <section className="mx-auto flex max-w-6xl flex-col items-center px-6 pb-16 pt-24 text-center sm:pt-32">
-        <p className="font-eter-sans text-[11px] uppercase tracking-[0.3em] text-[#171512]/50">
+        <p className="font-eter-sans text-[11px] uppercase tracking-[0.3em] text-[#171512]/70">
           Perfumaria & Objetos Sensoriais
         </p>
         <h1 className="font-eter-serif mt-6 max-w-3xl text-[clamp(2.5rem,8vw,5.5rem)] font-normal leading-[1.02] tracking-tight">

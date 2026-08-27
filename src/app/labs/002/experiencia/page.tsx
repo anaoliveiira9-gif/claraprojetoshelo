@@ -9,6 +9,9 @@ import { SiteFooter } from "@/components/labs/002/site-footer";
 const TEASERS = PROJECTS.slice(0, 6);
 const FEATURED_PLAN = getProject("casa-patio");
 
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4A5E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAFAF8]";
+
 export default function AtelierHomePage() {
   return (
     <main className="pt-24 sm:pt-28">
@@ -36,10 +39,13 @@ export default function AtelierHomePage() {
           <Link
             href="/labs/002/experiencia/projetos"
             data-cursor-hover
-            className="group flex shrink-0 items-center gap-2 border border-[#161615] px-5 py-3 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] transition-colors hover:border-[#2E4A5E] hover:text-[#2E4A5E]"
+            className={`group flex shrink-0 items-center gap-2 border border-[#161615] px-5 py-3 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] transition-colors hover:border-[#2E4A5E] hover:text-[#2E4A5E] ${FOCUS_RING}`}
           >
             Ver projetos
-            <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight
+              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
           </Link>
         </div>
 
@@ -74,7 +80,7 @@ export default function AtelierHomePage() {
               <Link
                 href={`/labs/002/experiencia/projetos/${FEATURED_PLAN.slug}`}
                 data-cursor-hover
-                className="shrink-0 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] text-[#2E4A5E] hover:underline"
+                className={`shrink-0 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] text-[#2E4A5E] hover:underline ${FOCUS_RING}`}
               >
                 Ver {FEATURED_PLAN.name} →
               </Link>
@@ -103,7 +109,7 @@ export default function AtelierHomePage() {
             <Link
               href="/labs/002/experiencia/projetos"
               data-cursor-hover
-              className="hidden shrink-0 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] text-[#2E4A5E] hover:underline sm:block"
+              className={`hidden shrink-0 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] text-[#2E4A5E] hover:underline sm:block ${FOCUS_RING}`}
             >
               Ver todos →
             </Link>
@@ -127,7 +133,7 @@ export default function AtelierHomePage() {
                 <Link
                   href={`/labs/002/experiencia/projetos/${project.slug}`}
                   data-cursor-hover
-                  className="group block"
+                  className={`group block rounded-sm ${FOCUS_RING}`}
                 >
                   <AbstractComposition
                     variant={project.galleryVariants[0]}
@@ -139,11 +145,14 @@ export default function AtelierHomePage() {
                       <h3 className="text-lg font-bold uppercase tracking-tight sm:text-xl">
                         {project.name}
                       </h3>
-                      <p className="mt-1 [font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.1em] text-[#161615]/55">
+                      <p className="mt-1 [font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.1em] text-[#161615]/65">
                         {project.location} · {project.year}
                       </p>
                     </div>
-                    <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-[#2E4A5E] opacity-0 transition-opacity group-hover:opacity-100" />
+                    <ArrowUpRight
+                      className="mt-1 h-4 w-4 shrink-0 text-[#2E4A5E] opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-hidden="true"
+                    />
                   </div>
                   <p className="mt-2 max-w-md text-sm leading-relaxed text-[#161615]/70">
                     {project.teaser}

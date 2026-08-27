@@ -82,6 +82,7 @@ export function FloorPlan({ plan }: { plan: FloorPlanData }) {
               aria-label={room.label}
               className={cn(
                 "relative flex h-4 w-4 items-center justify-center rounded-full border transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4A5E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F1F0EB]",
                 isOpen ? "border-[#2E4A5E] bg-[#2E4A5E]" : "border-[#2E4A5E] bg-[#FAFAF8]",
               )}
             >

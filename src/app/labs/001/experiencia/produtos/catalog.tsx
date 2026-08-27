@@ -62,18 +62,26 @@ export function Catalog({
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-3 border-b border-[#171512]/10 pb-6">
-        <span className="font-eter-sans mr-1 text-[10px] uppercase tracking-[0.2em] text-[#171512]/40">
+      <div
+        role="group"
+        aria-label="Filtrar por nota olfativa"
+        className="flex flex-wrap items-center gap-x-2 gap-y-3 border-b border-[#171512]/10 pb-6"
+      >
+        <span
+          aria-hidden="true"
+          className="font-eter-sans mr-1 text-[10px] uppercase tracking-[0.2em] text-[#171512]/70"
+        >
           Nota
         </span>
         <button
           type="button"
           data-cursor-hover
+          aria-pressed={note === null}
           onClick={() => setNote(null)}
           className={cn(
             "font-eter-sans px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] transition-colors",
             note === null
-              ? "bg-[#B4915B] text-[#F6F1E9]"
+              ? "bg-[#7A5A28] text-[#F6F1E9]"
               : "border border-[#171512]/20 text-[#171512]/70 hover:border-[#171512]"
           )}
         >
@@ -84,11 +92,12 @@ export function Catalog({
             key={n.id}
             type="button"
             data-cursor-hover
+            aria-pressed={note === n.id}
             onClick={() => setNote(n.id)}
             className={cn(
               "font-eter-sans px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] transition-colors",
               note === n.id
-                ? "bg-[#B4915B] text-[#F6F1E9]"
+                ? "bg-[#7A5A28] text-[#F6F1E9]"
                 : "border border-[#171512]/20 text-[#171512]/70 hover:border-[#171512]"
             )}
           >
@@ -97,12 +106,17 @@ export function Catalog({
         ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-3 border-b border-[#171512]/10 pb-6">
+      <div
+        role="group"
+        aria-label="Filtrar por categoria"
+        className="mt-4 flex flex-wrap gap-3 border-b border-[#171512]/10 pb-6"
+      >
         {CATEGORIES.map((category) => (
           <button
             key={category}
             type="button"
             data-cursor-hover
+            aria-pressed={active === category}
             onClick={() => setActive(category)}
             className={cn(
               "font-eter-sans px-4 py-2 text-[11px] uppercase tracking-[0.15em] transition-colors",
@@ -117,7 +131,7 @@ export function Catalog({
       </div>
 
       {products.length === 0 && (
-        <p className="mt-10 text-sm text-[#171512]/50">
+        <p className="mt-10 text-sm text-[#171512]/70" role="status">
           Nenhuma composição nessa combinação de nota e categoria.
         </p>
       )}
@@ -137,7 +151,7 @@ export function Catalog({
               </div>
               <p className="font-eter-serif mt-4 text-lg">{product.name}</p>
               <div className="mt-1 flex items-center justify-between">
-                <span className="text-xs uppercase tracking-[0.1em] text-[#171512]/50">
+                <span className="text-xs uppercase tracking-[0.1em] text-[#171512]/70">
                   {product.size}
                 </span>
                 <span className="text-sm text-[#171512]/70">

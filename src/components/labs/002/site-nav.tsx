@@ -30,8 +30,10 @@ export function SiteNav() {
               key={link.href}
               href={link.href}
               data-cursor-hover
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "px-2 py-1 [font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.14em] transition-colors sm:text-[11px]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4A5E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAFAF8]",
                 active ? "text-[#2E4A5E]" : "text-[#161615]/70 hover:text-[#161615]",
               )}
             >

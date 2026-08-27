@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { PAYMENT_METHODS, type PaymentMethodId } from "@/lib/config";
 import { suggestScope, type ProjectSelection } from "@/lib/diagnostic";
@@ -74,6 +74,8 @@ export function BudgetFlow({
   >("idle");
   const [charge, setCharge] = useState<MockChargeResult | null>(null);
 
+  const briefingFieldIds = useId();
+
   async function handleBriefingSubmit(event: React.FormEvent) {
     event.preventDefault();
     setBriefingStatus("sending");
@@ -134,53 +136,95 @@ export function BudgetFlow({
 
       <div>
         <SectionLabel index="02" label="Briefing" />
-        {briefingStatus === "sent" ? (
-          <p className="mt-6 border border-line p-6 text-sm leading-relaxed text-paper-dim">
-            {contactPrefilled
-              ? `Briefing recebido junto do diagnóstico, ${name}. A ALUMNA responde em até 1 dia útil pelo e-mail informado.`
-              : "Briefing recebido. A ALUMNA responde em até 1 dia útil pelo e-mail informado."}
-          </p>
-        ) : (
+        <div role="status" aria-live="polite">
+          {briefingStatus === "sent" && (
+            <p className="mt-6 border border-line p-6 text-sm leading-relaxed text-paper-dim">
+              {contactPrefilled
+                ? `Briefing recebido junto do diagnóstico, ${name}. A ALUMNA responde em até 1 dia útil pelo e-mail informado.`
+                : "Briefing recebido. A ALUMNA responde em até 1 dia útil pelo e-mail informado."}
+            </p>
+          )}
+        </div>
+        {briefingStatus !== "sent" && (
           <form
             onSubmit={handleBriefingSubmit}
             className="mt-6 grid gap-4 sm:grid-cols-2"
           >
-            <input
-              required
-              placeholder="Nome"
-              value={briefing.name}
-              onChange={(e) =>
-                setBriefing((b) => ({ ...b, name: e.target.value }))
-              }
-              className="border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
-            />
-            <input
-              required
-              type="email"
-              placeholder="E-mail"
-              value={briefing.email}
-              onChange={(e) =>
-                setBriefing((b) => ({ ...b, email: e.target.value }))
-              }
-              className="border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
-            />
-            <input
-              placeholder="Empresa (opcional)"
-              value={briefing.company}
-              onChange={(e) =>
-                setBriefing((b) => ({ ...b, company: e.target.value }))
-              }
-              className="border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none sm:col-span-2"
-            />
-            <textarea
-              placeholder="Conte sobre o projeto"
-              rows={4}
-              value={briefing.message}
-              onChange={(e) =>
-                setBriefing((b) => ({ ...b, message: e.target.value }))
-              }
-              className="border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none sm:col-span-2"
-            />
+            <div>
+              <label
+                htmlFor={`${briefingFieldIds}-name`}
+                className="sr-only"
+              >
+                Nome
+              </label>
+              <input
+                id={`${briefingFieldIds}-name`}
+                required
+                autoComplete="name"
+                placeholder="Nome"
+                value={briefing.name}
+                onChange={(e) =>
+                  setBriefing((b) => ({ ...b, name: e.target.value }))
+                }
+                className="w-full border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor={`${briefingFieldIds}-email`}
+                className="sr-only"
+              >
+                E-mail
+              </label>
+              <input
+                id={`${briefingFieldIds}-email`}
+                required
+                type="email"
+                autoComplete="email"
+                placeholder="E-mail"
+                value={briefing.email}
+                onChange={(e) =>
+                  setBriefing((b) => ({ ...b, email: e.target.value }))
+                }
+                className="w-full border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label
+                htmlFor={`${briefingFieldIds}-company`}
+                className="sr-only"
+              >
+                Empresa (opcional)
+              </label>
+              <input
+                id={`${briefingFieldIds}-company`}
+                autoComplete="organization"
+                placeholder="Empresa (opcional)"
+                value={briefing.company}
+                onChange={(e) =>
+                  setBriefing((b) => ({ ...b, company: e.target.value }))
+                }
+                className="w-full border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label
+                htmlFor={`${briefingFieldIds}-message`}
+                className="sr-only"
+              >
+                Conte sobre o projeto
+              </label>
+              <textarea
+                id={`${briefingFieldIds}-message`}
+                placeholder="Conte sobre o projeto"
+                rows={4}
+                value={briefing.message}
+                onChange={(e) =>
+                  setBriefing((b) => ({ ...b, message: e.target.value }))
+                }
+                className="w-full border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+              />
+            </div>
             <button
               type="submit"
               disabled={briefingStatus === "sending"}
@@ -201,11 +245,17 @@ export function BudgetFlow({
           pagamento real por e-mail ou WhatsApp.
         </p>
 
-        <div className="mt-6 grid gap-px overflow-hidden bg-line sm:grid-cols-3">
+        <div
+          role="radiogroup"
+          aria-label="Forma de pagamento"
+          className="mt-6 grid gap-px overflow-hidden bg-line sm:grid-cols-3"
+        >
           {PAYMENT_METHODS.map((option) => (
             <button
               key={option.id}
               type="button"
+              role="radio"
+              aria-checked={method === option.id}
               onClick={() => {
                 setMethod(option.id);
                 setChargeStatus("idle");
@@ -234,7 +284,11 @@ export function BudgetFlow({
           ))}
         </div>
 
-        <div className="mt-4 border border-line p-6 sm:p-8">
+        <div
+          className="mt-4 border border-line p-6 sm:p-8"
+          role="status"
+          aria-live="polite"
+        >
           {chargeStatus === "done" && charge ? (
             <div>
               <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
@@ -251,7 +305,10 @@ export function BudgetFlow({
             <>
               {method === "pix" && (
                 <div className="flex items-center gap-6">
-                  <div className="grid h-24 w-24 shrink-0 grid-cols-4 grid-rows-4 gap-0.5 bg-paper p-2">
+                  <div
+                    aria-hidden="true"
+                    className="grid h-24 w-24 shrink-0 grid-cols-4 grid-rows-4 gap-0.5 bg-paper p-2"
+                  >
                     {Array.from({ length: 16 }).map((_, i) => (
                       <span
                         key={i}
@@ -271,7 +328,7 @@ export function BudgetFlow({
               )}
               {method === "boleto" && (
                 <div className="flex flex-col gap-3">
-                  <div className="flex h-10 items-end gap-[2px]">
+                  <div aria-hidden="true" className="flex h-10 items-end gap-[2px]">
                     {Array.from({ length: 40 }).map((_, i) => (
                       <span
                         key={i}

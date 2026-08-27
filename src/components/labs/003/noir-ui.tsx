@@ -8,6 +8,15 @@ import { cn } from "@/lib/utils";
  * in for candlelight, plus hairline rules and generous negative space.
  */
 
+/**
+ * Noir's own keyboard-focus ring. The dark room (#0D0B0A) and brick-red
+ * accent (#7C2A2A) mean ALUMNA's shared orange `:focus-visible` ring can
+ * land on low-contrast ground here — every Noir control gets an explicit,
+ * on-brand ring instead (warm cream, always legible against this palette).
+ */
+export const NOIR_FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F1E9DD] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0B0A]";
+
 export function Eyebrow({
   children,
   className,
@@ -18,7 +27,7 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        "font-sans text-[11px] uppercase tracking-[0.35em] text-[#F1E9DD]/50",
+        "font-sans text-[11px] uppercase tracking-[0.35em] text-[#F1E9DD]/55",
         className,
       )}
     >
@@ -124,6 +133,7 @@ export function PrimaryButton({
 }) {
   const classes = cn(
     "inline-flex items-center justify-center gap-2 rounded-sm bg-[#7C2A2A] px-7 py-3 font-sans text-[11px] uppercase tracking-[0.25em] text-[#F1E9DD] transition-colors hover:bg-[#8f3232] disabled:cursor-not-allowed disabled:opacity-40",
+    NOIR_FOCUS_RING,
     className,
   );
 
@@ -165,6 +175,7 @@ export function GhostButton({
 }) {
   const classes = cn(
     "inline-flex items-center justify-center gap-2 rounded-sm border border-[#F1E9DD]/20 px-7 py-3 font-sans text-[11px] uppercase tracking-[0.25em] text-[#F1E9DD]/80 transition-colors hover:border-[#F1E9DD]/50 hover:text-[#F1E9DD] disabled:cursor-not-allowed disabled:opacity-40",
+    NOIR_FOCUS_RING,
     className,
   );
 

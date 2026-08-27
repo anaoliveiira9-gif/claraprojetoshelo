@@ -5,7 +5,12 @@
   --ink-soft: #131311;
   --paper: #f3eee3;
   --paper-dim: #f3eee3a3;
-  --paper-faint: #f3eee359;
+  /* Was #f3eee359 (35% alpha) — measured ~2.9:1 against --ink, well under
+     the 4.5:1 WCAG AA minimum for text, and this token is used for real
+     informational content (labels, timestamps, coordinates), not purely
+     decorative text. Raised just enough to clear ~4.6:1; still the
+     faintest of the three text tiers, same hierarchy, same hue. */
+  --paper-faint: #f3eee380;
   --accent: #c6491f;
   --accent-soft: #c6491f26;
   --line: #f3eee324;
@@ -55,6 +60,23 @@
 
 * {
   border-color: var(--line);
+}
+
+/*
+ * Site-wide keyboard focus ring. Nothing previously defined one, so every
+ * interactive element was falling back to each browser's own mismatched
+ * default outline (blue in Chrome) — visible, but off-brand. `:focus-visible`
+ * (not `:focus`) so it only appears for keyboard/assistive-tech focus, never
+ * on a mouse click, and it's overridden automatically wherever a component
+ * already pairs `focus:outline-none` with its own equally-visible treatment
+ * (e.g. `focus:border-accent` on form fields) — Tailwind's class selector
+ * there is more specific than this bare pseudo-class, by design.
+ */
+:focus-visible {
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--accent);
+  outline-offset: 3px;
 }
 
 html {

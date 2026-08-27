@@ -16,7 +16,7 @@ const THEME_VARS: Record<OrbitTheme, CSSProperties> = {
     "--orbit-bg": "#F5F6F7",
     "--orbit-surface": "#FFFFFF",
     "--orbit-ink": "#111214",
-    "--orbit-secondary": "#6B7280",
+    "--orbit-secondary": "#5B6672",
     "--orbit-border": "#E4E6E9",
     "--orbit-accent": "#136156",
     "--orbit-accent-ink": "#FFFFFF",
@@ -28,7 +28,7 @@ const THEME_VARS: Record<OrbitTheme, CSSProperties> = {
     "--orbit-ink": "#EDEFF1",
     "--orbit-secondary": "#9AA0A6",
     "--orbit-border": "#2A2D31",
-    "--orbit-accent": "#1B7A6B",
+    "--orbit-accent": "#24A088",
     "--orbit-accent-ink": "#0E0F11",
     "--orbit-negative": "#E5766D",
   } as CSSProperties,
@@ -66,6 +66,23 @@ export function OrbitThemeProvider({ children }: { children: ReactNode }) {
         className="min-h-screen bg-[var(--orbit-bg)] font-[family-name:var(--font-inter)] text-[var(--orbit-ink)] antialiased transition-colors duration-200"
       >
         {children}
+        {/*
+         * ALUMNA's global `:focus-visible` rule (globals.css) uses `var(--accent)`,
+         * which — as a CSS custom property — inherits down into this subtree since
+         * nothing here redefines `--accent` itself, only `--orbit-*`. That makes the
+         * ring's color an accident of inheritance from an unrelated palette rather
+         * than a deliberate choice, so it's pinned explicitly here to this lab's own
+         * `--orbit-accent`/`--orbit-border`, verified against both theme modes.
+         */}
+        <style jsx global>{`
+          [data-orbit-theme] :focus-visible {
+            outline-width: 2px;
+            outline-style: solid;
+            outline-color: var(--orbit-accent);
+            outline-offset: 2px;
+            border-radius: 2px;
+          }
+        `}</style>
       </div>
     </OrbitThemeContext.Provider>
   );

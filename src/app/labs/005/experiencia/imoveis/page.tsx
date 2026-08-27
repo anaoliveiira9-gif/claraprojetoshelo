@@ -11,7 +11,7 @@ export default async function ImoveisPage({
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
       <h1 className={`${serif} text-3xl text-[#241E1A] sm:text-4xl`}>Imóveis</h1>
-      <p className="mt-2 max-w-xl text-sm text-[#7A6F63]">
+      <p className="mt-2 max-w-xl text-sm text-[#6B6157]">
         Refine por localização, tipo, quartos e faixa de preço.
       </p>
 

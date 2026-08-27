@@ -146,9 +146,10 @@ export function PlanExplorer({
                 onClick={() => select(room.id)}
                 className={cn(
                   "border px-3 py-1.5 [font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.14em] transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4A5E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F1F0EB]",
                   isActive
                     ? "border-[#2E4A5E] bg-[#2E4A5E]/10 text-[#2E4A5E]"
-                    : "border-[#161615]/20 text-[#161615]/55 hover:border-[#161615]/40 hover:text-[#161615]",
+                    : "border-[#161615]/20 text-[#161615]/65 hover:border-[#161615]/40 hover:text-[#161615]",
                 )}
               >
                 {room.id}

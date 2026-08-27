@@ -47,18 +47,27 @@ export function PropertyVisual({
   const circleCy = rand() * 100;
   const circleR = 8 + rand() * 18;
 
+  // These are generated gradient-and-line placeholders, not real photos. On
+  // property cards (no `label`) they're purely decorative next to a title
+  // that already carries the accessible content, so they stay aria-hidden.
+  // In the detail-page gallery (`label` set, e.g. "Fachada", "Sala") each
+  // panel is the only content in its slot, so it's exposed as an `img` with
+  // that label as its accessible name instead of being hidden outright.
   return (
     <div
       className={cn("relative overflow-hidden", className)}
       style={{
         background: `linear-gradient(${angle}deg, ${from}, ${to})`,
       }}
-      aria-hidden="true"
+      role={label ? "img" : undefined}
+      aria-label={label ? `Ilustração — ${label}` : undefined}
+      aria-hidden={label ? undefined : "true"}
     >
       <svg
         className="absolute inset-0 h-full w-full opacity-30 mix-blend-overlay"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
+        aria-hidden="true"
       >
         <circle
           cx={circleCx}
@@ -81,7 +90,10 @@ export function PropertyVisual({
         ))}
       </svg>
       {label && (
-        <span className="absolute bottom-2 left-2 font-sans text-[10px] uppercase tracking-[0.2em] text-[#241E1A]/50">
+        <span
+          aria-hidden="true"
+          className="absolute bottom-2 left-2 font-sans text-[10px] uppercase tracking-[0.2em] text-[#241E1A]/50"
+        >
           {label}
         </span>
       )}

@@ -25,12 +25,27 @@ export default function EterLayout({
 }) {
   return (
     <div
-      className={`${fraunces.variable} ${inter.variable} min-h-screen bg-[#F6F1E9] text-[#171512]`}
+      className={`${fraunces.variable} ${inter.variable} eter-scope min-h-screen bg-[#F6F1E9] text-[#171512]`}
       style={{ fontFamily: "var(--font-eter-sans)" }}
     >
       <style>{`
         .font-eter-serif { font-family: var(--font-eter-serif), serif; }
         .font-eter-sans { font-family: var(--font-eter-sans), sans-serif; }
+        /*
+         * The site-wide :focus-visible outline (globals.css) uses
+         * var(--accent), ALUMNA's orange — it doesn't read as this lab's
+         * own identity against ÉTÉR's cream/ink palette, and several
+         * interactive elements here already pair focus:outline-none with
+         * their own treatment, which would otherwise suppress it
+         * unpredictably. This lab gets its own ring instead, built from
+         * its own ink color (#171512), which has strong contrast against
+         * every background used in this experience.
+         */
+        .eter-scope :focus-visible {
+          outline: 2px solid #171512;
+          outline-offset: 3px;
+          border-radius: 1px;
+        }
       `}</style>
       <LabExitBar labIndex="001" labName="Éter" />
       <EterProvider>

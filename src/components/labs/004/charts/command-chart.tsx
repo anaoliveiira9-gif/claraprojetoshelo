@@ -123,9 +123,7 @@ export function CommandChart({
           r={i === paths.pts.length - 1 ? 3.5 : 2.5}
           fill={color}
         >
-          <title>
-            {labels[i]}: {formatValue(shown[i])}
-          </title>
+          <title>{`${labels[i]}: ${formatValue(shown[i])}`}</title>
         </circle>
       ))}
       {labels.map((label, i) =>

@@ -25,7 +25,10 @@ export default function OrbitConfiguracoesPage() {
       <div className="rounded-lg border border-[var(--orbit-border)] bg-[var(--orbit-surface)] p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--orbit-accent)]/10 text-[var(--orbit-accent)]">
+            <span
+              aria-hidden="true"
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--orbit-accent)]/10 text-[var(--orbit-accent)]"
+            >
               {theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </span>
             <div>
@@ -109,9 +112,9 @@ export default function OrbitConfiguracoesPage() {
           >
             Salvar alterações
           </button>
-          {saved ? (
-            <span className="text-xs text-[var(--orbit-accent)]">Preferências salvas.</span>
-          ) : null}
+          <span role="status" aria-live="polite" className="text-xs text-[var(--orbit-accent)]">
+            {saved ? "Preferências salvas." : ""}
+          </span>
         </div>
       </form>
     </div>

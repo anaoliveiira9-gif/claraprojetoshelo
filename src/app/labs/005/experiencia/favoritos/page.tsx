@@ -13,7 +13,7 @@ export default function FavoritosPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
       <h1 className={`${serif} text-3xl text-[#241E1A] sm:text-4xl`}>Favoritos</h1>
-      <p className="mt-2 max-w-xl text-sm text-[#7A6F63]">
+      <p className="mt-2 max-w-xl text-sm text-[#6B6157]">
         Imóveis salvos durante esta sessão de navegação.
       </p>
 
@@ -24,7 +24,7 @@ export default function FavoritosPage() {
           ))}
         </div>
       ) : (
-        <div className="mt-8 rounded-sm border border-dashed border-[#DDD5C8] py-16 text-center text-sm text-[#7A6F63]">
+        <div className="mt-8 rounded-sm border border-dashed border-[#DDD5C8] py-16 text-center text-sm text-[#6B6157]">
           Você ainda não favoritou nenhum imóvel.{" "}
           <Link
             href="/labs/005/experiencia/imoveis"

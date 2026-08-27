@@ -44,7 +44,7 @@ export function MapListView({ properties }: { properties: Property[] }) {
 
   if (properties.length === 0) {
     return (
-      <div className="rounded-sm border border-dashed border-[#DDD5C8] py-16 text-center text-sm text-[#7A6F63]">
+      <div className="rounded-sm border border-dashed border-[#DDD5C8] py-16 text-center text-sm text-[#6B6157]">
         Nenhum imóvel encontrado com esses filtros.
       </div>
     );
@@ -62,7 +62,7 @@ export function MapListView({ properties }: { properties: Property[] }) {
             "flex items-center gap-1.5 rounded-sm border px-3 py-1.5 text-[10px] uppercase tracking-[0.16em]",
             mobileView === "mapa"
               ? "border-[#2F4A3B] bg-[#2F4A3B] text-[#F8F5F0]"
-              : "border-[#DDD5C8] text-[#7A6F63]",
+              : "border-[#DDD5C8] text-[#6B6157]",
           )}
         >
           <MapIcon className="h-3.5 w-3.5" /> Mapa
@@ -76,7 +76,7 @@ export function MapListView({ properties }: { properties: Property[] }) {
             "flex items-center gap-1.5 rounded-sm border px-3 py-1.5 text-[10px] uppercase tracking-[0.16em]",
             mobileView === "lista"
               ? "border-[#2F4A3B] bg-[#2F4A3B] text-[#F8F5F0]"
-              : "border-[#DDD5C8] text-[#7A6F63]",
+              : "border-[#DDD5C8] text-[#6B6157]",
           )}
         >
           <ListIcon className="h-3.5 w-3.5" /> Lista
@@ -109,7 +109,7 @@ export function MapListView({ properties }: { properties: Property[] }) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
                         {selected.bairro}, {selected.cidade}
                       </p>
                       <h3 className={`${serif} mt-1 truncate text-lg leading-snug text-[#241E1A]`}>
@@ -135,7 +135,7 @@ export function MapListView({ properties }: { properties: Property[] }) {
                     </button>
                   </div>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#7A6F63]">
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#6B6157]">
                     <span>{selected.area} m²</span>
                     {selected.quartos > 0 && (
                       <span className="inline-flex items-center gap-1">
@@ -202,11 +202,11 @@ export function MapListView({ properties }: { properties: Property[] }) {
                   )}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[10px] uppercase tracking-[0.14em] text-[#7A6F63]">
+                    <p className="truncate text-[10px] uppercase tracking-[0.14em] text-[#6B6157]">
                       {property.bairro}, {property.cidade}
                     </p>
                     <p className={`${serif} truncate text-base text-[#241E1A]`}>{property.titulo}</p>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-[#7A6F63]">
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-[#6B6157]">
                       <span>{property.area} m²</span>
                       {property.quartos > 0 && <span>{property.quartos} qt</span>}
                       {property.vagas > 0 && <span>{property.vagas} vg</span>}
@@ -222,7 +222,7 @@ export function MapListView({ properties }: { properties: Property[] }) {
                         data-cursor-hover
                         onClick={(event) => event.stopPropagation()}
                         aria-label={`Ver detalhes de ${property.titulo}`}
-                        className="p-0.5 text-[#7A6F63] transition-colors hover:text-[#2F4A3B]"
+                        className="p-0.5 text-[#6B6157] transition-colors hover:text-[#2F4A3B]"
                       >
                         <ArrowUpRight className="h-3.5 w-3.5" />
                       </Link>
@@ -240,7 +240,7 @@ export function MapListView({ properties }: { properties: Property[] }) {
                         <Heart
                           className={cn(
                             "h-3.5 w-3.5",
-                            favorited ? "fill-[#2F4A3B] text-[#2F4A3B]" : "text-[#7A6F63]",
+                            favorited ? "fill-[#2F4A3B] text-[#2F4A3B]" : "text-[#6B6157]",
                           )}
                         />
                       </button>

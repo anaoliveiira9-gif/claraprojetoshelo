@@ -104,7 +104,7 @@ export function NovaOnboardingScreen({
             type="button"
             data-cursor-hover
             onClick={onFinish}
-            className="text-[13px] font-medium text-[#8A8175]"
+            className="rounded text-[13px] font-medium text-[#6D665C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]"
           >
             Pular
           </button>
@@ -127,7 +127,7 @@ export function NovaOnboardingScreen({
             <h1 className="mb-3 max-w-[260px] text-[26px] font-extrabold leading-tight tracking-tight">
               {slide.title}
             </h1>
-            <p className="max-w-[280px] text-[14px] leading-relaxed text-[#8A8175]">
+            <p className="max-w-[280px] text-[14px] leading-relaxed text-[#6D665C]">
               {slide.body}
             </p>
           </motion.div>
@@ -158,7 +158,7 @@ export function NovaOnboardingScreen({
               setIndex((current) => current + 1);
             }
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-full bg-[#D93B6C] py-3.5 text-[15px] font-bold text-white transition-transform active:scale-[0.98]"
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-[#D62A5F] py-3.5 text-[15px] font-bold text-white transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1712] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]"
         >
           {isLast ? "Começar" : "Continuar"}
           <ArrowRight className="h-4 w-4" />
@@ -199,7 +199,7 @@ function RailHeader({
         )}
       </h2>
       {subtitle && (
-        <span className="truncate text-[11.5px] text-[#8A8175]">
+        <span className="truncate text-[11.5px] text-[#6D665C]">
           {subtitle}
         </span>
       )}
@@ -302,7 +302,7 @@ export function NovaHomeScreen({
     <ScreenFrame>
       <div className="flex-1 overflow-y-auto pb-8 pt-5">
         <div className="mb-5 px-4">
-          <p className="text-[13px] font-medium text-[#8A8175]">
+          <p className="text-[13px] font-medium text-[#6D665C]">
             Boa tarde, exploradora
           </p>
           <h1 className="text-[24px] font-extrabold tracking-tight">
@@ -345,7 +345,7 @@ export function NovaHomeScreen({
             type="button"
             data-cursor-hover
             onClick={onOpenMap}
-            className="flex w-full items-stretch gap-3 rounded-2xl border border-[#EAE3D6] bg-white p-3 text-left transition-transform active:scale-[0.98]"
+            className="flex w-full items-stretch gap-3 rounded-2xl border border-[#EAE3D6] bg-white p-3 text-left transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]"
           >
             <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#F1EBDD]">
               <MiniMapPreview experiences={perto} />
@@ -359,12 +359,12 @@ export function NovaHomeScreen({
                   <span className="truncate font-semibold text-[#1A1712]">
                     {item.title}
                   </span>
-                  <span className="shrink-0 text-[#D93B6C]">
+                  <span className="shrink-0 text-[#D62A5F]">
                     {formatDistance(item.distanceKm)}
                   </span>
                 </div>
               ))}
-              <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-[#8A8175]">
+              <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-[#6D665C]">
                 Explorar no mapa
                 <ArrowRight className="h-3 w-3" />
               </span>
@@ -461,10 +461,11 @@ export function NovaDiscoverScreen({
             type="button"
             data-cursor-hover
             onClick={() => setSortByDistance((current) => !current)}
+            aria-pressed={sortByDistance}
             className={cn(
-              "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11.5px] font-semibold transition-colors",
+              "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11.5px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]",
               sortByDistance
-                ? "border-[#D93B6C] bg-[#D93B6C] text-white"
+                ? "border-[#D62A5F] bg-[#D62A5F] text-white"
                 : "border-[#EAE3D6] bg-white text-[#1A1712]",
             )}
           >
@@ -477,10 +478,11 @@ export function NovaDiscoverScreen({
             type="button"
             data-cursor-hover
             onClick={() => setActiveCategory(null)}
+            aria-pressed={activeCategory === null}
             className={cn(
-              "shrink-0 rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold transition-colors",
+              "shrink-0 rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]",
               activeCategory === null
-                ? "border-[#D93B6C] bg-[#D93B6C] text-white"
+                ? "border-[#D62A5F] bg-[#D62A5F] text-white"
                 : "border-[#EAE3D6] bg-white text-[#1A1712]",
             )}
           >
@@ -495,10 +497,11 @@ export function NovaDiscoverScreen({
                 type="button"
                 data-cursor-hover
                 onClick={() => setActiveCategory(category)}
+                aria-pressed={active}
                 className={cn(
-                  "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold transition-colors",
+                  "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]",
                   active
-                    ? "border-[#D93B6C] bg-[#D93B6C] text-white"
+                    ? "border-[#D62A5F] bg-[#D62A5F] text-white"
                     : "border-[#EAE3D6] bg-white text-[#1A1712]",
                 )}
               >
@@ -512,7 +515,7 @@ export function NovaDiscoverScreen({
 
       <div className="flex-1 overflow-y-auto px-4 pb-6 pt-4">
         {filtered.length === 0 ? (
-          <p className="pt-10 text-center text-[13px] text-[#8A8175]">
+          <p className="pt-10 text-center text-[13px] text-[#6D665C]">
             Nenhuma experiência nessa categoria ainda.
           </p>
         ) : (
@@ -662,7 +665,7 @@ export function NovaMapScreen({
     <ScreenFrame>
       <div className="px-4 pt-5">
         <h1 className="text-[22px] font-extrabold tracking-tight">Explorar</h1>
-        <p className="text-[12.5px] text-[#8A8175]">
+        <p className="text-[12.5px] text-[#6D665C]">
           {reducedMotion
             ? "Toque num ponto para ver a experiência"
             : "Arraste o mapa e toque num ponto para explorar"}
@@ -679,10 +682,11 @@ export function NovaMapScreen({
               type="button"
               data-cursor-hover
               onClick={() => setFilter(item.key)}
+              aria-pressed={isActive}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-semibold transition-colors",
+                "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]",
                 isActive
-                  ? "border-[#D93B6C] bg-[#D93B6C] text-white"
+                  ? "border-[#D62A5F] bg-[#D62A5F] text-white"
                   : "border-[#EAE3D6] bg-white text-[#1A1712]",
               )}
             >
@@ -776,12 +780,14 @@ export function NovaMapScreen({
                           current === experience.id ? null : experience.id,
                         )
                       }
+                      aria-label={experience.title}
+                      aria-pressed={activeId === experience.id}
                       style={{
                         left: `${experience.mapX}%`,
                         top: `${(experience.mapY / 140) * 100}%`,
                       }}
                       className={cn(
-                        "absolute -translate-x-1/2 -translate-y-full transition-[opacity,transform] duration-150 active:scale-90",
+                        "absolute -translate-x-1/2 -translate-y-full rounded-full transition-[opacity,transform] duration-150 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1712] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F1EBDD]",
                         included ? "opacity-100" : "opacity-25",
                       )}
                     >
@@ -809,7 +815,7 @@ export function NovaMapScreen({
               data-cursor-hover
               onClick={() => setZoomed(true)}
               aria-label="Aproximar"
-              className="flex h-9 w-9 items-center justify-center border-b border-[#EAE3D6] text-[#1A1712] transition-transform active:scale-90"
+              className="flex h-9 w-9 items-center justify-center border-b border-[#EAE3D6] text-[#1A1712] transition-transform active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -818,7 +824,7 @@ export function NovaMapScreen({
               data-cursor-hover
               onClick={() => setZoomed(false)}
               aria-label="Afastar"
-              className="flex h-9 w-9 items-center justify-center text-[#1A1712] transition-transform active:scale-90"
+              className="flex h-9 w-9 items-center justify-center text-[#1A1712] transition-transform active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
             >
               <Minus className="h-4 w-4" />
             </button>
@@ -845,7 +851,7 @@ export function NovaMapScreen({
                   data-cursor-hover
                   onClick={() => setActiveId(null)}
                   aria-label="Fechar"
-                  className="absolute -top-3 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-[#EAE3D6] bg-white shadow-sm"
+                  className="absolute -top-3 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-[#EAE3D6] bg-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                 >
                   <X className="h-3.5 w-3.5 text-[#1A1712]" />
                 </button>
@@ -900,7 +906,7 @@ export function NovaFavoritesScreen({
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F1EBDD]">
               <Heart className="h-6 w-6 text-[#D93B6C]" />
             </div>
-            <p className="max-w-[220px] text-[13.5px] text-[#8A8175]">
+            <p className="max-w-[220px] text-[13.5px] text-[#6D665C]">
               Você ainda não favoritou nenhuma experiência. Toque no coração
               de um card para guardá-lo aqui.
             </p>
@@ -959,10 +965,13 @@ export function NovaProfileScreen({
           data-cursor-hover
           onClick={onOpenNotifications}
           aria-label="Notificações"
-          className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[#EAE3D6] bg-white"
+          className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[#EAE3D6] bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]"
         >
           <Bell className="h-4 w-4 text-[#1A1712]" />
-          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#D93B6C]" />
+          <span
+            aria-hidden="true"
+            className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#D93B6C]"
+          />
         </button>
       </div>
 
@@ -978,7 +987,7 @@ export function NovaProfileScreen({
             {initials}
           </div>
           <h2 className="text-[17px] font-bold">{name}</h2>
-          <p className="text-[12.5px] text-[#8A8175]">
+          <p className="text-[12.5px] text-[#6D665C]">
             Membro NOVA desde 2024
           </p>
         </div>
@@ -989,10 +998,10 @@ export function NovaProfileScreen({
               key={stat.label}
               className="rounded-2xl border border-[#EAE3D6] bg-white px-2 py-3 text-center"
             >
-              <p className="text-[17px] font-extrabold text-[#D93B6C]">
+              <p className="text-[17px] font-extrabold text-[#D62A5F]">
                 {stat.value}
               </p>
-              <p className="text-[10.5px] leading-tight text-[#8A8175]">
+              <p className="text-[10.5px] leading-tight text-[#6D665C]">
                 {stat.label}
               </p>
             </div>
@@ -1004,20 +1013,20 @@ export function NovaProfileScreen({
             type="button"
             data-cursor-hover
             onClick={onOpenNotifications}
-            className="flex items-center justify-between rounded-2xl border border-[#EAE3D6] bg-white px-4 py-3.5 text-left"
+            className="flex items-center justify-between rounded-2xl border border-[#EAE3D6] bg-white px-4 py-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]"
           >
             <span className="flex items-center gap-3 text-[13.5px] font-semibold">
               <Bell className="h-4 w-4 text-[#D93B6C]" />
               Notificações
             </span>
-            <ArrowRight className="h-4 w-4 text-[#8A8175]" />
+            <ArrowRight className="h-4 w-4 text-[#6D665C]" />
           </button>
           <div className="flex items-center justify-between rounded-2xl border border-[#EAE3D6] bg-white px-4 py-3.5 text-left opacity-70">
             <span className="flex items-center gap-3 text-[13.5px] font-semibold">
               <Sparkles className="h-4 w-4 text-[#D93B6C]" />
               Preferências de gosto
             </span>
-            <ArrowRight className="h-4 w-4 text-[#8A8175]" />
+            <ArrowRight className="h-4 w-4 text-[#6D665C]" />
           </div>
         </div>
       </div>

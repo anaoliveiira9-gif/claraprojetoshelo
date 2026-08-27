@@ -97,7 +97,7 @@ export default function OrbitLoginPage() {
             </label>
 
             {error ? (
-              <p className="text-xs text-[var(--orbit-negative)]">{error}</p>
+              <p role="alert" className="text-xs text-[var(--orbit-negative)]">{error}</p>
             ) : null}
 
             <button

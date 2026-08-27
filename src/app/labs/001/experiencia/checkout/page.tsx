@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useEter } from "@/components/labs/001/eter-context";
 import { formatPrice } from "@/components/labs/001/products";
@@ -34,6 +34,21 @@ export default function CheckoutPage() {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [furthestStep, setFurthestStep] = useState(0);
   const orderNumber = useMemo(() => fakeOrderNumber(), []);
+
+  // Each step renders its own heading; when the step changes, move focus
+  // there so screen-reader users get told the content changed instead of
+  // silently landing wherever the "Continuar"/stepper control happened to
+  // be. Skipped on first mount so loading the page doesn't yank focus away
+  // from wherever the user actually navigated in from.
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    headingRef.current?.focus();
+  }, [step]);
 
   const shipping = cartTotal > 500 || cartTotal === 0 ? 0 : 38;
   const total = cartTotal + shipping;
@@ -87,7 +102,10 @@ export default function CheckoutPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-24 pt-16">
-      <div className="flex items-center gap-2 font-eter-sans text-[10px] uppercase tracking-[0.15em] text-[#171512]/50">
+      <nav
+        aria-label="Etapas do checkout"
+        className="flex items-center gap-2 font-eter-sans text-[10px] uppercase tracking-[0.15em] text-[#171512]/70"
+      >
         {STEPS.map((label, i) => {
           // Once the order is confirmed the cart is cleared, so the earlier
           // steps no longer have anything valid to show — the stepper stops
@@ -104,7 +122,7 @@ export default function CheckoutPage() {
                 aria-current={i === step ? "step" : undefined}
                 className={cn(
                   "transition-colors",
-                  i <= step ? "text-[#B4915B]" : undefined,
+                  i <= step ? "text-[#7A5A28]" : undefined,
                   reachable
                     ? "cursor-pointer hover:text-[#171512]"
                     : "cursor-default"
@@ -112,16 +130,22 @@ export default function CheckoutPage() {
               >
                 {String(i + 1).padStart(2, "0")} {label}
               </button>
-              {i < STEPS.length - 1 && <span>—</span>}
+              {i < STEPS.length - 1 && <span aria-hidden="true">—</span>}
             </span>
           );
         })}
-      </div>
+      </nav>
 
       <div className="mt-10">
         {step === 0 && (
           <div>
-            <h1 className="font-eter-serif text-3xl">Sua sacola</h1>
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="font-eter-serif text-3xl outline-none"
+            >
+              Sua sacola
+            </h1>
             <ul className="mt-8 flex flex-col gap-6">
               {cartProducts.map(({ product, quantity }) => (
                 <li
@@ -130,12 +154,12 @@ export default function CheckoutPage() {
                 >
                   <div>
                     <p className="font-eter-serif text-lg">{product.name}</p>
-                    <p className="text-xs text-[#171512]/50">{product.size}</p>
+                    <p className="text-xs text-[#171512]/70">{product.size}</p>
                     <div className="mt-2 flex items-center gap-2 text-xs">
                       <button
                         type="button"
                         data-cursor-hover
-                        aria-label="Diminuir quantidade"
+                        aria-label={`Diminuir quantidade de ${product.name}`}
                         onClick={() => setQuantity(product.slug, quantity - 1)}
                         className="h-6 w-6 border border-[#171512]/20 transition-[border-color,transform] duration-150 hover:border-[#171512] active:scale-90"
                       >
@@ -145,7 +169,7 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         data-cursor-hover
-                        aria-label="Aumentar quantidade"
+                        aria-label={`Aumentar quantidade de ${product.name}`}
                         onClick={() => setQuantity(product.slug, quantity + 1)}
                         className="h-6 w-6 border border-[#171512]/20 transition-[border-color,transform] duration-150 hover:border-[#171512] active:scale-90"
                       >
@@ -164,10 +188,20 @@ export default function CheckoutPage() {
 
         {step === 1 && (
           <div>
-            <h1 className="font-eter-serif text-3xl">Seus dados</h1>
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="font-eter-serif text-3xl outline-none"
+            >
+              Seus dados
+            </h1>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
+                <label htmlFor="checkout-nome" className="sr-only">
+                  Nome completo
+                </label>
                 <input
+                  id="checkout-nome"
                   placeholder="Nome completo"
                   value={data.nome}
                   onChange={(e) =>
@@ -175,21 +209,32 @@ export default function CheckoutPage() {
                   }
                   onBlur={() => markTouched("nome")}
                   aria-invalid={touched.nome && !nomeValid}
+                  aria-describedby={
+                    touched.nome && !nomeValid ? "checkout-nome-error" : undefined
+                  }
                   className={cn(
-                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:outline-none",
+                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/60 focus:outline-none",
                     touched.nome && !nomeValid
                       ? "border-red-800/60 focus:border-red-800/60"
-                      : "border-[#171512]/20 focus:border-[#171512]"
+                      : "border-[#171512]/45 focus:border-[#171512]"
                   )}
                 />
                 {touched.nome && !nomeValid && (
-                  <p className="mt-1.5 text-xs text-red-800/70">
+                  <p
+                    id="checkout-nome-error"
+                    role="alert"
+                    className="mt-1.5 text-xs text-red-800"
+                  >
                     Informe seu nome completo.
                   </p>
                 )}
               </div>
               <div className="sm:col-span-2">
+                <label htmlFor="checkout-email" className="sr-only">
+                  E-mail
+                </label>
                 <input
+                  id="checkout-email"
                   type="email"
                   placeholder="E-mail"
                   value={data.email}
@@ -198,15 +243,24 @@ export default function CheckoutPage() {
                   }
                   onBlur={() => markTouched("email")}
                   aria-invalid={touched.email && !emailValid}
+                  aria-describedby={
+                    touched.email && !emailValid
+                      ? "checkout-email-error"
+                      : undefined
+                  }
                   className={cn(
-                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:outline-none",
+                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/60 focus:outline-none",
                     touched.email && !emailValid
                       ? "border-red-800/60 focus:border-red-800/60"
-                      : "border-[#171512]/20 focus:border-[#171512]"
+                      : "border-[#171512]/45 focus:border-[#171512]"
                   )}
                 />
                 {touched.email && !emailValid && (
-                  <p className="mt-1.5 text-xs text-red-800/70">
+                  <p
+                    id="checkout-email-error"
+                    role="alert"
+                    className="mt-1.5 text-xs text-red-800"
+                  >
                     Informe um e-mail válido.
                   </p>
                 )}
@@ -217,10 +271,20 @@ export default function CheckoutPage() {
 
         {step === 2 && (
           <div>
-            <h1 className="font-eter-serif text-3xl">Entrega</h1>
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="font-eter-serif text-3xl outline-none"
+            >
+              Entrega
+            </h1>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
+                <label htmlFor="checkout-rua" className="sr-only">
+                  Endereço
+                </label>
                 <input
+                  id="checkout-rua"
                   placeholder="Endereço"
                   value={address.rua}
                   onChange={(e) =>
@@ -228,21 +292,32 @@ export default function CheckoutPage() {
                   }
                   onBlur={() => markTouched("rua")}
                   aria-invalid={touched.rua && !ruaValid}
+                  aria-describedby={
+                    touched.rua && !ruaValid ? "checkout-rua-error" : undefined
+                  }
                   className={cn(
-                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:outline-none",
+                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/60 focus:outline-none",
                     touched.rua && !ruaValid
                       ? "border-red-800/60 focus:border-red-800/60"
-                      : "border-[#171512]/20 focus:border-[#171512]"
+                      : "border-[#171512]/45 focus:border-[#171512]"
                   )}
                 />
                 {touched.rua && !ruaValid && (
-                  <p className="mt-1.5 text-xs text-red-800/70">
+                  <p
+                    id="checkout-rua-error"
+                    role="alert"
+                    className="mt-1.5 text-xs text-red-800"
+                  >
                     Informe o endereço de entrega.
                   </p>
                 )}
               </div>
               <div>
+                <label htmlFor="checkout-cidade" className="sr-only">
+                  Cidade
+                </label>
                 <input
+                  id="checkout-cidade"
                   placeholder="Cidade"
                   value={address.cidade}
                   onChange={(e) =>
@@ -250,29 +325,44 @@ export default function CheckoutPage() {
                   }
                   onBlur={() => markTouched("cidade")}
                   aria-invalid={touched.cidade && !cidadeValid}
+                  aria-describedby={
+                    touched.cidade && !cidadeValid
+                      ? "checkout-cidade-error"
+                      : undefined
+                  }
                   className={cn(
-                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:outline-none",
+                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/60 focus:outline-none",
                     touched.cidade && !cidadeValid
                       ? "border-red-800/60 focus:border-red-800/60"
-                      : "border-[#171512]/20 focus:border-[#171512]"
+                      : "border-[#171512]/45 focus:border-[#171512]"
                   )}
                 />
                 {touched.cidade && !cidadeValid && (
-                  <p className="mt-1.5 text-xs text-red-800/70">
+                  <p
+                    id="checkout-cidade-error"
+                    role="alert"
+                    className="mt-1.5 text-xs text-red-800"
+                  >
                     Informe a cidade.
                   </p>
                 )}
               </div>
-              <input
-                placeholder="CEP"
-                value={address.cep}
-                onChange={(e) =>
-                  setAddress((a) => ({ ...a, cep: e.target.value }))
-                }
-                className="border border-[#171512]/20 bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:border-[#171512] focus:outline-none"
-              />
+              <div>
+                <label htmlFor="checkout-cep" className="sr-only">
+                  CEP
+                </label>
+                <input
+                  id="checkout-cep"
+                  placeholder="CEP"
+                  value={address.cep}
+                  onChange={(e) =>
+                    setAddress((a) => ({ ...a, cep: e.target.value }))
+                  }
+                  className="w-full border border-[#171512]/45 bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/60 focus:border-[#171512] focus:outline-none"
+                />
+              </div>
             </div>
-            <p className="mt-4 text-xs text-[#171512]/50">
+            <p className="mt-4 text-xs text-[#171512]/70">
               {shipping === 0
                 ? "Frete grátis para este pedido."
                 : `Frete: ${formatPrice(shipping)}`}
@@ -282,11 +372,21 @@ export default function CheckoutPage() {
 
         {step === 3 && (
           <div>
-            <h1 className="font-eter-serif text-3xl">Pagamento</h1>
-            <p className="mt-2 text-xs text-[#171512]/50">
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="font-eter-serif text-3xl outline-none"
+            >
+              Pagamento
+            </h1>
+            <p className="mt-2 text-xs text-[#171512]/70">
               Demonstração — nenhuma cobrança real é feita.
             </p>
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div
+              role="group"
+              aria-label="Forma de pagamento"
+              className="mt-6 grid gap-3 sm:grid-cols-3"
+            >
               {PAYMENT_METHODS.map((option) => (
                 <button
                   key={option.id}
@@ -311,24 +411,31 @@ export default function CheckoutPage() {
               data-cursor-hover
               onClick={handlePay}
               disabled={processing}
-              className="mt-8 flex w-full items-center justify-center bg-[#171512] px-6 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-[background-color,transform] duration-150 hover:bg-[#B4915B] active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 sm:w-fit sm:px-10"
+              className="mt-8 flex w-full items-center justify-center bg-[#171512] px-6 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-[background-color,transform] duration-150 hover:bg-[#7A5A28] active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 sm:w-fit sm:px-10"
             >
               {processing
                 ? "Processando…"
                 : `Confirmar pedido — ${formatPrice(total)}`}
             </button>
+            <p className="sr-only" role="status" aria-live="polite">
+              {processing ? "Processando pedido…" : ""}
+            </p>
           </div>
         )}
 
         {step === 4 && (
           <div className="text-center">
-            <p className="font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#B4915B]">
+            <p className="font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#7A5A28]">
               Pedido confirmado
             </p>
-            <h1 className="font-eter-serif mt-3 text-3xl sm:text-4xl">
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="font-eter-serif mt-3 text-3xl outline-none sm:text-4xl"
+            >
               Obrigada, {data.nome.split(" ")[0] || "cliente"}.
             </h1>
-            <p className="mt-4 text-sm text-[#171512]/60">
+            <p className="mt-4 text-sm text-[#171512]/70">
               Seu pedido {orderNumber} foi recebido. Este é um checkout
               demonstrativo — nenhuma cobrança real foi feita.
             </p>
@@ -350,7 +457,7 @@ export default function CheckoutPage() {
             data-cursor-hover
             onClick={() => setStep((s) => Math.max(0, s - 1))}
             disabled={step === 0}
-            className="font-eter-sans text-xs uppercase tracking-[0.15em] text-[#171512]/50 transition-colors hover:text-[#171512] disabled:opacity-0"
+            className="font-eter-sans text-xs uppercase tracking-[0.15em] text-[#171512]/70 transition-colors hover:text-[#171512] disabled:opacity-0"
           >
             ← Voltar
           </button>

@@ -9,7 +9,7 @@ export default function VerticeHomePage() {
   return (
     <div>
       <section className="mx-auto max-w-6xl px-5 pb-16 pt-16 sm:px-8 sm:pb-24 sm:pt-24">
-        <p className="text-xs uppercase tracking-[0.2em] text-[#7A6F63]">
+        <p className="text-xs uppercase tracking-[0.2em] text-[#6B6157]">
           Vértice — imóveis de alto padrão
         </p>
         <h1
@@ -17,7 +17,7 @@ export default function VerticeHomePage() {
         >
           Encontre o lugar certo, com a clareza de um projeto bem desenhado.
         </h1>
-        <p className="mt-5 max-w-xl text-sm leading-relaxed text-[#7A6F63] sm:text-base">
+        <p className="mt-5 max-w-xl text-sm leading-relaxed text-[#6B6157] sm:text-base">
           Uma curadoria de casas, apartamentos e coberturas em bairros consagrados do Brasil.
           Busque por cidade ou bairro e filtre por tipo, preço e quartos.
         </p>
@@ -28,26 +28,26 @@ export default function VerticeHomePage() {
           className="mt-10 flex flex-col gap-3 rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] p-3 sm:flex-row sm:items-center sm:gap-0 sm:p-2"
         >
           <label className="flex-1 px-3 py-2">
-            <span className="block text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+            <span className="block text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
               Cidade ou bairro
             </span>
             <input
               type="text"
               name="q"
               placeholder="Ex: Jardins, Leblon, Itaim Bibi…"
-              className="mt-1 w-full bg-transparent text-[#241E1A] placeholder:text-[#7A6F63]/60 focus:outline-none"
+              className="mt-1 w-full rounded-sm bg-transparent text-[#241E1A] placeholder:text-[#6B6157]/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2F4A3B] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8F5F0]"
             />
           </label>
 
           <label className="border-t border-[#DDD5C8] px-3 py-2 sm:w-44 sm:border-l sm:border-t-0">
-            <span className="block text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+            <span className="block text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
               Tipo
             </span>
             <select
               name="tipo"
               defaultValue=""
               data-cursor-hover
-              className="mt-1 w-full bg-transparent text-[#241E1A] focus:outline-none"
+              className="mt-1 w-full rounded-sm bg-transparent text-[#241E1A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2F4A3B] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8F5F0]"
             >
               <option value="">Todos</option>
               <option value="Apartamento">Apartamento</option>
@@ -73,7 +73,7 @@ export default function VerticeHomePage() {
           <Link
             href="/labs/005/experiencia/imoveis"
             data-cursor-hover
-            className="text-xs uppercase tracking-[0.16em] text-[#7A6F63] hover:text-[#241E1A]"
+            className="text-xs uppercase tracking-[0.16em] text-[#6B6157] hover:text-[#241E1A]"
           >
             Ver todos →
           </Link>

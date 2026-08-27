@@ -228,11 +228,49 @@ export function DiscoveryMap({
 
   const isZoomed = zoom > 1.001;
 
+  // Keyboard equivalent for the pointer-driven pan: arrow keys nudge the pan
+  // when the map surface itself (not a pin inside it) is focused, mirroring
+  // what dragging does. Guarded to the container so it never intercepts the
+  // Enter/Space that pins already handle for selection.
+  function handleContainerKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (event.target !== event.currentTarget) return;
+    const step = 28 / zoomRef.current;
+    let dx = 0;
+    let dy = 0;
+    switch (event.key) {
+      case "ArrowUp":
+        dy = step;
+        break;
+      case "ArrowDown":
+        dy = -step;
+        break;
+      case "ArrowLeft":
+        dx = step;
+        break;
+      case "ArrowRight":
+        dx = -step;
+        break;
+      case "Home":
+        event.preventDefault();
+        resetView();
+        return;
+      default:
+        return;
+    }
+    event.preventDefault();
+    const nextPan = clampPan({ x: panRef.current.x + dx, y: panRef.current.y + dy }, zoomRef.current);
+    panRef.current = nextPan;
+    setPan(nextPan);
+  }
+
   return (
     <div
       ref={containerRef}
       className="relative h-full w-full touch-none select-none"
       style={{ cursor: isDragging ? "grabbing" : isZoomed ? "grab" : "default" }}
+      role="group"
+      aria-label="Mapa dos imóveis filtrados, agrupados por bairro. Use scroll ou pinça para zoom, arraste para navegar. Com o mapa focado, use as setas do teclado para navegar e Home para redefinir."
+      tabIndex={0}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
@@ -241,13 +279,18 @@ export function DiscoveryMap({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onKeyDown={handleContainerKeyDown}
     >
-      <svg
-        viewBox={`0 0 ${VB_W} ${VB_H}`}
-        className="h-full w-full"
-        role="img"
-        aria-label="Mapa dos imóveis filtrados, agrupados por bairro. Use scroll ou pinça para zoom, arraste para navegar."
-      >
+      {/*
+       * Not aria-hidden: the pins rendered inside are real focusable
+       * role="button" elements with their own aria-label (see below) — an
+       * aria-hidden ancestor would silently drop them from the accessibility
+       * tree even though they'd remain keyboard-reachable. The wrapping div's
+       * role="group" + aria-label above gives the map itself a description;
+       * this svg stays a plain, exposed container so its interactive
+       * children are announced individually.
+       */}
+      <svg viewBox={`0 0 ${VB_W} ${VB_H}`} className="h-full w-full">
         <rect x={0} y={0} width={VB_W} height={VB_H} fill="#EFEAE3" />
         <g
           style={{
@@ -270,7 +313,7 @@ export function DiscoveryMap({
               y={(c.y / 100) * VB_H}
               fontSize={9}
               letterSpacing={1.2}
-              className="fill-[#7A6F63] uppercase"
+              className="fill-[#6B6157] uppercase"
               opacity={0.6}
             >
               {c.name}

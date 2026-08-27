@@ -58,6 +58,7 @@ export default function OrbitMetricasPage() {
               key={opt.value}
               type="button"
               data-cursor-hover
+              aria-pressed={period === opt.value}
               onClick={() => setPeriod(opt.value)}
               className={cn(
                 "rounded-[5px] px-3 py-1.5 text-xs font-medium transition-colors",
@@ -84,6 +85,7 @@ export default function OrbitMetricasPage() {
                 key={opt.value}
                 type="button"
                 data-cursor-hover
+                aria-pressed={metric === opt.value}
                 onClick={() => setMetric(opt.value)}
                 className={cn(
                   "rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors",

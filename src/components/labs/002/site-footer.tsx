@@ -18,19 +18,19 @@ export function SiteFooter() {
 
         <div className="mt-14 grid grid-cols-1 gap-10 border-t border-[#161615]/15 pt-10 sm:grid-cols-3">
           <div>
-            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.2em] text-[#161615]/50">
+            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.2em] text-[#161615]/65">
               01 / Fale com o estúdio
             </p>
             <Link
               href="/labs/002/experiencia/contato"
               data-cursor-hover
-              className="mt-3 inline-block text-lg font-bold uppercase tracking-tight text-[#161615] underline decoration-[#2E4A5E] decoration-2 underline-offset-4 transition-colors hover:text-[#2E4A5E]"
+              className="mt-3 inline-block rounded-sm text-lg font-bold uppercase tracking-tight text-[#161615] underline decoration-[#2E4A5E] decoration-2 underline-offset-4 transition-colors hover:text-[#2E4A5E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4A5E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAFAF8]"
             >
               Iniciar conversa
             </Link>
           </div>
           <div>
-            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.2em] text-[#161615]/50">
+            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.2em] text-[#161615]/65">
               02 / Estúdio
             </p>
             <p className="mt-3 [font-family:var(--font-atelier-mono)] text-xs leading-relaxed text-[#161615]/80">
@@ -40,7 +40,7 @@ export function SiteFooter() {
             </p>
           </div>
           <div>
-            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.2em] text-[#161615]/50">
+            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.2em] text-[#161615]/65">
               03 / Contato direto
             </p>
             <p className="mt-3 [font-family:var(--font-atelier-mono)] text-xs leading-relaxed text-[#161615]/80">
@@ -51,7 +51,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="mt-16 [font-family:var(--font-atelier-mono)] text-[9px] uppercase tracking-[0.2em] text-[#161615]/40">
+        <p className="mt-16 [font-family:var(--font-atelier-mono)] text-[9px] uppercase tracking-[0.2em] text-[#161615]/65">
           Atelier 17 — projeto conceitual de portfólio, produzido pela Alumna.
         </p>
       </div>

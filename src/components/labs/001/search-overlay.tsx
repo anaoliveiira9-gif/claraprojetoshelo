@@ -7,6 +7,7 @@ import { Search, X } from "lucide-react";
 import { useEter } from "@/components/labs/001/eter-context";
 import { PRODUCTS, formatPrice } from "@/components/labs/001/products";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+import { useDialogA11y } from "@/components/labs/001/use-dialog-a11y";
 
 export function SearchOverlay() {
   const { searchOpen, setSearchOpen } = useEter();
@@ -29,10 +30,16 @@ export function SearchOverlay() {
     setQuery("");
   }
 
+  const dialogRef = useDialogA11y<HTMLDivElement>(searchOpen, close);
+
   return (
     <AnimatePresence>
       {searchOpen && (
         <motion.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Buscar produtos"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -41,13 +48,16 @@ export function SearchOverlay() {
         >
           <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6 pt-24 sm:pt-32">
             <div className="flex items-center gap-4 border-b border-[#171512]/20 pb-4">
-              <Search className="h-5 w-5 shrink-0" strokeWidth={1.5} />
+              <Search className="h-5 w-5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+              <label htmlFor="eter-search-input" className="sr-only">
+                Buscar por nome, nota ou categoria
+              </label>
               <input
-                autoFocus
+                id="eter-search-input"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Buscar por nome, nota ou categoria…"
-                className="font-eter-serif w-full bg-transparent text-xl placeholder:text-[#171512]/30 focus:outline-none sm:text-2xl"
+                className="font-eter-serif w-full bg-transparent text-xl placeholder:text-[#171512]/60 sm:text-2xl"
               />
               <button
                 type="button"
@@ -56,13 +66,19 @@ export function SearchOverlay() {
                 onClick={close}
                 className="shrink-0"
               >
-                <X className="h-5 w-5" strokeWidth={1.5} />
+                <X className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
               </button>
             </div>
 
+            <p className="sr-only" role="status" aria-live="polite">
+              {query.trim()
+                ? `${results.length} ${results.length === 1 ? "resultado encontrado" : "resultados encontrados"}`
+                : ""}
+            </p>
+
             <div className="mt-8 flex-1 overflow-y-auto">
               {query.trim() && results.length === 0 && (
-                <p className="text-sm text-[#171512]/50">
+                <p className="text-sm text-[#171512]/70">
                   Nada encontrado para &ldquo;{query}&rdquo;.
                 </p>
               )}
@@ -73,13 +89,13 @@ export function SearchOverlay() {
                       href={`/labs/001/experiencia/produtos/${product.slug}`}
                       data-cursor-hover
                       onClick={close}
-                      className="flex items-center justify-between gap-4 border-b border-[#171512]/10 py-4 transition-colors hover:text-[#B4915B]"
+                      className="flex items-center justify-between gap-4 border-b border-[#171512]/10 py-4 transition-colors hover:text-[#7A5A28]"
                     >
                       <div>
                         <p className="font-eter-serif text-lg">
                           {product.name}
                         </p>
-                        <p className="text-xs uppercase tracking-[0.1em] text-[#171512]/50">
+                        <p className="text-xs uppercase tracking-[0.1em] text-[#171512]/70">
                           {product.category}
                         </p>
                       </div>

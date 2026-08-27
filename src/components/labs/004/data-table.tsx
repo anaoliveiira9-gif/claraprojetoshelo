@@ -80,19 +80,22 @@ export function DataTable() {
     <div className="rounded-lg border border-[var(--orbit-border)] bg-[var(--orbit-surface)]">
       <div className="flex flex-col gap-3 border-b border-[var(--orbit-border)] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-[var(--orbit-ink)]">Processos</h2>
-          <p className="mt-0.5 text-xs text-[var(--orbit-secondary)]">
+          <h2 id="orbit-table-heading" className="text-sm font-semibold text-[var(--orbit-ink)]">
+            Processos
+          </h2>
+          <p className="mt-0.5 text-xs text-[var(--orbit-secondary)]" aria-live="polite">
             {sorted.length} de {PROCESSOS.length} registros
           </p>
         </div>
         <div className="relative w-full sm:w-64">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--orbit-secondary)]" />
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--orbit-secondary)]" aria-hidden="true" />
           <input
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
               setPage(1);
             }}
+            aria-label="Buscar processo, área, responsável"
             placeholder="Buscar processo, área, responsável…"
             className="w-full rounded-md border border-[var(--orbit-border)] bg-[var(--orbit-bg)] py-1.5 pl-8 pr-3 text-sm text-[var(--orbit-ink)] outline-none placeholder:text-[var(--orbit-secondary)] focus:border-[var(--orbit-accent)]"
           />
@@ -100,15 +103,36 @@ export function DataTable() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+        <table
+          aria-labelledby="orbit-table-heading"
+          className="w-full min-w-[720px] border-collapse text-left text-sm"
+        >
           <thead>
             <tr className="border-b border-[var(--orbit-border)]">
               {COLUMNS.map((col) => (
-                <th key={col.key} className="px-4 py-2.5">
+                <th
+                  key={col.key}
+                  scope="col"
+                  aria-sort={
+                    sortKey === col.key
+                      ? sortDir === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : "none"
+                  }
+                  className="px-4 py-2.5"
+                >
                   <button
                     type="button"
                     data-cursor-hover
                     onClick={() => handleSort(col.key)}
+                    aria-label={`Ordenar por ${col.label}${
+                      sortKey === col.key
+                        ? sortDir === "asc"
+                          ? ", ordem crescente, clique para inverter"
+                          : ", ordem decrescente, clique para inverter"
+                        : ""
+                    }`}
                     className={cn(
                       "flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-[var(--orbit-secondary)] transition-colors hover:text-[var(--orbit-ink)]",
                       col.numeric && "ml-auto",
@@ -117,12 +141,12 @@ export function DataTable() {
                     {col.label}
                     {sortKey === col.key ? (
                       sortDir === "asc" ? (
-                        <ArrowUp className="h-3 w-3" />
+                        <ArrowUp className="h-3 w-3" aria-hidden="true" />
                       ) : (
-                        <ArrowDown className="h-3 w-3" />
+                        <ArrowDown className="h-3 w-3" aria-hidden="true" />
                       )
                     ) : (
-                      <ArrowUpDown className="h-3 w-3 opacity-30" />
+                      <ArrowUpDown className="h-3 w-3 opacity-30" aria-hidden="true" />
                     )}
                   </button>
                 </th>

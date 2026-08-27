@@ -18,7 +18,8 @@ function SkeletonBlock({ className }: { className?: string }) {
 
 export default function DadosLoading() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6" role="status" aria-label="Carregando dados">
+      <span className="sr-only">Carregando dados…</span>
       <div className="flex flex-col gap-2">
         <SkeletonBlock className="h-6 w-32" />
         <SkeletonBlock className="h-4 w-64" />

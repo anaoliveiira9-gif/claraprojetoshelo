@@ -102,7 +102,7 @@ export function AbstractComposition({
         )}
       </svg>
       {label && (
-        <span className="absolute bottom-2 left-2 [font-family:var(--font-atelier-mono)] text-[9px] uppercase tracking-[0.15em] text-[#161615]/50">
+        <span className="absolute bottom-2 left-2 [font-family:var(--font-atelier-mono)] text-[9px] uppercase tracking-[0.15em] text-[#161615]/65">
           {label}
         </span>
       )}

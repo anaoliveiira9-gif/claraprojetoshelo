@@ -5,7 +5,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
-import { AmbiancePanel, Display, Eyebrow, GhostButton, PrimaryButton } from "@/components/labs/003/noir-ui";
+import {
+  AmbiancePanel,
+  Display,
+  Eyebrow,
+  GhostButton,
+  NOIR_FOCUS_RING,
+  PrimaryButton,
+} from "@/components/labs/003/noir-ui";
 import { buildMonthGrid, WEEKDAY_LABELS } from "@/components/labs/003/calendar";
 import {
   getTimeSlots,
@@ -170,6 +177,11 @@ export function ReservationWizard() {
           const isDone = index < step;
           const isCurrent = index === step;
           const isReachable = index < step && !submitting && !confirmation;
+          const stateLabel = isCurrent
+            ? "etapa atual"
+            : isDone
+              ? "concluída"
+              : "bloqueada";
           return (
             <li key={label} className="flex items-center gap-3 sm:gap-6">
               <button
@@ -177,14 +189,17 @@ export function ReservationWizard() {
                 disabled={!isReachable}
                 onClick={() => isReachable && goTo(index)}
                 data-cursor-hover={isReachable ? true : undefined}
+                aria-current={isCurrent ? "step" : undefined}
                 className={cn(
-                  "flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.2em] transition-colors",
+                  "flex items-center gap-2 rounded-sm font-sans text-[11px] uppercase tracking-[0.2em] transition-colors",
+                  NOIR_FOCUS_RING,
                   isCurrent && "text-[#F1E9DD]",
-                  !isCurrent && isDone && "text-[#F1E9DD]/50 hover:text-[#F1E9DD]/80",
+                  !isCurrent && isDone && "text-[#F1E9DD]/55 hover:text-[#F1E9DD]/80",
                   !isCurrent && !isDone && "text-[#F1E9DD]/30",
                 )}
               >
                 <span
+                  aria-hidden
                   className={cn(
                     "flex h-5 w-5 items-center justify-center rounded-full border text-[10px]",
                     isCurrent && "border-[#7C2A2A] bg-[#7C2A2A] text-[#F1E9DD]",
@@ -194,7 +209,12 @@ export function ReservationWizard() {
                 >
                   {isDone ? <Check className="h-3 w-3" /> : index + 1}
                 </span>
-                <span className="hidden sm:inline">{label}</span>
+                <span aria-hidden className="hidden sm:inline">
+                  {label}
+                </span>
+                <span className="sr-only">
+                  Passo {index + 1} de {STEPS.length}: {label}, {stateLabel}
+                </span>
               </button>
               {index < STEPS.length - 1 && (
                 <span aria-hidden className="h-px w-6 bg-[#F1E9DD]/15 sm:w-10" />
@@ -216,7 +236,7 @@ export function ReservationWizard() {
               intensity={ambiance.intensity}
             >
               <div className="absolute inset-x-0 bottom-0 p-5">
-                <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#F1E9DD]/45">
+                <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#F1E9DD]/60">
                   {step === 0 && "A noite"}
                   {step === 1 && "A mesa"}
                   {step === 2 && "O horário"}
@@ -251,14 +271,15 @@ export function ReservationWizard() {
                     <div className="mt-10 grid gap-10 sm:grid-cols-2">
                       {months.map(({ weeks, label }) => (
                         <div key={label}>
-                          <p className="mb-4 font-sans text-xs uppercase tracking-[0.2em] text-[#F1E9DD]/50">
+                          <p className="mb-4 font-sans text-xs uppercase tracking-[0.2em] text-[#F1E9DD]/55">
                             {label}
                           </p>
                           <div className="grid grid-cols-7 gap-1.5">
                             {WEEKDAY_LABELS.map((w, i) => (
                               <span
                                 key={`${label}-wd-${i}`}
-                                className="flex h-7 items-center justify-center font-sans text-[10px] text-[#F1E9DD]/35"
+                                aria-hidden
+                                className="flex h-7 items-center justify-center font-sans text-[10px] text-[#F1E9DD]/55"
                               >
                                 {w}
                               </span>
@@ -271,6 +292,11 @@ export function ReservationWizard() {
                                   key={cell.iso}
                                   type="button"
                                   disabled={cell.isPast}
+                                  aria-disabled={cell.isPast || undefined}
+                                  aria-current={isSelected ? "date" : undefined}
+                                  aria-label={`${formatDateLong(cell.iso)}${
+                                    cell.isPast ? ", indisponível" : ""
+                                  }`}
                                   data-cursor-hover={!cell.isPast ? true : undefined}
                                   onClick={() => {
                                     if (cell.iso === date) return;
@@ -281,6 +307,7 @@ export function ReservationWizard() {
                                   }}
                                   className={cn(
                                     "flex h-9 items-center justify-center rounded-sm font-sans text-xs transition-colors",
+                                    NOIR_FOCUS_RING,
                                     cell.isPast && "text-[#F1E9DD]/15",
                                     !cell.isPast &&
                                       !isSelected &&
@@ -288,7 +315,7 @@ export function ReservationWizard() {
                                     isSelected && "bg-[#7C2A2A] text-[#F1E9DD]",
                                   )}
                                 >
-                                  {cell.date.getDate()}
+                                  <span aria-hidden>{cell.date.getDate()}</span>
                                 </button>
                               );
                             })}
@@ -314,6 +341,7 @@ export function ReservationWizard() {
                             key={option.id}
                             type="button"
                             data-cursor-hover
+                            aria-pressed={isSelected}
                             onClick={() => {
                               setTableId(option.id);
                               // A table's capacity is a real ceiling, not decoration —
@@ -323,6 +351,7 @@ export function ReservationWizard() {
                             }}
                             className={cn(
                               "flex items-start justify-between gap-6 rounded-sm border px-5 py-4 text-left transition-colors",
+                              NOIR_FOCUS_RING,
                               isSelected
                                 ? "border-[#7C2A2A] bg-[#7C2A2A]/10"
                                 : "border-[#F1E9DD]/15 hover:border-[#F1E9DD]/35",
@@ -341,7 +370,7 @@ export function ReservationWizard() {
                                 {option.description}
                               </p>
                             </div>
-                            <span className="shrink-0 pt-1 font-sans text-[11px] uppercase tracking-[0.15em] text-[#F1E9DD]/40">
+                            <span className="shrink-0 pt-1 font-sans text-[11px] uppercase tracking-[0.15em] text-[#F1E9DD]/55">
                               {option.capacity}
                             </span>
                           </button>
@@ -350,7 +379,7 @@ export function ReservationWizard() {
                     </div>
 
                     <div className="mt-9 flex items-center gap-5 border-t border-[#F1E9DD]/10 pt-8">
-                      <span className="font-sans text-xs uppercase tracking-[0.2em] text-[#F1E9DD]/50">
+                      <span className="font-sans text-xs uppercase tracking-[0.2em] text-[#F1E9DD]/55">
                         Pessoas
                       </span>
                       <button
@@ -358,12 +387,20 @@ export function ReservationWizard() {
                         data-cursor-hover
                         disabled={people <= 1}
                         onClick={() => setPeople((p) => Math.max(1, p - 1))}
-                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30"
+                        className={cn(
+                          "flex h-9 w-9 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30",
+                          NOIR_FOCUS_RING,
+                        )}
                         aria-label="Diminuir número de pessoas"
                       >
                         <Minus className="h-3.5 w-3.5" />
                       </button>
-                      <span className="font-[family-name:var(--font-noir-display)] text-3xl tabular-nums">
+                      <span
+                        className="font-[family-name:var(--font-noir-display)] text-3xl tabular-nums"
+                        aria-live="polite"
+                        aria-atomic="true"
+                      >
+                        <span className="sr-only">Número de pessoas: </span>
                         {people}
                       </span>
                       <button
@@ -371,13 +408,16 @@ export function ReservationWizard() {
                         data-cursor-hover
                         disabled={people >= maxPeople}
                         onClick={() => setPeople((p) => Math.min(maxPeople, p + 1))}
-                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30"
+                        className={cn(
+                          "flex h-9 w-9 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30",
+                          NOIR_FOCUS_RING,
+                        )}
                         aria-label="Aumentar número de pessoas"
                       >
                         <Plus className="h-3.5 w-3.5" />
                       </button>
                       {table && (
-                        <span className="font-sans text-[10px] uppercase tracking-[0.15em] text-[#F1E9DD]/35">
+                        <span className="font-sans text-[10px] uppercase tracking-[0.15em] text-[#F1E9DD]/55">
                           Máx. {maxPeople} nesta mesa
                         </span>
                       )}
@@ -391,7 +431,7 @@ export function ReservationWizard() {
                     <Display as="h2" className="mt-3 text-3xl sm:text-4xl">
                       Escolha o horário
                     </Display>
-                    <p className="mt-2 font-sans text-xs uppercase tracking-[0.15em] text-[#F1E9DD]/40">
+                    <p className="mt-2 font-sans text-xs uppercase tracking-[0.15em] text-[#F1E9DD]/55">
                       {formatDateLong(date)} · {table?.label}
                     </p>
 
@@ -401,10 +441,16 @@ export function ReservationWizard() {
                           key={slot.time}
                           type="button"
                           disabled={!slot.available}
+                          aria-disabled={!slot.available || undefined}
+                          aria-pressed={slot.available ? time === slot.time : undefined}
+                          aria-label={
+                            slot.available ? undefined : `${slot.time}, indisponível`
+                          }
                           data-cursor-hover={slot.available ? true : undefined}
                           onClick={() => setTime(slot.time)}
                           className={cn(
                             "rounded-sm border px-4 py-3 font-sans text-sm transition-colors",
+                            NOIR_FOCUS_RING,
                             !slot.available && "border-[#F1E9DD]/5 text-[#F1E9DD]/20 line-through",
                             slot.available &&
                               time !== slot.time &&
@@ -425,7 +471,7 @@ export function ReservationWizard() {
           </div>
         </div>
       ) : (
-        <div className="relative">
+        <div className="relative" role="status" aria-live="polite">
           {submitting && !confirmation && (
             <div className="flex flex-col items-center py-16 text-center">
               <Eyebrow>Confirmando</Eyebrow>
@@ -469,7 +515,10 @@ export function ReservationWizard() {
                 <span aria-hidden className="absolute bottom-3 right-3 h-3 w-3 border-b border-r border-[#7C2A2A]/70" />
 
                 <div className="flex flex-col items-center text-center">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#7C2A2A] text-[#7C2A2A]">
+                  <span
+                    aria-hidden
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-[#7C2A2A] text-[#7C2A2A]"
+                  >
                     <Check className="h-4 w-4" />
                   </span>
                   <Eyebrow className="mt-6">Reserva confirmada</Eyebrow>
@@ -481,25 +530,25 @@ export function ReservationWizard() {
                 <div className="mx-auto mt-10 h-px w-full bg-[#F1E9DD]/10" />
 
                 <dl className="mt-10 grid grid-cols-2 gap-x-8 gap-y-6">
-                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/40">
+                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/55">
                     Noite
                   </dt>
                   <dd className="text-right font-[family-name:var(--font-noir-display)] text-base capitalize text-[#F1E9DD]/90">
                     {formatDateLong(confirmation.selection.date)}
                   </dd>
-                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/40">
+                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/55">
                     Mesa
                   </dt>
                   <dd className="text-right font-[family-name:var(--font-noir-display)] text-base text-[#F1E9DD]/90">
                     {getTableById(confirmation.selection.tableId)?.label ?? "—"}
                   </dd>
-                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/40">
+                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/55">
                     Horário
                   </dt>
                   <dd className="text-right font-[family-name:var(--font-noir-display)] text-base text-[#F1E9DD]/90">
                     {confirmation.selection.time}
                   </dd>
-                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/40">
+                  <dt className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#F1E9DD]/55">
                     Pessoas
                   </dt>
                   <dd className="text-right font-[family-name:var(--font-noir-display)] text-base text-[#F1E9DD]/90">

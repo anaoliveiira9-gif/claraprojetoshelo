@@ -48,7 +48,9 @@ export default function AdminLoginPage() {
           </label>
 
           {state?.error && (
-            <p className="text-sm text-accent">{state.error}</p>
+            <p role="alert" className="text-sm text-accent">
+              {state.error}
+            </p>
           )}
 
           <button

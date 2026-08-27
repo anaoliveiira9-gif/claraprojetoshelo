@@ -36,7 +36,7 @@ export default async function ImovelPage({
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
-      <p className="text-xs uppercase tracking-[0.16em] text-[#7A6F63]">
+      <p className="text-xs uppercase tracking-[0.16em] text-[#6B6157]">
         {property.bairro}, {property.cidade}
       </p>
       <div className="mt-2 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -49,6 +49,7 @@ export default async function ImovelPage({
       </div>
 
       {/* Gallery */}
+      <h2 className="sr-only">Galeria de imagens</h2>
       <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {galleryPanels.map((panel) => (
           <PropertyVisual
@@ -71,7 +72,7 @@ export default async function ImovelPage({
           <div key={label} className="flex flex-col items-start gap-1.5">
             <Icon className="h-5 w-5 text-[#2F4A3B]" />
             <span className="text-lg text-[#241E1A]">{value}</span>
-            <span className="text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+            <span className="text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
               {label}
             </span>
           </div>

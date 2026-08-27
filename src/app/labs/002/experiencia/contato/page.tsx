@@ -30,19 +30,19 @@ export default function ContatoPage() {
 
         <Reveal delay={0.08} className="flex flex-col gap-8">
           <div>
-            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.15em] text-[#161615]/50">
+            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.15em] text-[#161615]/65">
               E-mail
             </p>
             <p className="mt-2 text-lg font-bold tracking-tight">contato@atelier17.com.br</p>
           </div>
           <div>
-            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.15em] text-[#161615]/50">
+            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.15em] text-[#161615]/65">
               Telefone
             </p>
             <p className="mt-2 text-lg font-bold tracking-tight">+55 11 4002-1917</p>
           </div>
           <div>
-            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.15em] text-[#161615]/50">
+            <p className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.15em] text-[#161615]/65">
               Endereço
             </p>
             <p className="mt-2 text-lg font-bold tracking-tight">

@@ -38,10 +38,10 @@ export default function ProjetosPage() {
             <Link
               href={`/labs/002/experiencia/projetos/${project.slug}`}
               data-cursor-hover
-              className="group flex h-full flex-col bg-[#FAFAF8] p-6 transition-colors sm:p-10"
+              className="group flex h-full flex-col bg-[#FAFAF8] p-6 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2E4A5E] sm:p-10"
             >
               <div className="flex items-baseline justify-between gap-4">
-                <span className="[font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.15em] text-[#161615]/45">
+                <span className="[font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.15em] text-[#161615]/65">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="[font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.15em] text-[#2E4A5E]">
@@ -59,11 +59,14 @@ export default function ProjetosPage() {
                   <h2 className="text-2xl font-bold uppercase tracking-tight sm:text-3xl">
                     {project.name}
                   </h2>
-                  <p className="mt-2 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.1em] text-[#161615]/55">
+                  <p className="mt-2 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.1em] text-[#161615]/65">
                     {project.location} · {project.year} · {project.area}
                   </p>
                 </div>
-                <ArrowUpRight className="mt-1 h-5 w-5 shrink-0 text-[#2E4A5E] opacity-0 transition-opacity group-hover:opacity-100" />
+                <ArrowUpRight
+                  className="mt-1 h-5 w-5 shrink-0 text-[#2E4A5E] opacity-0 transition-opacity group-hover:opacity-100"
+                  aria-hidden="true"
+                />
               </div>
               <p className="mt-3 max-w-md text-sm leading-relaxed text-[#161615]/70">
                 {project.teaser}

@@ -6,11 +6,14 @@ import { Minus, Plus, X } from "lucide-react";
 import { useEter } from "@/components/labs/001/eter-context";
 import { formatPrice } from "@/components/labs/001/products";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+import { useDialogA11y } from "@/components/labs/001/use-dialog-a11y";
 
 export function CartDrawer() {
   const { cartOpen, setCartOpen, cartProducts, setQuantity, cartTotal } =
     useEter();
   const reducedMotion = usePrefersReducedMotion();
+  const close = () => setCartOpen(false);
+  const dialogRef = useDialogA11y<HTMLDivElement>(cartOpen, close);
 
   return (
     <AnimatePresence>
@@ -22,9 +25,14 @@ export function CartDrawer() {
             exit={{ opacity: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.2 }}
             className="fixed inset-0 z-[90] bg-[#171512]/40"
-            onClick={() => setCartOpen(false)}
+            aria-hidden="true"
+            onClick={close}
           />
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cart-drawer-title"
             initial={{ x: reducedMotion ? 0 : "100%" }}
             animate={{ x: 0 }}
             exit={{ x: reducedMotion ? 0 : "100%" }}
@@ -32,14 +40,17 @@ export function CartDrawer() {
             className="fixed right-0 top-0 z-[95] flex h-full w-full max-w-md flex-col bg-[#F6F1E9] text-[#171512] shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-[#171512]/10 px-6 py-5">
-              <p className="font-eter-sans text-[11px] uppercase tracking-[0.2em]">
+              <p
+                id="cart-drawer-title"
+                className="font-eter-sans text-[11px] uppercase tracking-[0.2em]"
+              >
                 Sacola ({cartProducts.reduce((s, l) => s + l.quantity, 0)})
               </p>
               <button
                 type="button"
                 data-cursor-hover
                 aria-label="Fechar sacola"
-                onClick={() => setCartOpen(false)}
+                onClick={close}
               >
                 <X className="h-5 w-5" strokeWidth={1.5} />
               </button>
@@ -53,8 +64,8 @@ export function CartDrawer() {
                 <Link
                   href="/labs/001/experiencia/produtos"
                   data-cursor-hover
-                  onClick={() => setCartOpen(false)}
-                  className="font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#B4915B] underline underline-offset-4"
+                  onClick={close}
+                  className="font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#7A5A28] underline underline-offset-4"
                 >
                   Ver produtos
                 </Link>
@@ -82,7 +93,7 @@ export function CartDrawer() {
                               {formatPrice(product.price * quantity)}
                             </p>
                           </div>
-                          <p className="mt-0.5 text-xs text-[#171512]/50">
+                          <p className="mt-0.5 text-xs text-[#171512]/70">
                             {product.size}
                           </p>
                           <div className="mt-2 flex items-center gap-3">
@@ -128,8 +139,8 @@ export function CartDrawer() {
                   <Link
                     href="/labs/001/experiencia/checkout"
                     data-cursor-hover
-                    onClick={() => setCartOpen(false)}
-                    className="mt-4 flex items-center justify-center bg-[#171512] px-6 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-colors hover:bg-[#B4915B]"
+                    onClick={close}
+                    className="mt-4 flex items-center justify-center bg-[#171512] px-6 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-colors hover:bg-[#7A5A28]"
                   >
                     Finalizar compra
                   </Link>

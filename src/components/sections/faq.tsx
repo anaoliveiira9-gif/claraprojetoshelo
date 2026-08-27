@@ -8,13 +8,16 @@ import { useSiteContent } from "@/components/site-content-provider";
 
 function FaqItem({
   item,
+  index,
   isOpen,
   onToggle,
 }: {
   item: { question: string; answer: string };
+  index: number;
   isOpen: boolean;
   onToggle: () => void;
 }) {
+  const panelId = `faq-panel-${index}`;
   return (
     <div className="border-b border-line">
       <button
@@ -22,6 +25,7 @@ function FaqItem({
         onClick={onToggle}
         data-cursor-hover
         aria-expanded={isOpen}
+        aria-controls={panelId}
         className="flex w-full items-center justify-between gap-6 py-6 text-left"
       >
         <span
@@ -33,6 +37,7 @@ function FaqItem({
           {item.question}
         </span>
         <span
+          aria-hidden="true"
           className={cn(
             "shrink-0 font-mono text-lg leading-none text-paper-faint transition-transform duration-200",
             isOpen && "rotate-45 text-accent"
@@ -42,6 +47,8 @@ function FaqItem({
         </span>
       </button>
       <div
+        id={panelId}
+        aria-hidden={!isOpen}
         className="grid transition-[grid-template-rows] duration-300 ease-out"
         style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
       >
@@ -73,6 +80,7 @@ export function Faq() {
             <Reveal key={item.question} delay={Math.min(i, 6) * 0.02}>
               <FaqItem
                 item={item}
+                index={i}
                 isOpen={openIndex === i}
                 onToggle={() => setOpenIndex((cur) => (cur === i ? null : i))}
               />

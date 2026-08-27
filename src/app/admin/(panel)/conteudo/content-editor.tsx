@@ -69,14 +69,16 @@ function SaveBar({
       >
         {pending ? "Salvando…" : "Salvar"}
       </button>
-      {state.saved && (
-        <span className="font-mono text-xs uppercase tracking-[0.15em] text-accent">
-          Salvo ✓
-        </span>
-      )}
-      {state.error && (
-        <span className="text-xs text-accent">{state.error}</span>
-      )}
+      <span role="status" aria-live="polite">
+        {state.saved && (
+          <span className="font-mono text-xs uppercase tracking-[0.15em] text-accent">
+            Salvo ✓
+          </span>
+        )}
+        {state.error && (
+          <span className="text-xs text-accent">{state.error}</span>
+        )}
+      </span>
     </div>
   );
 }

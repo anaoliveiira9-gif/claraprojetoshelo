@@ -20,7 +20,7 @@ export function ProductDetail({ product }: { product: Product }) {
       </div>
 
       <div className="flex flex-col">
-        <span className="font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#171512]/50">
+        <span className="font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#171512]/70">
           {product.category} · {product.size}
         </span>
         <h1 className="font-eter-serif mt-3 text-4xl sm:text-5xl">
@@ -40,7 +40,7 @@ export function ProductDetail({ product }: { product: Product }) {
               key={note}
               href={`/labs/001/experiencia/produtos?nota=${encodeURIComponent(note)}`}
               data-cursor-hover
-              className="border border-[#B4915B]/40 bg-[#B4915B]/10 px-3 py-1 text-xs uppercase tracking-[0.15em] text-[#B4915B] transition-colors hover:bg-[#B4915B]/20"
+              className="border border-[#B4915B]/40 bg-[#B4915B]/10 px-3 py-1 text-xs uppercase tracking-[0.15em] text-[#7A5A28] transition-colors hover:bg-[#B4915B]/20"
             >
               {note}
             </Link>
@@ -85,7 +85,7 @@ export function ProductDetail({ product }: { product: Product }) {
             type="button"
             data-cursor-hover
             onClick={() => addToCart(product.slug, quantity)}
-            className="flex flex-1 items-center justify-center bg-[#171512] px-8 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-[background-color,transform] duration-150 hover:bg-[#B4915B] active:scale-[0.98]"
+            className="flex flex-1 items-center justify-center bg-[#171512] px-8 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-[background-color,transform] duration-150 hover:bg-[#7A5A28] active:scale-[0.98]"
           >
             Adicionar à sacola
           </button>
@@ -110,7 +110,7 @@ export function ProductDetail({ product }: { product: Product }) {
         <Link
           href="/labs/001/experiencia/produtos"
           data-cursor-hover
-          className="mt-10 font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#171512]/50 hover:text-[#171512]"
+          className="mt-10 font-eter-sans text-[11px] uppercase tracking-[0.2em] text-[#171512]/70 hover:text-[#171512]"
         >
           ← Voltar ao catálogo
         </Link>

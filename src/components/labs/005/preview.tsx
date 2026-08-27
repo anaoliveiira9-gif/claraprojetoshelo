@@ -23,15 +23,15 @@ export function LabPreview() {
 
         <div className="flex w-[38%] flex-col gap-1.5">
           <div className="flex items-center justify-between rounded-sm border border-[#2F4A3B] bg-[#F8F5F0] px-1.5 py-1.5">
-            <span className="truncate font-sans text-[6.5px] text-[#7A6F63]">Jardins</span>
+            <span className="truncate font-sans text-[6.5px] text-[#6B6157]">Jardins</span>
             <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 4,8M</span>
           </div>
           <div className="flex items-center justify-between rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] px-1.5 py-1.5">
-            <span className="truncate font-sans text-[6.5px] text-[#7A6F63]">Leblon</span>
+            <span className="truncate font-sans text-[6.5px] text-[#6B6157]">Leblon</span>
             <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 3,2M</span>
           </div>
           <div className="flex items-center justify-between rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] px-1.5 py-1.5">
-            <span className="truncate font-sans text-[6.5px] text-[#7A6F63]">Moema</span>
+            <span className="truncate font-sans text-[6.5px] text-[#6B6157]">Moema</span>
             <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 2,6M</span>
           </div>
         </div>

@@ -58,9 +58,7 @@ export function BarChart({
               fill={color}
               opacity={0.85}
             >
-              <title>
-                {d.label}: {formatValue(d.value)}
-              </title>
+              <title>{`${d.label}: ${formatValue(d.value)}`}</title>
             </rect>
             <text
               x={x + barW / 2}

@@ -43,7 +43,7 @@ export function NovaExperienceDetail({
             data-cursor-hover
             onClick={onBack}
             aria-label="Voltar"
-            className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90"
+            className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]"
           >
             <ArrowLeft className="h-4 w-4 text-[#1A1712]" />
           </button>
@@ -51,8 +51,13 @@ export function NovaExperienceDetail({
             type="button"
             data-cursor-hover
             onClick={onToggleFavorite}
-            aria-label={favorited ? "Remover dos favoritos" : "Favoritar"}
-            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90"
+            aria-label={
+              favorited
+                ? `Remover ${experience.title} dos favoritos`
+                : `Favoritar ${experience.title}`
+            }
+            aria-pressed={favorited}
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]"
           >
             <Heart
               className={cn(
@@ -67,13 +72,13 @@ export function NovaExperienceDetail({
         </div>
 
         <div className="px-5 pt-5">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#D93B6C]">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-[#D62A5F]">
             {experience.category}
           </p>
           <h1 className="mb-3 text-[24px] font-extrabold leading-tight tracking-tight">
             {experience.title}
           </h1>
-          <p className="mb-5 text-[13.5px] leading-relaxed text-[#8A8175]">
+          <p className="mb-5 text-[13.5px] leading-relaxed text-[#6D665C]">
             {experience.description}
           </p>
 
@@ -99,6 +104,8 @@ export function NovaExperienceDetail({
       <div className="shrink-0 border-t border-[#EAE3D6] bg-white p-4">
         {confirmationCode ? (
           <motion.div
+            role="status"
+            aria-live="polite"
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.18 }}
@@ -121,7 +128,7 @@ export function NovaExperienceDetail({
             onClick={() =>
               setConfirmationCode(generateConfirmationCode(experience.id))
             }
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-[#D93B6C] py-3.5 text-[15px] font-bold text-white transition-transform active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-[#D62A5F] py-3.5 text-[15px] font-bold text-white transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1712] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
             <CalendarCheck className="h-4 w-4" />
             Reservar

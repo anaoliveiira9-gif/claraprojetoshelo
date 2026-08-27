@@ -7,7 +7,12 @@ const PAD = 12;
 export function FloorPlan({ property }: { property: Property }) {
   if (property.tipo === "Terreno") {
     return (
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" aria-hidden="true">
+      <svg
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        className="h-full w-full"
+        role="img"
+        aria-label={`Planta esquemática: terreno de ${property.area} m².`}
+      >
         <rect
           x={PAD}
           y={PAD}
@@ -22,7 +27,7 @@ export function FloorPlan({ property }: { property: Property }) {
           x={WIDTH / 2}
           y={HEIGHT / 2}
           textAnchor="middle"
-          className="fill-[#7A6F63]"
+          className="fill-[#6B6157]"
           fontSize={11}
         >
           Terreno {property.area} m²
@@ -49,7 +54,12 @@ export function FloorPlan({ property }: { property: Property }) {
   const gap = 3;
 
   return (
-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" aria-hidden="true">
+    <svg
+      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+      className="h-full w-full"
+      role="img"
+      aria-label={`Planta esquemática com ${rooms.length} ambientes: ${rooms.join(", ")}.`}
+    >
       <rect
         x={2}
         y={2}
@@ -72,7 +82,7 @@ export function FloorPlan({ property }: { property: Property }) {
               width={cellW - gap}
               height={cellH - gap}
               fill="none"
-              stroke="#7A6F63"
+              stroke="#6B6157"
               strokeWidth={0.8}
             />
             <text

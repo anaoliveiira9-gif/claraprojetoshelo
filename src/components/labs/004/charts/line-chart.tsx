@@ -59,9 +59,7 @@ export function LineChart({
       <path d={linePath} fill="none" stroke={color} strokeWidth={2} />
       {points.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r={2.5} fill={color}>
-          <title>
-            {p.label}: {formatValue(p.value)}
-          </title>
+          <title>{`${p.label}: ${formatValue(p.value)}`}</title>
         </circle>
       ))}
       {points.map((p, i) =>

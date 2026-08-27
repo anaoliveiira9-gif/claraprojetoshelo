@@ -43,9 +43,9 @@ export default async function ProjectDetailPage({
         <Link
           href="/labs/002/experiencia/projetos"
           data-cursor-hover
-          className="inline-flex items-center gap-2 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] text-[#161615]/60 hover:text-[#2E4A5E]"
+          className="inline-flex items-center gap-2 rounded-sm [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] text-[#161615]/60 hover:text-[#2E4A5E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4A5E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAFAF8]"
         >
-          <ArrowLeft className="h-3.5 w-3.5" />
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
           Todos os projetos
         </Link>
 
@@ -97,14 +97,14 @@ export default async function ProjectDetailPage({
               ["Localização", project.location],
             ].map(([term, value]) => (
               <div key={term}>
-                <dt className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.1em] text-[#161615]/50">
+                <dt className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.1em] text-[#161615]/65">
                   {term}
                 </dt>
                 <dd className="mt-1 text-base font-bold tracking-tight sm:text-lg">{value}</dd>
               </div>
             ))}
             <div className="col-span-2 sm:col-span-4">
-              <dt className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.1em] text-[#161615]/50">
+              <dt className="[font-family:var(--font-atelier-mono)] text-[10px] uppercase tracking-[0.1em] text-[#161615]/65">
                 Materiais
               </dt>
               <dd className="mt-2 flex flex-wrap gap-2">
@@ -181,17 +181,20 @@ export default async function ProjectDetailPage({
         <Link
           href={`/labs/002/experiencia/projetos/${next.slug}`}
           data-cursor-hover
-          className="group flex items-center justify-between gap-4"
+          className="group flex items-center justify-between gap-4 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E4A5E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAFAF8]"
         >
           <div>
-            <p className="[font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.2em] text-[#161615]/50">
+            <p className="[font-family:var(--font-atelier-mono)] text-[11px] uppercase tracking-[0.2em] text-[#161615]/65">
               Próximo projeto
             </p>
             <h3 className="mt-2 text-3xl font-black uppercase tracking-tight sm:text-5xl">
               {next.name}
             </h3>
           </div>
-          <ArrowUpRight className="h-8 w-8 shrink-0 text-[#2E4A5E] transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+          <ArrowUpRight
+            className="h-8 w-8 shrink-0 text-[#2E4A5E] transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+            aria-hidden="true"
+          />
         </Link>
       </section>
 

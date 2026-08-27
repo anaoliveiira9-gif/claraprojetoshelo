@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { NOIR_FOCUS_RING } from "@/components/labs/003/noir-ui";
 
 const BASE = "/labs/003/experiencia";
 
@@ -36,8 +37,10 @@ export function NoirNav() {
             key={link.href}
             href={link.href}
             data-cursor-hover
+            aria-current={isActive ? "page" : undefined}
             className={cn(
               "rounded-full px-3 py-1.5 font-sans text-[10px] uppercase tracking-[0.15em] transition-colors",
+              NOIR_FOCUS_RING,
               isActive
                 ? "bg-[#7C2A2A] text-[#F1E9DD]"
                 : "text-[#F1E9DD]/60 hover:text-[#F1E9DD]",

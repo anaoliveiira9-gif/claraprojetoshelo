@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, CalendarCheck, MapPinned, Sparkles, X } from "lucide-react";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
@@ -36,6 +37,52 @@ export function NovaNotificationsPanel({
   onClose: () => void;
 }) {
   const reducedMotion = usePrefersReducedMotion();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const backdropRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocused = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      previouslyFocused.current = document.activeElement as HTMLElement | null;
+      closeButtonRef.current?.focus();
+    } else {
+      previouslyFocused.current?.focus();
+      previouslyFocused.current = null;
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key === "Tab") {
+        // Only two focusable elements live in this overlay (backdrop +
+        // close button) — keep Tab/Shift+Tab cycling between just those two
+        // so focus can't escape to the screen underneath while it's open.
+        const focusables = [backdropRef.current, closeButtonRef.current].filter(
+          (el): el is HTMLButtonElement => el !== null,
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
 
   return (
     <AnimatePresence>
@@ -43,15 +90,19 @@ export function NovaNotificationsPanel({
         <>
           <motion.button
             type="button"
+            ref={backdropRef}
             aria-label="Fechar notificações"
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="absolute inset-0 z-40 bg-[#1A1712]/40"
+            className="absolute inset-0 z-40 bg-[#1A1712]/40 focus-visible:outline-none"
           />
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Notificações"
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24 }}
@@ -65,10 +116,11 @@ export function NovaNotificationsPanel({
               </span>
               <button
                 type="button"
+                ref={closeButtonRef}
                 data-cursor-hover
                 onClick={onClose}
                 aria-label="Fechar"
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-white"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D93B6C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF7F2]"
               >
                 <X className="h-3.5 w-3.5 text-[#1A1712]" />
               </button>
@@ -88,10 +140,10 @@ export function NovaNotificationsPanel({
                       <p className="text-[13px] font-semibold text-[#1A1712]">
                         {notification.title}
                       </p>
-                      <p className="text-[12px] leading-snug text-[#8A8175]">
+                      <p className="text-[12px] leading-snug text-[#6D665C]">
                         {notification.body}
                       </p>
-                      <p className="mt-1 text-[10.5px] text-[#8A8175]">
+                      <p className="mt-1 text-[10.5px] text-[#6D665C]">
                         {notification.time}
                       </p>
                     </div>

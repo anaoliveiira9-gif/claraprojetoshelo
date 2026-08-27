@@ -50,7 +50,7 @@ export function ListingClient({
     <div>
       <div className="grid grid-cols-1 gap-4 rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] p-4 sm:grid-cols-2 lg:grid-cols-5 lg:items-end lg:gap-3">
         <label className="block">
-          <span className="block text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+          <span className="block text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
             Cidade ou bairro
           </span>
           <input
@@ -58,12 +58,12 @@ export function ListingClient({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Buscar…"
-            className="mt-1 w-full border-b border-[#DDD5C8] bg-transparent pb-1 text-sm text-[#241E1A] placeholder:text-[#7A6F63]/60 focus:border-[#2F4A3B] focus:outline-none"
+            className="mt-1 w-full border-b border-[#DDD5C8] bg-transparent pb-1 text-sm text-[#241E1A] placeholder:text-[#6B6157]/60 focus:border-[#2F4A3B] focus:outline-none"
           />
         </label>
 
         <label className="block">
-          <span className="block text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+          <span className="block text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
             Tipo
           </span>
           <select
@@ -82,7 +82,7 @@ export function ListingClient({
         </label>
 
         <label className="block">
-          <span className="block text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+          <span className="block text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
             Quartos (mín.)
           </span>
           <select
@@ -101,7 +101,7 @@ export function ListingClient({
         </label>
 
         <label className="block">
-          <span className="block text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+          <span className="block text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
             Preço mín. (R$)
           </span>
           <input
@@ -111,13 +111,13 @@ export function ListingClient({
             value={precoMin}
             onChange={(e) => setPrecoMin(e.target.value)}
             placeholder="0"
-            className="mt-1 w-full border-b border-[#DDD5C8] bg-transparent pb-1 text-sm text-[#241E1A] placeholder:text-[#7A6F63]/60 focus:border-[#2F4A3B] focus:outline-none"
+            className="mt-1 w-full border-b border-[#DDD5C8] bg-transparent pb-1 text-sm text-[#241E1A] placeholder:text-[#6B6157]/60 focus:border-[#2F4A3B] focus:outline-none"
           />
         </label>
 
         <div className="flex items-end gap-3">
           <label className="block flex-1">
-            <span className="block text-[10px] uppercase tracking-[0.16em] text-[#7A6F63]">
+            <span className="block text-[10px] uppercase tracking-[0.16em] text-[#6B6157]">
               Preço máx. (R$)
             </span>
             <input
@@ -127,21 +127,21 @@ export function ListingClient({
               value={precoMax}
               onChange={(e) => setPrecoMax(e.target.value)}
               placeholder="Sem limite"
-              className="mt-1 w-full border-b border-[#DDD5C8] bg-transparent pb-1 text-sm text-[#241E1A] placeholder:text-[#7A6F63]/60 focus:border-[#2F4A3B] focus:outline-none"
+              className="mt-1 w-full border-b border-[#DDD5C8] bg-transparent pb-1 text-sm text-[#241E1A] placeholder:text-[#6B6157]/60 focus:border-[#2F4A3B] focus:outline-none"
             />
           </label>
           <button
             type="button"
             onClick={clearFilters}
             data-cursor-hover
-            className="shrink-0 pb-1 text-[10px] uppercase tracking-[0.16em] text-[#7A6F63] underline underline-offset-4 hover:text-[#241E1A]"
+            className="shrink-0 pb-1 text-[10px] uppercase tracking-[0.16em] text-[#6B6157] underline underline-offset-4 hover:text-[#241E1A]"
           >
             Limpar
           </button>
         </div>
       </div>
 
-      <p className="mt-6 mb-4 text-xs uppercase tracking-[0.16em] text-[#7A6F63]">
+      <p className="mt-6 mb-4 text-xs uppercase tracking-[0.16em] text-[#6B6157]">
         {filtered.length} {filtered.length === 1 ? "imóvel encontrado" : "imóveis encontrados"}
       </p>
 
