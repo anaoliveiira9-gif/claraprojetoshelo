@@ -21,14 +21,22 @@ export async function loginAction(
   if (!isAdminConfigured()) {
     return {
       error:
-        "Painel ainda não configurado. Defina ADMIN_PASSWORD e ADMIN_SESSION_SECRET no ambiente.",
+        "Painel ainda não configurado. Defina ADMIN_EMAIL, ADMIN_PASSWORD e ADMIN_SESSION_SECRET no ambiente.",
     };
   }
 
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const password = String(formData.get("password") ?? "");
-  const expected = process.env.ADMIN_PASSWORD as string;
-  if (!password || !timingSafeEqual(password, expected)) {
-    return { error: "Senha incorreta." };
+  const expectedEmail = (process.env.ADMIN_EMAIL as string).trim().toLowerCase();
+  const expectedPassword = process.env.ADMIN_PASSWORD as string;
+
+  const emailOk = email.length > 0 && timingSafeEqual(email, expectedEmail);
+  const passwordOk =
+    password.length > 0 && timingSafeEqual(password, expectedPassword);
+  if (!emailOk || !passwordOk) {
+    return { error: "E-mail ou senha incorretos." };
   }
 
   const token = await createSessionToken();

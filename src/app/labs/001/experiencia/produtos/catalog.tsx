@@ -12,6 +12,7 @@ import {
 } from "@/components/labs/001/products";
 import { ScentObject } from "@/components/labs/001/scent-object";
 import { useEter } from "@/components/labs/001/eter-context";
+import { useHoverCapable } from "@/components/labs/001/use-hover-capable";
 import { cn } from "@/lib/utils";
 
 const CATEGORIES: (ProductCategory | "Todos")[] = [
@@ -31,6 +32,7 @@ export function Catalog({
   const [active, setActive] = useState<ProductCategory | "Todos">(initialCategory);
   const [note, setNote] = useState<ScentNoteId | null>(initialNote);
   const { toggleWishlist, isWishlisted } = useEter();
+  const hoverCapable = useHoverCapable();
 
   // initialCategory/initialNote come from the URL search params, read on the
   // server. When navigating client-side to a new query string on this same
@@ -146,9 +148,24 @@ export function Catalog({
             <button
               type="button"
               data-cursor-hover
-              aria-label="Favoritar"
+              aria-label={
+                isWishlisted(product.slug)
+                  ? "Remover dos favoritos"
+                  : "Favoritar"
+              }
+              aria-pressed={isWishlisted(product.slug)}
               onClick={() => toggleWishlist(product.slug)}
-              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center bg-[#F6F1E9]/90 opacity-0 transition-opacity group-hover:opacity-100"
+              className={cn(
+                "absolute right-3 top-3 flex h-8 w-8 items-center justify-center bg-[#F6F1E9]/90 transition-[opacity,transform] duration-150 active:scale-90",
+                // A hover-only reveal is invisible and unreachable on touch
+                // devices (no hover state to trigger it), so it's only used
+                // on real hover-capable pointers. Everywhere else — touch,
+                // or the item is already wishlisted — the button stays
+                // visible so its state and affordance are always readable.
+                !hoverCapable || isWishlisted(product.slug)
+                  ? "opacity-100"
+                  : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+              )}
             >
               <Heart
                 className="h-4 w-4"

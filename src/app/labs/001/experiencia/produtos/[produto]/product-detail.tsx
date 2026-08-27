@@ -65,7 +65,7 @@ export function ProductDetail({ product }: { product: Product }) {
               data-cursor-hover
               aria-label="Diminuir quantidade"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="flex h-12 w-12 items-center justify-center transition-colors hover:bg-[#171512]/5"
+              className="flex h-12 w-12 items-center justify-center transition-[background-color,transform] duration-150 hover:bg-[#171512]/5 active:scale-90"
             >
               <Minus className="h-3.5 w-3.5" />
             </button>
@@ -75,7 +75,7 @@ export function ProductDetail({ product }: { product: Product }) {
               data-cursor-hover
               aria-label="Aumentar quantidade"
               onClick={() => setQuantity((q) => q + 1)}
-              className="flex h-12 w-12 items-center justify-center transition-colors hover:bg-[#171512]/5"
+              className="flex h-12 w-12 items-center justify-center transition-[background-color,transform] duration-150 hover:bg-[#171512]/5 active:scale-90"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
@@ -85,7 +85,7 @@ export function ProductDetail({ product }: { product: Product }) {
             type="button"
             data-cursor-hover
             onClick={() => addToCart(product.slug, quantity)}
-            className="flex flex-1 items-center justify-center bg-[#171512] px-8 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-colors hover:bg-[#B4915B]"
+            className="flex flex-1 items-center justify-center bg-[#171512] px-8 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-[background-color,transform] duration-150 hover:bg-[#B4915B] active:scale-[0.98]"
           >
             Adicionar à sacola
           </button>
@@ -93,9 +93,10 @@ export function ProductDetail({ product }: { product: Product }) {
           <button
             type="button"
             data-cursor-hover
-            aria-label="Favoritar"
+            aria-label={wishlisted ? "Remover dos favoritos" : "Favoritar"}
+            aria-pressed={wishlisted}
             onClick={() => toggleWishlist(product.slug)}
-            className="flex h-[52px] w-[52px] shrink-0 items-center justify-center border border-[#171512]/20 transition-colors hover:border-[#171512]"
+            className="flex h-[52px] w-[52px] shrink-0 items-center justify-center border border-[#171512]/20 transition-[border-color,transform] duration-150 hover:border-[#171512] active:scale-90"
           >
             <Heart
               className="h-4 w-4"

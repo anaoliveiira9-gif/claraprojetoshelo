@@ -23,12 +23,19 @@ export function ExperienceCard({
   className?: string;
 }) {
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       data-cursor-hover
       onClick={() => onSelect?.(experience.slug)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect?.(experience.slug);
+        }
+      }}
       className={cn(
-        "group flex w-full flex-col overflow-hidden rounded-2xl border border-[#EAE3D6] bg-white text-left shadow-[0_1px_2px_rgba(26,23,18,0.04)] transition-transform active:scale-[0.98]",
+        "group flex w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-[#EAE3D6] bg-white text-left shadow-[0_1px_2px_rgba(26,23,18,0.04)] transition-transform active:scale-[0.98]",
         size === "rail" && "w-[168px] shrink-0",
         className,
       )}
@@ -87,6 +94,6 @@ export function ExperienceCard({
           <span>{experience.time}</span>
         </div>
       </div>
-    </button>
+    </div>
   );
 }

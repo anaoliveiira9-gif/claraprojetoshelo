@@ -17,7 +17,7 @@ export function SiteNav() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-[70] flex justify-end px-4 pt-3 sm:px-8 sm:pt-6">
+    <header className="fixed inset-x-0 top-14 z-[70] flex justify-end px-4 pt-3 sm:top-0 sm:px-8 sm:pt-6">
       <nav
         aria-label="Navegação principal"
         className="flex items-center gap-1 border border-[#161615]/15 bg-[#FAFAF8]/90 px-2 py-1.5 backdrop-blur-md sm:gap-2 sm:px-3"

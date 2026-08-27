@@ -13,7 +13,7 @@ export function Studio() {
   return (
     <section id="studio" className="border-b border-line px-5 py-24 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-[1600px]">
-        <SectionLabel index="05" label="Estúdio" />
+        <SectionLabel index="04" label="Estúdio" />
 
         <div className="mt-10 grid gap-14 lg:grid-cols-[1.5fr_1fr]">
           <Reveal>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import {
   ArrowRight,
   Bell,
@@ -562,6 +562,7 @@ export function NovaMapScreen({
 }) {
   const reducedMotion = usePrefersReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
+  const dragControls = useDragControls();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [filter, setFilter] = useState<MapFilterKey>("todos");
   const [zoomed, setZoomed] = useState(false);
@@ -634,6 +635,11 @@ export function NovaMapScreen({
       >
         <motion.div
           drag={!reducedMotion}
+          dragListener={false}
+          dragControls={dragControls}
+          onPointerDown={(event) => {
+            if (!reducedMotion) dragControls.start(event);
+          }}
           dragConstraints={containerRef}
           dragElastic={0.05}
           dragTransition={{ power: 0.2, timeConstant: 200 }}
@@ -681,6 +687,7 @@ export function NovaMapScreen({
                 key={experience.id}
                 type="button"
                 data-cursor-hover
+                onPointerDown={(event) => event.stopPropagation()}
                 onClick={() =>
                   setActiveId((current) =>
                     current === experience.id ? null : experience.id,

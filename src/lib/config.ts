@@ -59,7 +59,7 @@ export type PaymentMethodId = (typeof PAYMENT_METHODS)[number]["id"];
 export const NAV_LINKS = [
   { href: "/#labs", label: "Labs" },
   { href: "/#services", label: "Serviços" },
-  { href: "/#faq", label: "FAQ" },
   { href: "/#studio", label: "Estúdio" },
+  { href: "/#faq", label: "FAQ" },
   { href: "/start-a-project", label: "Começar um Projeto" },
 ] as const;

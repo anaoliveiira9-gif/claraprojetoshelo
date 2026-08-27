@@ -1,4 +1,5 @@
 import { BRAND, CONTACT } from "@/lib/config";
+import { AdminAccessForm } from "@/components/admin/access-form";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -44,13 +45,13 @@ export default function AdminConfiguracoesPage() {
           Acesso ao painel
         </p>
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-paper-dim">
-          O login deste painel usa uma senha única definida nas variáveis de
-          ambiente <code className="text-paper">ADMIN_PASSWORD</code> e{" "}
+          O login usa um e-mail e senha únicos, definidos nas variáveis de
+          ambiente <code className="text-paper">ADMIN_EMAIL</code>,{" "}
+          <code className="text-paper">ADMIN_PASSWORD</code> e{" "}
           <code className="text-paper">ADMIN_SESSION_SECRET</code> — nenhuma
-          credencial fica no código ou é enviada ao navegador. Para trocar a
-          senha, basta atualizar <code className="text-paper">ADMIN_PASSWORD</code>{" "}
-          nas configurações do projeto na Vercel e fazer um novo deploy.
+          credencial fica no código ou é enviada ao navegador.
         </p>
+        <AdminAccessForm />
       </div>
     </div>
   );

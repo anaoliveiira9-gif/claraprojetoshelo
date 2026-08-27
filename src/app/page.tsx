@@ -13,8 +13,8 @@ export default function Home() {
       <LabsGrid />
       <HowWeWork />
       <Services />
-      <Faq />
       <Studio />
+      <Faq />
       <FinalCta />
     </>
   );

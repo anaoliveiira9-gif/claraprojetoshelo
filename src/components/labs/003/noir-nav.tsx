@@ -23,7 +23,7 @@ export function NoirNav() {
   return (
     <nav
       aria-label="Navegação Noir"
-      className="fixed right-3 top-3 z-[80] flex items-center gap-1 rounded-full border border-[#F1E9DD]/15 bg-[#0D0B0A]/90 p-1 backdrop-blur-md sm:right-5 sm:top-5"
+      className="fixed right-3 top-16 z-[80] flex items-center gap-1 rounded-full border border-[#F1E9DD]/15 bg-[#0D0B0A]/90 p-1 backdrop-blur-md sm:right-5 sm:top-5"
     >
       {LINKS.map((link) => {
         const isActive =

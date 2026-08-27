@@ -26,7 +26,7 @@ const SEED_EVENTS: ActivityEvent[] = [
   },
   {
     id: "seed-2",
-    text: "PR-1049 — Integração API logística Tork avançou para 72%.",
+    text: "PR-1049 — Integração API logística Nexlog avançou para 72%.",
     area: "TI",
     kind: "info",
     time: "há 6 min",

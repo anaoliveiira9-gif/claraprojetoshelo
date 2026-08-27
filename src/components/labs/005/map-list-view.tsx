@@ -216,24 +216,35 @@ export function MapListView({ properties }: { properties: Property[] }) {
                     <span className={`${serif} text-sm text-[#2F4A3B]`}>
                       {formatBRL(property.preco)}
                     </span>
-                    <button
-                      type="button"
-                      data-cursor-hover
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        toggleFavorite(property.id);
-                      }}
-                      aria-pressed={favorited}
-                      aria-label={favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-                      className="p-0.5"
-                    >
-                      <Heart
-                        className={cn(
-                          "h-3.5 w-3.5",
-                          favorited ? "fill-[#2F4A3B] text-[#2F4A3B]" : "text-[#7A6F63]",
-                        )}
-                      />
-                    </button>
+                    <div className="flex items-center gap-2.5">
+                      <Link
+                        href={`/labs/005/experiencia/imoveis/${property.slug}`}
+                        data-cursor-hover
+                        onClick={(event) => event.stopPropagation()}
+                        aria-label={`Ver detalhes de ${property.titulo}`}
+                        className="p-0.5 text-[#7A6F63] transition-colors hover:text-[#2F4A3B]"
+                      >
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </Link>
+                      <button
+                        type="button"
+                        data-cursor-hover
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          toggleFavorite(property.id);
+                        }}
+                        aria-pressed={favorited}
+                        aria-label={favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                        className="p-0.5"
+                      >
+                        <Heart
+                          className={cn(
+                            "h-3.5 w-3.5",
+                            favorited ? "fill-[#2F4A3B] text-[#2F4A3B]" : "text-[#7A6F63]",
+                          )}
+                        />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

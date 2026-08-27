@@ -31,17 +31,36 @@ export default function CheckoutPage() {
     "pix"
   );
   const [processing, setProcessing] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [furthestStep, setFurthestStep] = useState(0);
   const orderNumber = useMemo(() => fakeOrderNumber(), []);
 
   const shipping = cartTotal > 500 || cartTotal === 0 ? 0 : 38;
   const total = cartTotal + shipping;
 
+  const nomeValid = data.nome.trim().length > 0;
+  const emailValid = /\S+@\S+\.\S+/.test(data.email);
+  const ruaValid = address.rua.trim().length > 0;
+  const cidadeValid = address.cidade.trim().length > 0;
+
   const canAdvance =
     (step === 0 && cartProducts.length > 0) ||
-    (step === 1 && data.nome.trim() && /\S+@\S+\.\S+/.test(data.email)) ||
-    (step === 2 && address.rua.trim() && address.cidade.trim()) ||
+    (step === 1 && nomeValid && emailValid) ||
+    (step === 2 && ruaValid && cidadeValid) ||
     step === 3 ||
     step === 4;
+
+  function markTouched(field: string) {
+    setTouched((t) => (t[field] ? t : { ...t, [field]: true }));
+  }
+
+  function goToStep(target: number) {
+    // Only steps already reached can be jumped back to directly — this
+    // mirrors "← Voltar" (never lets you skip ahead of validation) while
+    // making the stepper itself a real, clickable piece of navigation
+    // instead of a static progress label.
+    if (target <= furthestStep && target !== step) setStep(target);
+  }
 
   async function handlePay() {
     setProcessing(true);
@@ -69,14 +88,34 @@ export default function CheckoutPage() {
   return (
     <main className="mx-auto max-w-3xl px-6 pb-24 pt-16">
       <div className="flex items-center gap-2 font-eter-sans text-[10px] uppercase tracking-[0.15em] text-[#171512]/50">
-        {STEPS.map((label, i) => (
-          <span key={label} className="flex items-center gap-2">
-            <span className={i <= step ? "text-[#B4915B]" : undefined}>
-              {String(i + 1).padStart(2, "0")} {label}
+        {STEPS.map((label, i) => {
+          // Once the order is confirmed the cart is cleared, so the earlier
+          // steps no longer have anything valid to show — the stepper stops
+          // being a navigation control at that point, matching there being
+          // no "← Voltar" control on the confirmation screen either.
+          const reachable = step !== 4 && i <= furthestStep && i !== step;
+          return (
+            <span key={label} className="flex items-center gap-2">
+              <button
+                type="button"
+                data-cursor-hover={reachable ? true : undefined}
+                onClick={() => goToStep(i)}
+                disabled={!reachable}
+                aria-current={i === step ? "step" : undefined}
+                className={cn(
+                  "transition-colors",
+                  i <= step ? "text-[#B4915B]" : undefined,
+                  reachable
+                    ? "cursor-pointer hover:text-[#171512]"
+                    : "cursor-default"
+                )}
+              >
+                {String(i + 1).padStart(2, "0")} {label}
+              </button>
+              {i < STEPS.length - 1 && <span>—</span>}
             </span>
-            {i < STEPS.length - 1 && <span>—</span>}
-          </span>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-10">
@@ -96,8 +135,9 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         data-cursor-hover
+                        aria-label="Diminuir quantidade"
                         onClick={() => setQuantity(product.slug, quantity - 1)}
-                        className="h-6 w-6 border border-[#171512]/20"
+                        className="h-6 w-6 border border-[#171512]/20 transition-[border-color,transform] duration-150 hover:border-[#171512] active:scale-90"
                       >
                         −
                       </button>
@@ -105,8 +145,9 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         data-cursor-hover
+                        aria-label="Aumentar quantidade"
                         onClick={() => setQuantity(product.slug, quantity + 1)}
-                        className="h-6 w-6 border border-[#171512]/20"
+                        className="h-6 w-6 border border-[#171512]/20 transition-[border-color,transform] duration-150 hover:border-[#171512] active:scale-90"
                       >
                         +
                       </button>
@@ -125,19 +166,51 @@ export default function CheckoutPage() {
           <div>
             <h1 className="font-eter-serif text-3xl">Seus dados</h1>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <input
-                placeholder="Nome completo"
-                value={data.nome}
-                onChange={(e) => setData((d) => ({ ...d, nome: e.target.value }))}
-                className="border border-[#171512]/20 bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:border-[#171512] focus:outline-none sm:col-span-2"
-              />
-              <input
-                type="email"
-                placeholder="E-mail"
-                value={data.email}
-                onChange={(e) => setData((d) => ({ ...d, email: e.target.value }))}
-                className="border border-[#171512]/20 bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:border-[#171512] focus:outline-none sm:col-span-2"
-              />
+              <div className="sm:col-span-2">
+                <input
+                  placeholder="Nome completo"
+                  value={data.nome}
+                  onChange={(e) =>
+                    setData((d) => ({ ...d, nome: e.target.value }))
+                  }
+                  onBlur={() => markTouched("nome")}
+                  aria-invalid={touched.nome && !nomeValid}
+                  className={cn(
+                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:outline-none",
+                    touched.nome && !nomeValid
+                      ? "border-red-800/60 focus:border-red-800/60"
+                      : "border-[#171512]/20 focus:border-[#171512]"
+                  )}
+                />
+                {touched.nome && !nomeValid && (
+                  <p className="mt-1.5 text-xs text-red-800/70">
+                    Informe seu nome completo.
+                  </p>
+                )}
+              </div>
+              <div className="sm:col-span-2">
+                <input
+                  type="email"
+                  placeholder="E-mail"
+                  value={data.email}
+                  onChange={(e) =>
+                    setData((d) => ({ ...d, email: e.target.value }))
+                  }
+                  onBlur={() => markTouched("email")}
+                  aria-invalid={touched.email && !emailValid}
+                  className={cn(
+                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:outline-none",
+                    touched.email && !emailValid
+                      ? "border-red-800/60 focus:border-red-800/60"
+                      : "border-[#171512]/20 focus:border-[#171512]"
+                  )}
+                />
+                {touched.email && !emailValid && (
+                  <p className="mt-1.5 text-xs text-red-800/70">
+                    Informe um e-mail válido.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -146,22 +219,50 @@ export default function CheckoutPage() {
           <div>
             <h1 className="font-eter-serif text-3xl">Entrega</h1>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <input
-                placeholder="Endereço"
-                value={address.rua}
-                onChange={(e) =>
-                  setAddress((a) => ({ ...a, rua: e.target.value }))
-                }
-                className="border border-[#171512]/20 bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:border-[#171512] focus:outline-none sm:col-span-2"
-              />
-              <input
-                placeholder="Cidade"
-                value={address.cidade}
-                onChange={(e) =>
-                  setAddress((a) => ({ ...a, cidade: e.target.value }))
-                }
-                className="border border-[#171512]/20 bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:border-[#171512] focus:outline-none"
-              />
+              <div className="sm:col-span-2">
+                <input
+                  placeholder="Endereço"
+                  value={address.rua}
+                  onChange={(e) =>
+                    setAddress((a) => ({ ...a, rua: e.target.value }))
+                  }
+                  onBlur={() => markTouched("rua")}
+                  aria-invalid={touched.rua && !ruaValid}
+                  className={cn(
+                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:outline-none",
+                    touched.rua && !ruaValid
+                      ? "border-red-800/60 focus:border-red-800/60"
+                      : "border-[#171512]/20 focus:border-[#171512]"
+                  )}
+                />
+                {touched.rua && !ruaValid && (
+                  <p className="mt-1.5 text-xs text-red-800/70">
+                    Informe o endereço de entrega.
+                  </p>
+                )}
+              </div>
+              <div>
+                <input
+                  placeholder="Cidade"
+                  value={address.cidade}
+                  onChange={(e) =>
+                    setAddress((a) => ({ ...a, cidade: e.target.value }))
+                  }
+                  onBlur={() => markTouched("cidade")}
+                  aria-invalid={touched.cidade && !cidadeValid}
+                  className={cn(
+                    "w-full border bg-transparent px-4 py-3 text-sm placeholder:text-[#171512]/40 focus:outline-none",
+                    touched.cidade && !cidadeValid
+                      ? "border-red-800/60 focus:border-red-800/60"
+                      : "border-[#171512]/20 focus:border-[#171512]"
+                  )}
+                />
+                {touched.cidade && !cidadeValid && (
+                  <p className="mt-1.5 text-xs text-red-800/70">
+                    Informe a cidade.
+                  </p>
+                )}
+              </div>
               <input
                 placeholder="CEP"
                 value={address.cep}
@@ -191,9 +292,10 @@ export default function CheckoutPage() {
                   key={option.id}
                   type="button"
                   data-cursor-hover
+                  aria-pressed={method === option.id}
                   onClick={() => setMethod(option.id)}
                   className={cn(
-                    "border px-4 py-4 text-xs uppercase tracking-[0.15em] transition-colors",
+                    "border px-4 py-4 text-xs uppercase tracking-[0.15em] transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97]",
                     method === option.id
                       ? "border-[#171512] bg-[#171512] text-[#F6F1E9]"
                       : "border-[#171512]/20 text-[#171512]/70 hover:border-[#171512]"
@@ -209,7 +311,7 @@ export default function CheckoutPage() {
               data-cursor-hover
               onClick={handlePay}
               disabled={processing}
-              className="mt-8 flex w-full items-center justify-center bg-[#171512] px-6 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-colors hover:bg-[#B4915B] disabled:opacity-50 sm:w-fit sm:px-10"
+              className="mt-8 flex w-full items-center justify-center bg-[#171512] px-6 py-4 font-eter-sans text-xs uppercase tracking-[0.2em] text-[#F6F1E9] transition-[background-color,transform] duration-150 hover:bg-[#B4915B] active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 sm:w-fit sm:px-10"
             >
               {processing
                 ? "Processando…"
@@ -256,9 +358,27 @@ export default function CheckoutPage() {
             <button
               type="button"
               data-cursor-hover
-              onClick={() => setStep((s) => Math.min(3, s + 1))}
-              disabled={!canAdvance}
-              className="border border-[#171512] px-6 py-3 font-eter-sans text-xs uppercase tracking-[0.15em] transition-colors hover:bg-[#171512] hover:text-[#F6F1E9] disabled:cursor-not-allowed disabled:opacity-30"
+              onClick={() => {
+                if (canAdvance) {
+                  setFurthestStep((f) => Math.max(f, step + 1));
+                  setStep((s) => Math.min(3, s + 1));
+                  return;
+                }
+                // Invalid — reveal the inline errors for this step instead
+                // of silently doing nothing, so a disabled-looking button
+                // still gives a clear reason when tapped.
+                if (step === 1) {
+                  setTouched((t) => ({ ...t, nome: true, email: true }));
+                } else if (step === 2) {
+                  setTouched((t) => ({ ...t, rua: true, cidade: true }));
+                }
+              }}
+              className={cn(
+                "border px-6 py-3 font-eter-sans text-xs uppercase tracking-[0.15em] transition-colors",
+                canAdvance
+                  ? "border-[#171512] text-[#171512] hover:bg-[#171512] hover:text-[#F6F1E9]"
+                  : "border-[#171512]/30 text-[#171512]/40"
+              )}
             >
               Continuar →
             </button>

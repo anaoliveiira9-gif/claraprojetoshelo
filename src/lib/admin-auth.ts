@@ -1,23 +1,29 @@
 /**
- * Minimal, dependency-free admin auth: a single shared password (env var)
- * plus an HMAC-signed, expiring session cookie. No database, no user
- * accounts — this gate is for one owner, not a multi-user system.
+ * Minimal, dependency-free admin auth: a single shared e-mail + password
+ * (env vars) plus an HMAC-signed, expiring session cookie. No database, no
+ * user accounts — this gate is for one owner, not a multi-user system.
  *
  * Edge-compatible on purpose (uses Web Crypto + btoa, not Node's `crypto`
- * or `Buffer`) so it works both in `middleware.ts` (edge runtime) and in
+ * or `Buffer`) so it works both in `src/proxy.ts` (edge runtime) and in
  * server actions (node runtime).
  *
  * Required environment variables (set in Vercel project settings, never
- * committed): `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` (any long random
- * string, unrelated to the password). Until both are set, the panel stays
- * fully locked — it fails closed, never open.
+ * committed): `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `ADMIN_SESSION_SECRET`
+ * (any long random string, unrelated to the password). Until all three are
+ * set, the panel stays fully locked — it fails closed, never open. There is
+ * no self-service rotation UI yet (no database to persist a change to) —
+ * see `/admin/configuracoes` for how a change request is handled today.
  */
 
 export const ADMIN_SESSION_COOKIE = "alumna_admin_session";
 export const ADMIN_SESSION_TTL_SECONDS = 60 * 60 * 12; // 12h
 
 export function isAdminConfigured(): boolean {
-  return Boolean(process.env.ADMIN_PASSWORD && process.env.ADMIN_SESSION_SECRET);
+  return Boolean(
+    process.env.ADMIN_EMAIL &&
+      process.env.ADMIN_PASSWORD &&
+      process.env.ADMIN_SESSION_SECRET
+  );
 }
 
 function toBase64Url(bytes: ArrayBuffer): string {

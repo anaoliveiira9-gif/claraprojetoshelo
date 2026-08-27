@@ -22,13 +22,27 @@ export default function AdminLoginPage() {
         <form action={formAction} className="mt-10 flex flex-col gap-4">
           <label className="flex flex-col gap-2">
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
+              E-mail
+            </span>
+            <input
+              type="email"
+              name="email"
+              required
+              autoFocus
+              autoComplete="username"
+              className="border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
+            />
+          </label>
+
+          <label className="flex flex-col gap-2">
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper-faint">
               Senha
             </span>
             <input
               type="password"
               name="password"
               required
-              autoFocus
+              autoComplete="current-password"
               className="border border-line bg-transparent px-4 py-3 text-sm text-paper placeholder:text-paper-faint focus:border-accent focus:outline-none"
             />
           </label>

@@ -56,12 +56,12 @@ function FaqItem({
 }
 
 export function Faq() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
     <section id="faq" className="border-b border-line px-5 py-24 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-[1600px]">
-        <SectionLabel index="04" label="Perguntas Frequentes" />
+        <SectionLabel index="05" label="Perguntas Frequentes" />
         <p className="mt-6 max-w-xl text-sm leading-relaxed text-paper-dim">
           As dúvidas mais comuns de quem está avaliando começar um projeto
           com a ALUMNA.

@@ -18,7 +18,7 @@ export default function OrbitPerfilPage() {
           <div>
             <p className="text-base font-semibold text-[var(--orbit-ink)]">Heloísa Souza</p>
             <p className="text-sm text-[var(--orbit-secondary)]">
-              Gerente de Operações · Metzler Metal Mecânica
+              Gerente de Operações · Ferronova Metalúrgica
             </p>
           </div>
         </div>
@@ -27,7 +27,7 @@ export default function OrbitPerfilPage() {
           <div className="flex items-center gap-2.5 text-sm">
             <Mail className="h-4 w-4 text-[var(--orbit-secondary)]" />
             <dt className="sr-only">E-mail</dt>
-            <dd className="text-[var(--orbit-ink)]">heloisa.souza@metzler.com.br</dd>
+            <dd className="text-[var(--orbit-ink)]">heloisa.souza@ferronova.com.br</dd>
           </div>
           <div className="flex items-center gap-2.5 text-sm">
             <MapPin className="h-4 w-4 text-[var(--orbit-secondary)]" />

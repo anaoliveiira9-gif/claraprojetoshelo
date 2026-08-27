@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -10,31 +10,9 @@ import {
   type ScentNoteId,
 } from "@/components/labs/001/products";
 import { ScentObject } from "@/components/labs/001/scent-object";
+import { useHoverCapable } from "@/components/labs/001/use-hover-capable";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/utils";
-
-/**
- * True on devices with a real hover-capable pointer (mouse/trackpad).
- * Touch devices fall back to tap-to-select instead of hover-to-preview.
- */
-function getInitialHoverCapable() {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-}
-
-function useHoverCapable() {
-  const [hoverCapable, setHoverCapable] = useState(getInitialHoverCapable);
-
-  useEffect(() => {
-    const query = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const listener = (event: MediaQueryListEvent) =>
-      setHoverCapable(event.matches);
-    query.addEventListener("change", listener);
-    return () => query.removeEventListener("change", listener);
-  }, []);
-
-  return hoverCapable;
-}
 
 const DEFAULT_MOOD =
   "Cinco notas. Nove composições. Escolha por onde sentir primeiro.";

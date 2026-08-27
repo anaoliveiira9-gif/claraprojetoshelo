@@ -6,7 +6,7 @@ import { useOrbitTheme } from "@/components/labs/004/theme";
 
 export default function OrbitConfiguracoesPage() {
   const { theme, toggle } = useOrbitTheme();
-  const [empresa, setEmpresa] = useState("Metzler Metal Mecânica Ltda.");
+  const [empresa, setEmpresa] = useState("Ferronova Metalúrgica Ltda.");
   const [fuso, setFuso] = useState("America/Sao_Paulo");
   const [idioma, setIdioma] = useState("pt-BR");
   const [saved, setSaved] = useState(false);

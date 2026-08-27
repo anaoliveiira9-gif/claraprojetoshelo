@@ -20,7 +20,7 @@ export const PROCESSOS: Processo[] = [
   { id: "PR-1046", nome: "Atualização de cadastro de clientes", area: "Comercial", responsavel: "Carla Nogueira", status: "Em andamento", prioridade: "Baixa", prazo: "2026-09-10", progresso: 55 },
   { id: "PR-1047", nome: "Migração de planilhas para ERP", area: "Financeiro", responsavel: "Marina Alves", status: "Em andamento", prioridade: "Média", prazo: "2026-09-05", progresso: 38 },
   { id: "PR-1048", nome: "Revisão de contratos SLA", area: "Jurídico", responsavel: "Otávio Lima", status: "Pendente", prioridade: "Média", prazo: "2026-09-14", progresso: 5 },
-  { id: "PR-1049", nome: "Integração API logística Tork", area: "TI", responsavel: "Bianca Ferreira", status: "Em andamento", prioridade: "Alta", prazo: "2026-08-30", progresso: 72 },
+  { id: "PR-1049", nome: "Integração API logística Nexlog", area: "TI", responsavel: "Bianca Ferreira", status: "Em andamento", prioridade: "Alta", prazo: "2026-08-30", progresso: 72 },
   { id: "PR-1050", nome: "Fechamento contábil mensal", area: "Financeiro", responsavel: "Igor Cardoso", status: "Concluído", prioridade: "Alta", prazo: "2026-08-15", progresso: 100 },
   { id: "PR-1051", nome: "Triagem de tickets de suporte", area: "Atendimento", responsavel: "Larissa Prado", status: "Em andamento", prioridade: "Baixa", prazo: "2026-08-29", progresso: 81 },
   { id: "PR-1052", nome: "Validação de estoque CD Sul", area: "Operações", responsavel: "Diego Martins", status: "Pendente", prioridade: "Alta", prazo: "2026-09-01", progresso: 18 },
