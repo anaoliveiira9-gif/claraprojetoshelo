@@ -19,7 +19,7 @@ function fakeOrderNumber() {
 }
 
 export default function CheckoutPage() {
-  const { cartProducts, cartTotal, setQuantity } = useEter();
+  const { cartProducts, cartTotal, setQuantity, clearCart } = useEter();
   const [step, setStep] = useState(0);
   const [data, setData] = useState({ nome: "", email: "" });
   const [address, setAddress] = useState({
@@ -48,6 +48,7 @@ export default function CheckoutPage() {
     await new Promise((r) => setTimeout(r, 1100));
     setProcessing(false);
     setStep(4);
+    clearCart();
   }
 
   if (cartProducts.length === 0 && step === 0) {

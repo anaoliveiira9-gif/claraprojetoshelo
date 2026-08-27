@@ -68,9 +68,33 @@ export function SiteFooter() {
               Índice
             </p>
             <ul className="mt-4 flex flex-col gap-3 text-sm text-paper-dim">
-              <li>Website — E-commerce</li>
-              <li>App — Produto Digital</li>
-              <li>Sistemas — Automação</li>
+              <li>
+                <Link
+                  href="/servicos/site"
+                  data-cursor-hover
+                  className="transition-colors hover:text-paper"
+                >
+                  Website — E-commerce
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/servicos/aplicativo"
+                  data-cursor-hover
+                  className="transition-colors hover:text-paper"
+                >
+                  App — Produto Digital
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/servicos/sistema"
+                  data-cursor-hover
+                  className="transition-colors hover:text-paper"
+                >
+                  Sistemas — Automação
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

@@ -49,6 +49,13 @@ export function getTableById(id: string | null): TableOption | undefined {
   return TABLES.find((table) => table.id === id);
 }
 
+/** Highest party size a table's capacity range actually allows (e.g. "2–4 pessoas" → 4). */
+export function getTableCapacityMax(table: TableOption): number {
+  const matches = table.capacity.match(/\d+/g);
+  if (!matches || matches.length === 0) return 10;
+  return Number(matches[matches.length - 1]);
+}
+
 export type ReservationSelection = {
   date: string; // ISO yyyy-mm-dd
   people: number;

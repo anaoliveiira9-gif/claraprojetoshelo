@@ -552,10 +552,12 @@ type MapFilterKey = (typeof MAP_FILTERS)[number]["key"];
 export function NovaMapScreen({
   experiences = NOVA_EXPERIENCES,
   favoriteIds = [],
+  onToggleFavorite = () => {},
   onSelect = () => {},
 }: {
   experiences?: NovaExperience[];
   favoriteIds?: string[];
+  onToggleFavorite?: (id: string) => void;
   onSelect?: (slug: string) => void;
 }) {
   const reducedMotion = usePrefersReducedMotion();
@@ -752,6 +754,8 @@ export function NovaMapScreen({
                 </button>
                 <ExperienceCard
                   experience={active}
+                  favorited={favoriteIds.includes(active.id)}
+                  onToggleFavorite={onToggleFavorite}
                   onSelect={onSelect}
                   meta={
                     active.startsInMinutes !== null

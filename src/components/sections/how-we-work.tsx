@@ -43,18 +43,40 @@ const PROCESS_STEPS = [
 
 const STEP_COUNT = PROCESS_STEPS.length;
 
-function StepList({ activeStep }: { activeStep: number }) {
+function StepList({
+  activeStep,
+  displayStep,
+  onSelect,
+  onPreview,
+  onPreviewEnd,
+}: {
+  activeStep: number;
+  displayStep: number;
+  onSelect: (i: number) => void;
+  onPreview: (i: number) => void;
+  onPreviewEnd: () => void;
+}) {
   return (
     <div className="flex flex-col gap-0">
       {PROCESS_STEPS.map((step, i) => {
-        const isActive = i === activeStep;
+        const isActive = i === displayStep;
         const isDone = i < activeStep;
         return (
-          <div key={step.n} className="flex gap-4 sm:gap-5">
+          <button
+            key={step.n}
+            type="button"
+            data-cursor-hover
+            onClick={() => onSelect(i)}
+            onMouseEnter={() => onPreview(i)}
+            onMouseLeave={onPreviewEnd}
+            onFocus={() => onPreview(i)}
+            onBlur={onPreviewEnd}
+            className="flex gap-4 text-left sm:gap-5"
+          >
             <div className="flex flex-col items-center">
               <span
                 className={cn(
-                  "font-mono text-xs transition-colors duration-300",
+                  "font-mono text-xs transition-colors duration-200",
                   isActive || isDone ? "text-accent" : "text-paper-faint"
                 )}
               >
@@ -73,13 +95,13 @@ function StepList({ activeStep }: { activeStep: number }) {
             </div>
             <div
               className={cn(
-                "pb-8 transition-opacity duration-300",
+                "pb-8 transition-opacity duration-200",
                 isActive ? "opacity-100" : "opacity-40"
               )}
             >
               <p
                 className={cn(
-                  "font-display text-xl font-semibold uppercase tracking-tight transition-colors duration-300 sm:text-2xl",
+                  "font-display text-xl font-semibold uppercase tracking-tight transition-colors duration-200 sm:text-2xl",
                   isActive ? "text-paper" : "text-paper-dim"
                 )}
               >
@@ -91,7 +113,7 @@ function StepList({ activeStep }: { activeStep: number }) {
                 </p>
               )}
             </div>
-          </div>
+          </button>
         );
       })}
     </div>
@@ -101,6 +123,7 @@ function StepList({ activeStep }: { activeStep: number }) {
 function ScrollDrivenProcess() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeStep, setActiveStep] = useState(0);
+  const [previewStep, setPreviewStep] = useState<number | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -113,23 +136,43 @@ function ScrollDrivenProcess() {
 
   useMotionValueEvent(stepProgress, "change", (v) => setActiveStep(v));
 
+  function jumpToStep(i: number) {
+    const container = containerRef.current;
+    if (!container) return;
+    const frac = (i + 0.5) / STEP_COUNT;
+    const top = container.getBoundingClientRect().top + window.scrollY;
+    const scrollableHeight = container.offsetHeight - window.innerHeight;
+    window.scrollTo({
+      top: top + frac * scrollableHeight,
+      behavior: "smooth",
+    });
+  }
+
+  const displayStep = previewStep ?? activeStep;
+
   return (
     <div ref={containerRef} className="relative h-[380vh]">
       <div className="sticky top-20 flex h-[calc(100vh-5rem)] max-h-[720px] flex-col justify-center">
         <div className="grid gap-10 lg:grid-cols-[280px_1fr] lg:gap-16">
-          <StepList activeStep={activeStep} />
+          <StepList
+            activeStep={activeStep}
+            displayStep={displayStep}
+            onSelect={jumpToStep}
+            onPreview={setPreviewStep}
+            onPreviewEnd={() => setPreviewStep(null)}
+          />
 
           <div className="h-[300px] sm:h-[380px] lg:h-[440px]">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                key={activeStep}
+                key={displayStep}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                 className="h-full w-full"
               >
-                <ProcessCanvas step={activeStep} />
+                <ProcessCanvas step={displayStep} />
               </motion.div>
             </AnimatePresence>
           </div>

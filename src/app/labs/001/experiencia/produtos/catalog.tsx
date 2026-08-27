@@ -32,6 +32,26 @@ export function Catalog({
   const [note, setNote] = useState<ScentNoteId | null>(initialNote);
   const { toggleWishlist, isWishlisted } = useEter();
 
+  // initialCategory/initialNote come from the URL search params, read on the
+  // server. When navigating client-side to a new query string on this same
+  // route (e.g. the "Ambiente"/"Corpo" nav links, or a scent-note link),
+  // Next.js re-renders this page with new props but does not remount this
+  // component, so the local filter state must be re-synced from the props.
+  // Adjusting state during render (rather than in an effect) avoids an
+  // extra render pass and a flash of the stale filter — see
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevCategory, setPrevCategory] = useState(initialCategory);
+  if (initialCategory !== prevCategory) {
+    setPrevCategory(initialCategory);
+    setActive(initialCategory);
+  }
+
+  const [prevNote, setPrevNote] = useState(initialNote);
+  if (initialNote !== prevNote) {
+    setPrevNote(initialNote);
+    setNote(initialNote);
+  }
+
   const products = PRODUCTS.filter(
     (p) =>
       (active === "Todos" || p.category === active) &&

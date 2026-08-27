@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { BRAND } from "@/lib/config";
 import { SiteChrome } from "@/components/site-chrome";
@@ -50,6 +52,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteChrome>
           <main className="flex-1">{children}</main>
         </SiteChrome>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

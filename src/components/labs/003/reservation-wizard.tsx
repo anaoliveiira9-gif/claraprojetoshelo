@@ -12,6 +12,7 @@ import {
   createReservation,
   TABLES,
   getTableById,
+  getTableCapacityMax,
   type ReservationConfirmation,
 } from "@/components/labs/003/reservation";
 
@@ -101,6 +102,7 @@ export function ReservationWizard() {
 
   const timeSlots = useMemo(() => (date ? getTimeSlots(date) : []), [date]);
   const table = getTableById(tableId);
+  const maxPeople = table ? getTableCapacityMax(table) : 10;
   const ambiance = useAmbiance(step, date, tableId, time, timeSlots);
 
   function goTo(nextStep: number) {
@@ -123,6 +125,7 @@ export function ReservationWizard() {
 
   async function handleConfirm() {
     if (!date || !time || !tableId) return;
+    if (!timeSlots.some((s) => s.time === time && s.available)) return;
     setSubmitting(true);
     goTo(3);
     const result = await createReservation({ date, people, time, tableId });
@@ -140,10 +143,12 @@ export function ReservationWizard() {
     goTo(0);
   }
 
+  const isSelectedTimeAvailable = !time || timeSlots.some((s) => s.time === time && s.available);
+
   const canContinue =
     (step === 0 && !!date) ||
     (step === 1 && !!tableId && people > 0) ||
-    (step === 2 && !!time);
+    (step === 2 && !!time && isSelectedTimeAvailable);
 
   const variants = reducedMotion
     ? {
@@ -267,7 +272,13 @@ export function ReservationWizard() {
                                   type="button"
                                   disabled={cell.isPast}
                                   data-cursor-hover={!cell.isPast ? true : undefined}
-                                  onClick={() => setDate(cell.iso)}
+                                  onClick={() => {
+                                    if (cell.iso === date) return;
+                                    setDate(cell.iso);
+                                    // Time slot availability is date-specific — a previously
+                                    // chosen hour may not exist/be free on the new night.
+                                    setTime(null);
+                                  }}
                                   className={cn(
                                     "flex h-9 items-center justify-center rounded-sm font-sans text-xs transition-colors",
                                     cell.isPast && "text-[#F1E9DD]/15",
@@ -303,7 +314,13 @@ export function ReservationWizard() {
                             key={option.id}
                             type="button"
                             data-cursor-hover
-                            onClick={() => setTableId(option.id)}
+                            onClick={() => {
+                              setTableId(option.id);
+                              // A table's capacity is a real ceiling, not decoration —
+                              // clamp any already-chosen party size down to fit it.
+                              const max = getTableCapacityMax(option);
+                              setPeople((p) => Math.min(p, max));
+                            }}
                             className={cn(
                               "flex items-start justify-between gap-6 rounded-sm border px-5 py-4 text-left transition-colors",
                               isSelected
@@ -352,13 +369,18 @@ export function ReservationWizard() {
                       <button
                         type="button"
                         data-cursor-hover
-                        disabled={people >= 10}
-                        onClick={() => setPeople((p) => Math.min(10, p + 1))}
+                        disabled={people >= maxPeople}
+                        onClick={() => setPeople((p) => Math.min(maxPeople, p + 1))}
                         className="flex h-9 w-9 items-center justify-center rounded-full border border-[#F1E9DD]/25 text-[#F1E9DD] transition-colors hover:border-[#7C2A2A] hover:text-[#7C2A2A] disabled:cursor-not-allowed disabled:opacity-30"
                         aria-label="Aumentar número de pessoas"
                       >
                         <Plus className="h-3.5 w-3.5" />
                       </button>
+                      {table && (
+                        <span className="font-sans text-[10px] uppercase tracking-[0.15em] text-[#F1E9DD]/35">
+                          Máx. {maxPeople} nesta mesa
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}

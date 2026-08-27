@@ -11,6 +11,7 @@ export default function MapaPage() {
   return (
     <NovaMapScreen
       favoriteIds={favorites?.favoriteIds ?? []}
+      onToggleFavorite={(id) => favorites?.toggleFavorite(id)}
       onSelect={(slug) => router.push(`/labs/006/experiencia/${slug}`)}
     />
   );

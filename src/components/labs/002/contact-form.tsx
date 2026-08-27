@@ -24,6 +24,17 @@ export function ContactForm() {
           portfólio — nenhum dado foi enviado de verdade — mas em um projeto
           real nossa equipe responderia em até dois dias úteis.
         </p>
+        <button
+          type="button"
+          data-cursor-hover
+          onClick={() => {
+            setSubmitted(false);
+            setName("");
+          }}
+          className="mt-2 [font-family:var(--font-atelier-mono)] text-xs uppercase tracking-[0.15em] text-[#2E4A5E] underline underline-offset-4 hover:text-[#161615]"
+        >
+          Enviar outra mensagem
+        </button>
       </div>
     );
   }

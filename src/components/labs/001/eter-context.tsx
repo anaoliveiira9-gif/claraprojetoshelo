@@ -27,6 +27,7 @@ interface EterState {
   addToCart: (slug: string, quantity?: number) => void;
   removeFromCart: (slug: string) => void;
   setQuantity: (slug: string, quantity: number) => void;
+  clearCart: () => void;
   toggleWishlist: (slug: string) => void;
   isWishlisted: (slug: string) => boolean;
   cartCount: number;
@@ -149,6 +150,10 @@ export function EterProvider({ children }: { children: React.ReactNode }) {
     [cartStore]
   );
 
+  const clearCart = useCallback(() => {
+    cartStore.set([]);
+  }, [cartStore]);
+
   const toggleWishlist = useCallback(
     (slug: string) => {
       const current = wishlistStore.getSnapshot();
@@ -200,6 +205,7 @@ export function EterProvider({ children }: { children: React.ReactNode }) {
     addToCart,
     removeFromCart,
     setQuantity,
+    clearCart,
     toggleWishlist,
     isWishlisted,
     cartCount,
