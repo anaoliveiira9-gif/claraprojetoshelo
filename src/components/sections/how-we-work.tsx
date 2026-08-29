@@ -196,9 +196,9 @@ export function HowWeWork() {
   }));
 
   return (
-    <section className="border-b border-line px-5 py-24 sm:px-8 lg:px-12">
+    <section id="how-we-work" className="border-b border-line px-5 py-24 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-[1600px]">
-        <SectionLabel index="02" label={howWeWork.label} />
+        <SectionLabel index="01" label={howWeWork.label} />
         <p className="mt-6 max-w-xl text-sm leading-relaxed text-paper-dim">
           {howWeWork.description}
         </p>

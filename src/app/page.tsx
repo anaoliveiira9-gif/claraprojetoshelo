@@ -10,8 +10,8 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <LabsGrid />
       <HowWeWork />
+      <LabsGrid />
       <Services />
       <Studio />
       <Faq />

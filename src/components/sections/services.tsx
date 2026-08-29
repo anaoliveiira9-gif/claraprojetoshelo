@@ -36,6 +36,25 @@ export function Services() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal delay={servicesSection.items.length * 0.03}>
+          <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-line pt-8 sm:flex-row sm:items-center">
+            <p className="max-w-sm text-sm leading-relaxed text-paper-dim">
+              Não sabe por onde começar? O diagnóstico ajusta o escopo e a
+              estimativa para o que você realmente precisa.
+            </p>
+            <Link
+              href="/start-a-project"
+              data-cursor-hover
+              className="group flex shrink-0 items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-paper transition-colors hover:text-accent"
+            >
+              Começar um Projeto
+              <span className="transition-transform group-hover:translate-x-1">
+                →
+              </span>
+            </Link>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

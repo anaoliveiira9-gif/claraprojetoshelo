@@ -14,43 +14,14 @@ export interface Lab {
   experienceHref: string;
 }
 
+/**
+ * Display order (not the same as `index`/`slug`, which stay fixed for
+ * stable URLs): sequenced for a portfolio narrative — impacto → produto →
+ * tecnologia → variedade → profundidade — front-loading the most visually
+ * immediate, easy-to-grasp experiences, and keeping similar domains
+ * (architecture vs. real estate) apart instead of back-to-back.
+ */
 export const LABS: Lab[] = [
-  {
-    index: "001",
-    slug: "001",
-    category: "Luxury Commerce",
-    title: "A fragrância como interface.",
-    client: "ÉTÉR — Perfumaria & Objetos Sensoriais",
-    summary:
-      "E-commerce editorial para uma maison brasileira de perfumaria, onde cada frasco é tratado como objeto de desejo.",
-    description: [
-      "ÉTÉR precisava de uma loja que competisse com as grandes maisons sem perder identidade própria. Construímos uma experiência de compra pausada, quase silenciosa — grandes composições tipográficas, tons de âmbar e um checkout em poucos passos.",
-      "Catálogo, busca, wishlist e carrinho funcionam de verdade dentro da demonstração — não são apenas telas estáticas.",
-    ],
-    services: ["E-commerce", "Sistema de Design", "Direção de Marca"],
-    year: "2026",
-    stack: ["Next.js", "React Context", "Framer Motion"],
-    devices: ["desktop", "tablet", "phone"],
-    experienceHref: "/labs/001/experiencia",
-  },
-  {
-    index: "002",
-    slug: "002",
-    category: "Architecture",
-    title: "Plantas, luz e silêncio.",
-    client: "ATELIER 17 — Arquitetura Contemporânea",
-    summary:
-      "Site institucional para um escritório de arquitetura brasileiro, com apresentação editorial de projetos e plantas interativas.",
-    description: [
-      "O desafio era apresentar projetos residenciais e comerciais sem transformar o site em um catálogo raso. A navegação foi construída em torno de plantas técnicas, galerias em tela cheia e uma grade assimétrica que respira.",
-      "Cada projeto tem sua própria narrativa: contexto, processo, materiais e resultado — como uma publicação de arquitetura levada para a web.",
-    ],
-    services: ["Website", "Sistema Editorial", "Direção de Arte"],
-    year: "2026",
-    stack: ["Next.js", "Framer Motion", "SVG"],
-    devices: ["desktop", "tablet", "phone"],
-    experienceHref: "/labs/002/experiencia",
-  },
   {
     index: "003",
     slug: "003",
@@ -68,6 +39,24 @@ export const LABS: Lab[] = [
     stack: ["Next.js", "React Context", "Framer Motion"],
     devices: ["desktop", "phone"],
     experienceHref: "/labs/003/experiencia",
+  },
+  {
+    index: "006",
+    slug: "006",
+    category: "Digital Product",
+    title: "Descobrir a cidade, de novo.",
+    client: "NOVA — Descoberta Cultural",
+    summary:
+      "Aplicativo mobile de descoberta de experiências, restaurantes e eventos, navegável como um app nativo de verdade.",
+    description: [
+      "NOVA nasceu para tornar a descoberta cultural da cidade mais editorial e menos genérica. Desenhamos onboarding, home, busca, mapa, favoritos e reservas — tudo com identidade visual própria.",
+      "Cada tela é um componente real e navegável, com transições e barra de navegação inferior como um aplicativo nativo.",
+    ],
+    services: ["App", "Design de Produto", "Sistema de Design"],
+    year: "2026",
+    stack: ["Next.js", "Framer Motion", "React Context"],
+    devices: ["phone", "tablet"],
+    experienceHref: "/labs/006/experiencia",
   },
   {
     index: "004",
@@ -106,22 +95,40 @@ export const LABS: Lab[] = [
     experienceHref: "/labs/005/experiencia",
   },
   {
-    index: "006",
-    slug: "006",
-    category: "Digital Product",
-    title: "Descobrir a cidade, de novo.",
-    client: "NOVA — Descoberta Cultural",
+    index: "001",
+    slug: "001",
+    category: "Luxury Commerce",
+    title: "A fragrância como interface.",
+    client: "ÉTÉR — Perfumaria & Objetos Sensoriais",
     summary:
-      "Aplicativo mobile de descoberta de experiências, restaurantes e eventos, navegável como um app nativo de verdade.",
+      "E-commerce editorial para uma maison brasileira de perfumaria, onde cada frasco é tratado como objeto de desejo.",
     description: [
-      "NOVA nasceu para tornar a descoberta cultural da cidade mais editorial e menos genérica. Desenhamos onboarding, home, busca, mapa, favoritos e reservas — tudo com identidade visual própria.",
-      "Cada tela é um componente real e navegável, com transições e barra de navegação inferior como um aplicativo nativo.",
+      "ÉTÉR precisava de uma loja que competisse com as grandes maisons sem perder identidade própria. Construímos uma experiência de compra pausada, quase silenciosa — grandes composições tipográficas, tons de âmbar e um checkout em poucos passos.",
+      "Catálogo, busca, wishlist e carrinho funcionam de verdade dentro da demonstração — não são apenas telas estáticas.",
     ],
-    services: ["App", "Design de Produto", "Sistema de Design"],
+    services: ["E-commerce", "Sistema de Design", "Direção de Marca"],
     year: "2026",
-    stack: ["Next.js", "Framer Motion", "React Context"],
-    devices: ["phone", "tablet"],
-    experienceHref: "/labs/006/experiencia",
+    stack: ["Next.js", "React Context", "Framer Motion"],
+    devices: ["desktop", "tablet", "phone"],
+    experienceHref: "/labs/001/experiencia",
+  },
+  {
+    index: "002",
+    slug: "002",
+    category: "Architecture",
+    title: "Plantas, luz e silêncio.",
+    client: "ATELIER 17 — Arquitetura Contemporânea",
+    summary:
+      "Site institucional para um escritório de arquitetura brasileiro, com apresentação editorial de projetos e plantas interativas.",
+    description: [
+      "O desafio era apresentar projetos residenciais e comerciais sem transformar o site em um catálogo raso. A navegação foi construída em torno de plantas técnicas, galerias em tela cheia e uma grade assimétrica que respira.",
+      "Cada projeto tem sua própria narrativa: contexto, processo, materiais e resultado — como uma publicação de arquitetura levada para a web.",
+    ],
+    services: ["Website", "Sistema Editorial", "Direção de Arte"],
+    year: "2026",
+    stack: ["Next.js", "Framer Motion", "SVG"],
+    devices: ["desktop", "tablet", "phone"],
+    experienceHref: "/labs/002/experiencia",
   },
 ];
 

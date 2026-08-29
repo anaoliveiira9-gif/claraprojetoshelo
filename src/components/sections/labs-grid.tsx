@@ -13,7 +13,7 @@ export function LabsGrid() {
   return (
     <section id="labs" className="border-b border-line px-5 py-24 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-[1600px]">
-        <SectionLabel index="01" label={labsSection.label} />
+        <SectionLabel index="02" label={labsSection.label} />
         <p className="mt-6 max-w-xl text-sm leading-relaxed text-paper-dim">
           {labsSection.description}
         </p>
