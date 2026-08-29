@@ -1,23 +1,34 @@
-import type { ReactNode } from "react";
-import type { Metadata } from "next";
+import { Newsreader } from "next/font/google";
 import { LabExitBar } from "@/components/labs/lab-exit-bar";
-import { OrbitThemeProvider } from "@/components/labs/004/theme";
+import { FavoritesProvider } from "@/components/labs/004/favorites-context";
+import { VerticeChrome } from "@/components/labs/004/vertice-chrome";
 
-export const metadata: Metadata = {
-  title: "Orbit — Inteligência Operacional",
-};
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 /**
- * Root of the Orbit micro-experience. Owns its own light/dark theme system
- * (scoped via OrbitThemeProvider) and its own palette/type, overriding
- * ALUMNA's dark tokens entirely. The LabExitBar deliberately keeps ALUMNA's
- * own styling so it always reads as "the way out".
+ * VÉRTICE lives inside ALUMNA's lab shell but deliberately overrides the
+ * dark copper tokens with its own warm-stone / forest-green identity, kept
+ * local to this subtree via the wrapping div below.
  */
-export default function ExperienciaLayout({ children }: { children: ReactNode }) {
+export default function ExperienciaLayout({ children }: { children: React.ReactNode }) {
   return (
-    <OrbitThemeProvider>
-      <LabExitBar labIndex="004" labName="Orbit" />
-      {children}
-    </OrbitThemeProvider>
+    <div className={`vertice-scope ${newsreader.variable} font-sans`}>
+      {/*
+       * ALUMNA's site-wide `:focus-visible` ring (globals.css) uses its own
+       * copper --accent, which doesn't belong to Vértice's warm-stone/forest
+       * identity and isn't in scope to change globally. Scoping an override
+       * to Vértice's own forest green here keeps the ring on-brand without
+       * touching the shared stylesheet.
+       */}
+      <style>{`.vertice-scope :focus-visible { outline-color: #2F4A3B; }`}</style>
+      <LabExitBar labIndex="004" labName="Vértice" />
+      <FavoritesProvider>
+        <VerticeChrome>{children}</VerticeChrome>
+      </FavoritesProvider>
+    </div>
   );
 }

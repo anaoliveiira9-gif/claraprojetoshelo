@@ -1,37 +1,37 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Archivo, IBM_Plex_Mono } from "next/font/google";
+import { Manrope } from "next/font/google";
 import { LabExitBar } from "@/components/labs/lab-exit-bar";
-import { SiteNav } from "@/components/labs/002/site-nav";
+import { FavoritesProvider } from "@/components/labs/002/favorites-context";
 
-const archivo = Archivo({
+const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "700", "800", "900"],
-  variable: "--font-atelier-display",
-  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-nova",
 });
 
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-atelier-mono",
-  display: "swap",
-});
-
-export const metadata: Metadata = {
-  title: "Atelier 17 — Arquitetura",
-  description:
-    "Atelier 17, estúdio de arquitetura brasileiro — projetos residenciais, institucionais, comerciais e culturais.",
-};
-
-export default function ExperienciaLayout({ children }: { children: ReactNode }) {
+/**
+ * Root of the NOVA app-shell. Fully overrides ALUMNA's dark tokens with
+ * NOVA's own cream/ink/magenta palette via this wrapping div, and constrains
+ * everything to a phone-proportioned column so it reads as a real app even
+ * when opened directly in a wide browser window.
+ */
+export default function ExperienciaLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <div
-      className={`${archivo.variable} ${plexMono.variable} relative min-h-screen bg-[#FAFAF8] text-[#161615] antialiased [font-family:var(--font-atelier-display)]`}
+      className={`${manrope.variable} min-h-screen bg-[#EDE6D6] font-[family-name:var(--font-nova)] antialiased`}
     >
-      <LabExitBar labIndex="002" labName="Atelier 17" />
-      <SiteNav />
-      {children}
+      <LabExitBar labIndex="002" labName="Nova" />
+      <FavoritesProvider>
+        <div className="flex min-h-screen w-full justify-center sm:py-8">
+          <div className="relative flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-[#FAF7F2] text-[#1A1712] sm:h-[900px] sm:max-h-[calc(100dvh-4rem)] sm:rounded-[2.5rem] sm:border sm:border-[#DCD3BF] sm:shadow-2xl">
+            {children}
+          </div>
+        </div>
+      </FavoritesProvider>
     </div>
   );
 }

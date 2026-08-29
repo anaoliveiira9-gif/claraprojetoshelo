@@ -1,37 +1,37 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Manrope } from "next/font/google";
+import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import { LabExitBar } from "@/components/labs/lab-exit-bar";
-import { FavoritesProvider } from "@/components/labs/006/favorites-context";
+import { SiteNav } from "@/components/labs/006/site-nav";
 
-const manrope = Manrope({
+const archivo = Archivo({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-nova",
+  weight: ["400", "500", "700", "800", "900"],
+  variable: "--font-atelier-display",
+  display: "swap",
 });
 
-/**
- * Root of the NOVA app-shell. Fully overrides ALUMNA's dark tokens with
- * NOVA's own cream/ink/magenta palette via this wrapping div, and constrains
- * everything to a phone-proportioned column so it reads as a real app even
- * when opened directly in a wide browser window.
- */
-export default function ExperienciaLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-atelier-mono",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Atelier 17 — Arquitetura",
+  description:
+    "Atelier 17, estúdio de arquitetura brasileiro — projetos residenciais, institucionais, comerciais e culturais.",
+};
+
+export default function ExperienciaLayout({ children }: { children: ReactNode }) {
   return (
     <div
-      className={`${manrope.variable} min-h-screen bg-[#EDE6D6] font-[family-name:var(--font-nova)] antialiased`}
+      className={`${archivo.variable} ${plexMono.variable} relative min-h-screen bg-[#FAFAF8] text-[#161615] antialiased [font-family:var(--font-atelier-display)]`}
     >
-      <LabExitBar labIndex="006" labName="Nova" />
-      <FavoritesProvider>
-        <div className="flex min-h-screen w-full justify-center sm:py-8">
-          <div className="relative flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-[#FAF7F2] text-[#1A1712] sm:h-[900px] sm:max-h-[calc(100dvh-4rem)] sm:rounded-[2.5rem] sm:border sm:border-[#DCD3BF] sm:shadow-2xl">
-            {children}
-          </div>
-        </div>
-      </FavoritesProvider>
+      <LabExitBar labIndex="006" labName="Atelier 17" />
+      <SiteNav />
+      {children}
     </div>
   );
 }

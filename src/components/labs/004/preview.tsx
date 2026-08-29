@@ -1,56 +1,38 @@
-/**
- * Static, non-interactive miniature of the Orbit dashboard for the lab
- * case-study device frame. Light-mode palette only, hardcoded hex values
- * (not the runtime CSS vars from theme.tsx) so it stays legible and
- * self-contained at small sizes without needing OrbitThemeProvider.
- */
 export function LabPreview() {
   return (
-    <div className="flex h-full w-full overflow-hidden bg-[#F5F6F7] font-sans text-[#111214]">
-      {/* sidebar strip */}
-      <div className="flex w-[22%] shrink-0 flex-col gap-2 border-r border-[#E4E6E9] bg-white px-2 py-3">
-        <div className="mb-2 h-2 w-[70%] rounded-sm bg-[#136156]" />
-        {["a", "b", "c", "d", "e"].map((k, i) => (
-          <div
-            key={k}
-            className="h-1.5 w-full rounded-sm"
-            style={{ backgroundColor: i === 0 ? "#13615633" : "#E4E6E9" }}
-          />
-        ))}
-      </div>
+    <div className="flex h-full w-full flex-col overflow-hidden bg-[#EFEAE3] p-4 text-[#241E1A]">
+      <p className="font-serif text-[13px] leading-none">Vértice</p>
 
-      {/* main content */}
-      <div className="flex min-w-0 flex-1 flex-col gap-2 p-3">
-        {/* topbar */}
-        <div className="mb-1 flex items-center justify-between">
-          <div className="h-2 w-[35%] rounded-sm bg-[#E4E6E9]" />
-          <div className="h-2 w-2 rounded-full bg-[#136156]" />
-        </div>
-
-        {/* kpi cards */}
-        <div className="grid grid-cols-3 gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="flex flex-col gap-1 rounded-[3px] border border-[#E4E6E9] bg-white p-1.5"
-            >
-              <div className="h-1 w-[60%] rounded-sm bg-[#E4E6E9]" />
-              <div className="h-2 w-[40%] rounded-sm bg-[#111214]" />
-            </div>
-          ))}
-        </div>
-
-        {/* chart card with bar-chart silhouette */}
-        <div className="flex flex-1 flex-col justify-end gap-1 rounded-[3px] border border-[#E4E6E9] bg-white p-2">
-          <div className="mb-1 h-1 w-[30%] rounded-sm bg-[#E4E6E9]" />
-          <div className="flex flex-1 items-end gap-[3px]">
-            {[40, 65, 50, 80, 95, 55, 35].map((h, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-t-[1px] bg-[#136156]"
-                style={{ height: `${h}%`, opacity: 0.85 }}
-              />
+      <div className="mt-3 flex flex-1 gap-2">
+        <div className="relative flex-1 overflow-hidden rounded-sm border border-[#DDD5C8] bg-[#F8F5F0]">
+          <svg viewBox="0 0 100 70" className="h-full w-full" aria-hidden="true">
+            <rect x={0} y={0} width={100} height={70} fill="#F8F5F0" />
+            {[14, 28, 42, 56, 70].map((x) => (
+              <line key={x} x1={x} y1={0} x2={x} y2={70} stroke="#DDD5C8" strokeWidth={0.6} />
             ))}
+            {[14, 28, 42, 56].map((y) => (
+              <line key={y} x1={0} y1={y} x2={100} y2={y} stroke="#DDD5C8" strokeWidth={0.6} />
+            ))}
+            <circle cx={26} cy={22} r={4.5} fill="none" stroke="#2F4A3B" strokeWidth={1} opacity={0.5} />
+            <circle cx={26} cy={22} r={3} fill="#2F4A3B" />
+            <circle cx={58} cy={34} r={2.2} fill="#2F4A3B" opacity={0.8} />
+            <circle cx={44} cy={50} r={2.2} fill="#2F4A3B" opacity={0.8} />
+            <circle cx={78} cy={16} r={2.2} fill="#2F4A3B" opacity={0.8} />
+          </svg>
+        </div>
+
+        <div className="flex w-[38%] flex-col gap-1.5">
+          <div className="flex items-center justify-between rounded-sm border border-[#2F4A3B] bg-[#F8F5F0] px-1.5 py-1.5">
+            <span className="truncate font-sans text-[6.5px] text-[#6B6157]">Jardins</span>
+            <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 4,8M</span>
+          </div>
+          <div className="flex items-center justify-between rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] px-1.5 py-1.5">
+            <span className="truncate font-sans text-[6.5px] text-[#6B6157]">Leblon</span>
+            <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 3,2M</span>
+          </div>
+          <div className="flex items-center justify-between rounded-sm border border-[#DDD5C8] bg-[#F8F5F0] px-1.5 py-1.5">
+            <span className="truncate font-sans text-[6.5px] text-[#6B6157]">Moema</span>
+            <span className="shrink-0 font-sans text-[6.5px] text-[#2F4A3B]">R$ 2,6M</span>
           </div>
         </div>
       </div>

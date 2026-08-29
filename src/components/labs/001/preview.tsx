@@ -1,38 +1,49 @@
+/**
+ * Static "poster" composition for the lab card / device-frame mockup.
+ * No interactivity, no external fonts — just enough of Noir's mood
+ * (deep near-black, oxblood glow, serif headline, a CTA fragment) to
+ * read clearly at 200–460px wide inside overflow:hidden.
+ */
 export function LabPreview() {
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-[#F6F1E9] font-sans text-[#171512]">
-      <div className="flex items-center justify-between border-b border-[#171512]/10 px-3 py-2">
-        <span className="font-serif text-[10px] tracking-[0.1em]">ÉTÉR</span>
-        <div className="flex gap-1.5">
-          <span className="h-2 w-2 rounded-full border border-[#171512]/40" />
-          <span className="h-2 w-2 rounded-full border border-[#171512]/40" />
-          <span className="h-2 w-2 rounded-full bg-[#171512]/70" />
-        </div>
-      </div>
+    <div
+      className="relative flex h-full w-full flex-col justify-between overflow-hidden p-5"
+      style={{
+        background:
+          "radial-gradient(120% 90% at 25% 15%, rgba(124,42,42,0.4) 0%, rgba(13,11,10,0) 55%), radial-gradient(80% 70% at 80% 80%, rgba(241,233,221,0.08) 0%, rgba(13,11,10,0) 60%), #0D0B0A",
+      }}
+    >
+      <span
+        className="font-sans text-[9px] uppercase tracking-[0.35em]"
+        style={{ color: "rgba(241,233,221,0.5)" }}
+      >
+        Noir · Sala de jantar
+      </span>
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 text-center">
-        <span className="text-[6px] uppercase tracking-[0.3em] text-[#171512]/45">
-          Navegue pelo cheiro
-        </span>
-        <p className="font-serif text-[11px] leading-[1.15] tracking-tight">
-          MADEIRA · PELE · <span className="text-[#B4915B]">FUMAÇA</span>
+      <div>
+        <p
+          className="font-serif italic leading-[1.05]"
+          style={{ color: "#F1E9DD", fontSize: "clamp(20px, 12%, 34px)" }}
+        >
+          Uma noite,
           <br />
-          FLOR · ÂMBAR
+          <span style={{ color: "#7C2A2A" }}>bem servida.</span>
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-1.5 border-t border-[#171512]/10 p-3">
-        {[
-          ["#8A5A2B", "#3A2412"],
-          ["#6B7A73", "#22302B"],
-          ["#D9C9B8", "#8C7A63"],
-        ].map(([a, b], i) => (
-          <div
-            key={i}
-            className="aspect-[3/4]"
-            style={{ background: `linear-gradient(180deg, ${a}, ${b})` }}
-          />
-        ))}
+      <div className="flex items-center justify-between">
+        <span
+          className="rounded-sm px-3 py-1.5 font-sans text-[9px] uppercase tracking-[0.2em]"
+          style={{ background: "#7C2A2A", color: "#F1E9DD" }}
+        >
+          Reservar
+        </span>
+        <span
+          className="font-sans text-[9px] tracking-[0.15em]"
+          style={{ color: "rgba(241,233,221,0.35)" }}
+        >
+          Noite · Mesa · Horário
+        </span>
       </div>
     </div>
   );

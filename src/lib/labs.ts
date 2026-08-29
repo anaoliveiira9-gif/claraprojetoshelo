@@ -15,16 +15,16 @@ export interface Lab {
 }
 
 /**
- * Display order (not the same as `index`/`slug`, which stay fixed for
- * stable URLs): sequenced for a portfolio narrative — impacto → produto →
- * tecnologia → variedade → profundidade — front-loading the most visually
- * immediate, easy-to-grasp experiences, and keeping similar domains
- * (architecture vs. real estate) apart instead of back-to-back.
+ * Sequenced for a portfolio narrative — impacto → produto → tecnologia →
+ * variedade → profundidade — front-loading the most visually immediate,
+ * easy-to-grasp experiences, and keeping similar domains (architecture vs.
+ * real estate) apart instead of back-to-back. `index`/`slug` match this
+ * display order directly.
  */
 export const LABS: Lab[] = [
   {
-    index: "003",
-    slug: "003",
+    index: "001",
+    slug: "001",
     category: "Hospitality",
     title: "Reservar deveria ser um prazer.",
     client: "NOIR — Restaurante & Hotel Boutique",
@@ -38,11 +38,11 @@ export const LABS: Lab[] = [
     year: "2025",
     stack: ["Next.js", "React Context", "Framer Motion"],
     devices: ["desktop", "phone"],
-    experienceHref: "/labs/003/experiencia",
+    experienceHref: "/labs/001/experiencia",
   },
   {
-    index: "006",
-    slug: "006",
+    index: "002",
+    slug: "002",
     category: "Digital Product",
     title: "Descobrir a cidade, de novo.",
     client: "NOVA — Descoberta Cultural",
@@ -56,11 +56,11 @@ export const LABS: Lab[] = [
     year: "2026",
     stack: ["Next.js", "Framer Motion", "React Context"],
     devices: ["phone", "tablet"],
-    experienceHref: "/labs/006/experiencia",
+    experienceHref: "/labs/002/experiencia",
   },
   {
-    index: "004",
-    slug: "004",
+    index: "003",
+    slug: "003",
     category: "AI / SaaS",
     title: "Complexidade, organizada.",
     client: "ORBIT — Inteligência Operacional",
@@ -74,11 +74,11 @@ export const LABS: Lab[] = [
     year: "2026",
     stack: ["Next.js", "SVG", "React Context"],
     devices: ["desktop", "laptop", "tablet"],
-    experienceHref: "/labs/004/experiencia",
+    experienceHref: "/labs/003/experiencia",
   },
   {
-    index: "005",
-    slug: "005",
+    index: "004",
+    slug: "004",
     category: "Real Estate",
     title: "Encontrar o lugar certo.",
     client: "VÉRTICE — Plataforma Imobiliária",
@@ -92,11 +92,11 @@ export const LABS: Lab[] = [
     year: "2026",
     stack: ["Next.js", "React Context", "SVG"],
     devices: ["laptop", "phone"],
-    experienceHref: "/labs/005/experiencia",
+    experienceHref: "/labs/004/experiencia",
   },
   {
-    index: "001",
-    slug: "001",
+    index: "005",
+    slug: "005",
     category: "Luxury Commerce",
     title: "A fragrância como interface.",
     client: "ÉTÉR — Perfumaria & Objetos Sensoriais",
@@ -110,11 +110,11 @@ export const LABS: Lab[] = [
     year: "2026",
     stack: ["Next.js", "React Context", "Framer Motion"],
     devices: ["desktop", "tablet", "phone"],
-    experienceHref: "/labs/001/experiencia",
+    experienceHref: "/labs/005/experiencia",
   },
   {
-    index: "002",
-    slug: "002",
+    index: "006",
+    slug: "006",
     category: "Architecture",
     title: "Plantas, luz e silêncio.",
     client: "ATELIER 17 — Arquitetura Contemporânea",
@@ -128,7 +128,7 @@ export const LABS: Lab[] = [
     year: "2026",
     stack: ["Next.js", "Framer Motion", "SVG"],
     devices: ["desktop", "tablet", "phone"],
-    experienceHref: "/labs/002/experiencia",
+    experienceHref: "/labs/006/experiencia",
   },
 ];
 
