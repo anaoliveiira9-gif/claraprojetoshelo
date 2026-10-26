@@ -6,6 +6,7 @@ import type {
   AddonOption,
   StyleOption,
 } from "@/lib/pricing";
+import { formatBRL, getService } from "@/lib/pricing";
 
 /**
  * Plain-language subtitles and step hints for the configurator — purely
@@ -67,7 +68,7 @@ export const ADDON_DESCRIPTIONS: Record<AddonOption, string> = {
   Automação: "Conectar ferramentas e reduzir trabalho manual",
   "UX/UI": "Só o design da interface, sem desenvolver",
   "Identidade digital": "Marca (logo, cores) aplicada ao digital",
-  "Manutenção e evolução": "Suporte contínuo, a partir de R$ 700/mês",
+  "Manutenção e evolução": `Suporte contínuo, a partir de ${formatBRL(getService("manutencao-evolucao")!.basePrice)}/mês`,
 };
 
 export const STYLE_DESCRIPTIONS: Record<StyleOption, string> = {

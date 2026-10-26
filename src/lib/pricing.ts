@@ -29,12 +29,12 @@ export type BuildOption = (typeof BUILD_OPTIONS)[number];
 
 /** "A partir de" entry price for each project type. */
 export const BUILD_OPTION_BASE: Record<BuildOption, number> = {
-  "Landing page": 2500,
-  Site: 4000,
-  "Loja virtual": 7000,
-  Aplicativo: 9000,
-  Sistema: 12000,
-  Plataforma: 16000,
+  "Landing page": 1750,
+  Site: 2800,
+  "Loja virtual": 4900,
+  Aplicativo: 6300,
+  Sistema: 8400,
+  Plataforma: 11200,
 };
 
 /**
@@ -43,12 +43,12 @@ export const BUILD_OPTION_BASE: Record<BuildOption, number> = {
  * the weights below has something to sanity-check typical scenarios
  * against. An exceptionally complex project is expected to exceed its
  * band; that's by design, not a bug.
- *   Landing page:  2.500 –  5.000+
- *   Site:          4.000 – 12.000+
- *   Loja virtual:  7.000 – 20.000+
- *   Aplicativo:    9.000 – 30.000+
- *   Sistema:      12.000 – 40.000+
- *   Plataforma:   16.000 – 60.000+
+ *   Landing page:  1.750 –  3.500+
+ *   Site:          2.800 –  8.400+
+ *   Loja virtual:  4.900 – 14.000+
+ *   Aplicativo:    6.300 – 21.000+
+ *   Sistema:       8.400 – 28.000+
+ *   Plataforma:   11.200 – 42.000+
  */
 
 // ---------------------------------------------------------------------------
@@ -67,12 +67,12 @@ export const OBJECTIVE_OPTIONS = [
 export type ObjectiveOption = (typeof OBJECTIVE_OPTIONS)[number];
 
 const OBJECTIVE_WEIGHT: Record<ObjectiveOption, number> = {
-  Vender: 500,
-  "Atrair clientes": 350,
-  "Agendar e receber pedidos": 450,
-  "Gerenciar operações": 500,
-  "Automatizar processos": 600,
-  "Conectar ferramentas": 500,
+  Vender: 350,
+  "Atrair clientes": 245,
+  "Agendar e receber pedidos": 315,
+  "Gerenciar operações": 350,
+  "Automatizar processos": 420,
+  "Conectar ferramentas": 350,
 };
 
 // ---------------------------------------------------------------------------
@@ -97,15 +97,15 @@ export const FEATURE_OPTIONS = [
 export type FeatureOption = (typeof FEATURE_OPTIONS)[number];
 
 const FEATURE_WEIGHT: Record<FeatureOption, number> = {
-  "Contas e login": 700,
-  "Área administrativa": 1600,
-  Pagamentos: 1000,
-  "WhatsApp e contato": 250,
-  Notificações: 350,
-  "Busca e filtros": 600,
-  "Mapas e localização": 600,
-  "Integrações externas": 1000,
-  "Inteligência artificial": 1800,
+  "Contas e login": 490,
+  "Área administrativa": 1120,
+  Pagamentos: 700,
+  "WhatsApp e contato": 175,
+  Notificações: 245,
+  "Busca e filtros": 420,
+  "Mapas e localização": 420,
+  "Integrações externas": 700,
+  "Inteligência artificial": 1260,
 };
 
 // ---------------------------------------------------------------------------
@@ -143,10 +143,10 @@ export const ADDON_OPTIONS = [
 export type AddonOption = (typeof ADDON_OPTIONS)[number];
 
 const ADDON_WEIGHT: Record<AddonOption, number> = {
-  Automação: 2500,
-  "UX/UI": 3000,
-  "Identidade digital": 4500,
-  "Manutenção e evolução": 700,
+  Automação: 1750,
+  "UX/UI": 2100,
+  "Identidade digital": 3150,
+  "Manutenção e evolução": 490,
 };
 
 const RECURRING_ADDONS: AddonOption[] = ["Manutenção e evolução"];
@@ -258,7 +258,7 @@ export const SERVICES: ServiceDef[] = [
       "Pixel de analytics",
       "Captura de lead",
     ],
-    basePrice: 2500,
+    basePrice: 1750,
     buildOption: "Landing page",
   },
   {
@@ -281,7 +281,7 @@ export const SERVICES: ServiceDef[] = [
       "Busca e filtros",
       "Integração com redes sociais",
     ],
-    basePrice: 4000,
+    basePrice: 2800,
     buildOption: "Site",
   },
   {
@@ -303,7 +303,7 @@ export const SERVICES: ServiceDef[] = [
       "Área do cliente",
       "Integração com frete",
     ],
-    basePrice: 7000,
+    basePrice: 4900,
     buildOption: "Loja virtual",
   },
   {
@@ -326,7 +326,7 @@ export const SERVICES: ServiceDef[] = [
       "Integração com APIs externas",
       "Inteligência artificial",
     ],
-    basePrice: 9000,
+    basePrice: 6300,
     buildOption: "Aplicativo",
   },
   {
@@ -349,7 +349,7 @@ export const SERVICES: ServiceDef[] = [
       "Integrações com outras ferramentas",
       "Automações internas",
     ],
-    basePrice: 12000,
+    basePrice: 8400,
     buildOption: "Sistema",
   },
   {
@@ -372,7 +372,7 @@ export const SERVICES: ServiceDef[] = [
       "Integrações via API",
       "Painel de métricas de uso",
     ],
-    basePrice: 16000,
+    basePrice: 11200,
     buildOption: "Plataforma",
   },
   {
@@ -395,7 +395,7 @@ export const SERVICES: ServiceDef[] = [
       "Conexão com planilhas ou bancos de dados",
       "IA aplicada ao fluxo",
     ],
-    basePrice: 2500,
+    basePrice: 1750,
     addonOption: "Automação",
   },
   {
@@ -418,7 +418,7 @@ export const SERVICES: ServiceDef[] = [
       "Design system completo",
       "Handoff para desenvolvimento",
     ],
-    basePrice: 3000,
+    basePrice: 2100,
     addonOption: "UX/UI",
   },
   {
@@ -441,7 +441,7 @@ export const SERVICES: ServiceDef[] = [
       "Aplicação em embalagem",
       "Guia de tom de voz",
     ],
-    basePrice: 4500,
+    basePrice: 3150,
     addonOption: "Identidade digital",
   },
   {
@@ -463,7 +463,7 @@ export const SERVICES: ServiceDef[] = [
       "Novas funcionalidades pontuais",
       "Backup e segurança",
     ],
-    basePrice: 700,
+    basePrice: 490,
     isRecurring: true,
     addonOption: "Manutenção e evolução",
   },
